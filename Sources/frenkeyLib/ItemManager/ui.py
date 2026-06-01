@@ -294,8 +294,13 @@ class ConfigInfo(Generic[TConfig]):
 class UI:
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
+    
+    SELECTABLE_SELECTED_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.5)
+    SELECTABLE_HOVERED_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.3)
+    SELECTABLE_ACTIVE_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.7)
+    
     RED_COLOR : Color = ColorPalette.GetColor("red")
-    GRAY_COLOR : Color = Color.from_tuple((0.35, 0.35, 0.35, 1.0))
+    SUBTLE_TEXT_COLOR : Color = Color(90, 90, 90)
     SCREEN_SIZE : tuple[float, float] = (0.0, 0.0)
     RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
     
@@ -804,6 +809,35 @@ class UI:
         return Utils.humanize_string(value.replace("NONE", "None").replace("None_", "None").replace("_None", "None")).replace("  ", " ").strip()
 
     @staticmethod
+    def _get_relative_luminance(color: Color) -> float:
+        return (0.2126 * color.r) + (0.7152 * color.g) + (0.0722 * color.b)
+
+    @staticmethod
+    def _build_subtle_text_color(text_color: Color) -> Color:
+        text_luminance = UI._get_relative_luminance(text_color)
+        subtle_color = text_color.desaturate(0.25)
+
+        if text_luminance >= 110:
+            return Color(
+                max(0, min(255, int(round(subtle_color.r * 0.45)))),
+                max(0, min(255, int(round(subtle_color.g * 0.45)))),
+                max(0, min(255, int(round(subtle_color.b * 0.45)))),
+                text_color.a,
+            )
+
+        strongest_channel = max(subtle_color.r, subtle_color.g, subtle_color.b)
+        if strongest_channel <= 0:
+            return Color(90, 90, 90, text_color.a)
+
+        lift = 90.0 / strongest_channel
+        return Color(
+            max(0, min(255, int(round(subtle_color.r * lift)))),
+            max(0, min(255, int(round(subtle_color.g * lift)))),
+            max(0, min(255, int(round(subtle_color.b * lift)))),
+            text_color.a,
+        )
+
+    @staticmethod
     def _normalize_search_query(value: str) -> str:
         return UI.LEADING_SEARCH_AMOUNT_RE.sub("", value.strip(), count=1).lower()
 
@@ -878,7 +912,7 @@ class UI:
             PyImGui.text_wrapped(doc)    
         PyImGui.pop_text_wrap_pos()
         
-        ImGui.text_colored(drag_note, color=UI.GRAY_COLOR.color_tuple, font_size=12)
+        ImGui.text_colored(drag_note, color=UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
         
         PyImGui.end_tooltip()
         
@@ -1979,7 +2013,7 @@ class UI:
                 ImGui.end_table()
             style.CellPadding.pop_style_var_direct()
         else:
-            ImGui.text_colored('No custom profiles available for this config type.', UI.GRAY_COLOR.color_tuple, font_size=11)
+            ImGui.text_colored('No custom profiles available for this config type.', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=11)
 
         if ImGui.button('Close', -1):
             self.show_manage_profile_window = False
@@ -2091,8 +2125,12 @@ class UI:
         style = ImGui.get_style()
         io = PyImGui.get_io()
         
-        self.SCREEN_SIZE = (io.display_size_x, io.display_size_y)
-        
+        UI.SCREEN_SIZE = (io.display_size_x, io.display_size_y)
+        UI.SELECTABLE_SELECTED_COLOR = style.Header.opacity(0.8)
+        UI.SELECTABLE_ACTIVE_COLOR = style.HeaderActive.opacity(0.95)
+        UI.SELECTABLE_HOVERED_COLOR = style.HeaderHovered.opacity(0.75)
+        UI.SUBTLE_TEXT_COLOR = UI._build_subtle_text_color(style.Text)
+                
         # style.TableBorderLight.push_color_direct((255,255,255,255))
         # style.TableBorderStrong.push_color_direct((255,255,255,255))
         style.CellPadding.push_style_var_direct(10, 10)
@@ -2105,11 +2143,11 @@ class UI:
 
             if ImGui.begin_child("##navigation", (0, 0), border=False):
                 for _, config in enumerate(self.configs):
-                    if ImGui.begin_selectable(f"##{config.name}", selected=self.config == config, size=(0, 35), border=True):
+                    if ImGui.begin_selectable(f"##{config.name}", selected=self.config == config, size=(0, 35), border=True, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                         ImGui.text(config.name)
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 5)
-                        ImGui.text_colored(config.config.__class__.__name__, UI.GRAY_COLOR.color_tuple, font_size=12)
+                        ImGui.text_colored(config.config.__class__.__name__, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                     if ImGui.end_selectable():
                         self.switch_to_config(config)
@@ -2415,7 +2453,7 @@ class UI:
         outer_color = Utils.TupleToColor((0.18, 0.45, 0.72, 0.92))
         inner_color = Utils.TupleToColor((0.10, 0.16, 0.24, 0.95))
         text_color = Utils.TupleToColor((0.97, 0.95, 0.88, 1.0))
-        subtitle_color = Utils.TupleToColor(UI.GRAY_COLOR.color_tuple)
+        subtitle_color = Utils.TupleToColor(UI.SUBTLE_TEXT_COLOR.color_tuple)
 
         overlay = Overlay()
 
@@ -2479,7 +2517,7 @@ class UI:
         outer_color = Utils.TupleToColor((0.18, 0.45, 0.72, 0.92))
         inner_color = Utils.TupleToColor((0.10, 0.16, 0.24, 0.95))
         text_color = Utils.TupleToColor((0.97, 0.95, 0.88, 1.0))
-        subtitle_color = Utils.TupleToColor(UI.GRAY_COLOR.color_tuple)
+        subtitle_color = Utils.TupleToColor(UI.SUBTLE_TEXT_COLOR.color_tuple)
 
         overlay = Overlay()
         overlay.BeginDraw()
@@ -2678,13 +2716,13 @@ class UI:
                     already_selected = entry_key in selected_entries
                     if not already_selected:
                         if PyImGui.is_rect_visible(0, 34):
-                            if ImGui.begin_selectable(f'##sort_argument_model_id_{unique_id}_{item.model_id}_{item.item_type.name}', False, (0, 34)):
+                            if ImGui.begin_selectable(f'##sort_argument_model_id_{unique_id}_{item.model_id}_{item.item_type.name}', False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text(self._get_item_display_name(item))
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
                                 ImGui.text_colored(
                                     f'{self._humanize_name(item.item_type.name)} | Model ID: {int(item.model_id)}',
-                                    UI.GRAY_COLOR.color_tuple,
+                                    UI.SUBTLE_TEXT_COLOR.color_tuple,
                                     font_size=12,
                                 )
                             if ImGui.end_selectable() and not already_selected:
@@ -2738,7 +2776,7 @@ class UI:
                     ImGui.text(label)
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
-                    ImGui.text_colored(subtitle, UI.GRAY_COLOR.color_tuple, font_size=12)
+                    ImGui.text_colored(subtitle, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                     PyImGui.end_group()
                 ImGui.end_child()
         ImGui.end_child()
@@ -2770,15 +2808,15 @@ class UI:
             argument.custom_order.append(remaining_entries[next_index - 1].name)
             changed = True
 
-        ImGui.text_colored(add_label, UI.GRAY_COLOR.color_tuple, font_size=12)
+        ImGui.text_colored(add_label, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
         if ImGui.begin_child(f'##sort_argument_named_selected_{unique_id}', (0, 0), border=False):
             for index, entry_name in enumerate(list(selected_names)):
                 item_unique_id = f'sort_argument_named_order_{unique_id}_{entry_name}_{index}'
                 if argument.field == SortField.ItemType:
-                    color_tuple = UI.GRAY_COLOR.color_tuple
+                    color_tuple = UI.SUBTLE_TEXT_COLOR.color_tuple
                 else:
-                    color_tuple = self._get_rarity_color(Rarity[entry_name]).color_tuple if entry_name in Rarity.__members__ else UI.GRAY_COLOR.color_tuple
+                    color_tuple = self._get_rarity_color(Rarity[entry_name]).color_tuple if entry_name in Rarity.__members__ else UI.SUBTLE_TEXT_COLOR.color_tuple
 
                 if ImGui.begin_child(f'##{item_unique_id}', (0, 40), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                     if ImGui.icon_button(f'{IconsFontAwesome5.ICON_ARROW_UP}##{item_unique_id}_up', 26, 24) and index > 0:
@@ -2891,7 +2929,7 @@ class UI:
                                 PyImGui.open_popup(popup_id)
                             changed = self._draw_sort_argument_custom_order_popup(argument, popup_id, row_id) or changed
                         else:
-                            ImGui.text_colored('Natural only', UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored('Natural only', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                         PyImGui.table_next_column()
                         if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##{row_id}_delete', -1, 24):
@@ -2980,7 +3018,7 @@ class UI:
             exact_enum_match = manual_value in self._sorted_model_id_values if manual_value is not None else False
 
             if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
-                if ImGui.begin_selectable(f'##sorting_manual_model_id_{manual_value}_{unique_id}', False, (0, 34)):
+                if ImGui.begin_selectable(f'##sorting_manual_model_id_{manual_value}_{unique_id}', False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                     ImGui.text(f'Manual Model ID: {manual_value}')
 
                 if ImGui.end_selectable():
@@ -2999,11 +3037,11 @@ class UI:
                     if not already_selected:
                         if PyImGui.is_rect_visible(0, 34):
                             
-                            if ImGui.begin_selectable(f'##sorting_model_id_enum_{unique_id}_{model_id.name}', False, (0, 34)):
+                            if ImGui.begin_selectable(f'##sorting_model_id_enum_{unique_id}_{model_id.name}', False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text(self._humanize_name(model_id.name))
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f'{model_id_value}', UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f'{model_id_value}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                             if ImGui.end_selectable():
                                 matcher.model_ids.append(model_id)
@@ -3039,7 +3077,7 @@ class UI:
                         ImGui.text(label)
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(f'Model ID: {model_id_value}', UI.GRAY_COLOR.color_tuple, font_size=12)
+                        ImGui.text_colored(f'Model ID: {model_id_value}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                         PyImGui.end_group()
                     ImGui.end_child()
             ImGui.end_child()
@@ -3067,7 +3105,7 @@ class UI:
             ImGui.separator()
             ImGui.text_colored(
                 f'{len(selected_slot_refs)} slot(s) selected',
-                UI.GRAY_COLOR.color_tuple,
+                UI.SUBTLE_TEXT_COLOR.color_tuple,
                 font_size=12,
             )
             
@@ -3142,9 +3180,9 @@ class UI:
                     style.ChildBg.push_color_direct(UI.RED_COLOR.rgb_tuple)
                 
                 elif not is_available:
-                    style.ChildBg.push_color_direct(UI.GRAY_COLOR.rgb_tuple)
+                    style.ChildBg.push_color_direct(UI.SUBTLE_TEXT_COLOR.rgb_tuple)
                     
-                if ImGui.begin_selectable(f'##sorting_bag_{b}_slot_{slot}', size=(slot_size, slot_size), border=True, border_color=UI.GRAY_COLOR.rgb_tuple, selected_color=UI.GREEN_COLOR.rgb_tuple, selected=is_selected):
+                if ImGui.begin_selectable(f'##sorting_bag_{b}_slot_{slot}', size=(slot_size, slot_size), border=True, border_color=UI.SUBTLE_TEXT_COLOR.rgb_tuple, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple, selected=is_selected):
                     pass
                     
                 if ImGui.end_selectable():
@@ -3340,7 +3378,7 @@ class UI:
                         group.matcher.min_quantity = normalized_min
                         group.matcher.max_quantity = normalized_max
                         changed = True
-                ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.GRAY_COLOR.color_tuple, font_size=12)
+                ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                 ImGui.end_child()
 
                 if ImGui.begin_child(f'##sorting_model_ids_{unique_id}', (0, 0), border=True):
@@ -3389,23 +3427,23 @@ class UI:
                 group_rects: dict[int, tuple[float, float, float, float]] = {}
                 group_gap_values: list[float] = []
 
-                if ImGui.begin_selectable('##sorting_default_sorter', selected=self.sorting_group is None, size=(0, 48), border=True):
+                if ImGui.begin_selectable('##sorting_default_sorter', selected=self.sorting_group is None, size=(0, 48), border=True, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                     ImGui.text('Default Sort Policy')
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
-                    ImGui.text_colored(config.default_group.sorter.display_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                    ImGui.text_colored(config.default_group.sorter.display_name, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                 if ImGui.end_selectable():
                     self._set_active_sorting_group(None)
 
                 for index, group in enumerate(config.slot_groups):
                     group_label = group.name or f'Slot Group #{index + 1}'
                     group_summary = self._slot_group_selection_summary(group)
-                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True):
+                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                         PyImGui.begin_disabled(not group.enabled)
                         ImGui.text(group_label)
                         x, y = PyImGui.get_cursor_pos()
                         PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(group_summary, UI.GRAY_COLOR.color_tuple, font_size=12)
+                        ImGui.text_colored(group_summary, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                         PyImGui.end_disabled()
                     if ImGui.end_selectable():
                         self._set_active_sorting_group(group)
@@ -3651,7 +3689,7 @@ class UI:
                 x, y = PyImGui.get_cursor_pos()
                 PyImGui.set_cursor_pos(x, y - 4)
                 helper_text = entry.description or "Target quantity to keep in inventory."
-                ImGui.text_colored(helper_text, UI.GRAY_COLOR.color_tuple, font_size=12)
+                ImGui.text_colored(helper_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                 PyImGui.end_group()
 
                 PyImGui.next_column()
@@ -3731,7 +3769,7 @@ class UI:
                     PyImGui.same_line(0, 10)
                     ImGui.text_colored(
                         self._get_item_label(recipe.result.model_id, recipe.result.item_type, fallback=recipe.name),
-                        UI.GRAY_COLOR.color_tuple,
+                        UI.SUBTLE_TEXT_COLOR.color_tuple,
                         font_size=12,
                     )
                     PyImGui.same_line(PyImGui.get_content_region_avail()[0] - 75, 0)
@@ -3801,7 +3839,7 @@ class UI:
                         PyImGui.set_item_allow_overlap()
                         PyImGui.set_cursor_pos(cx, cy)
                         
-                        if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar):
+                        if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             PyImGui.begin_disabled(not rule.enabled)
                             ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
                             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
@@ -3810,7 +3848,7 @@ class UI:
                             PyImGui.set_cursor_pos(x, y - 2)
                             ImGui.text(f"{UI._humanize_name(rule.action.name)}" + (" (Disabled)" if not rule.enabled else ""), font_size=13)
                             PyImGui.set_cursor_pos(x, PyImGui.get_cursor_pos_y() - 5)
-                            ImGui.text_colored(f"{rule.__class__.__name__}", UI.GRAY_COLOR.color_tuple, font_size=11)
+                            ImGui.text_colored(f"{rule.__class__.__name__}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=11)
 
                             PyImGui.end_disabled()
                             
@@ -4454,8 +4492,42 @@ class UI:
                     sizes["element_height"] = 48
                     sizes["element_width"] = 250
                     items_amount = len(condition.model_file_ids)
+
+                case EncodedNamesCondition():
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["element_height"] = 56
+                    sizes["element_width"] = 250
+                    items_amount = len(condition.encoded_names)
+
+                case ModelFileIdsAndItemTypesCondition():
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["element_height"] = 56
+                    sizes["element_width"] = 250
+                    items_amount = len(condition.model_file_ids_and_item_types)
+
+                case ModelIdsAndItemTypesCondition():
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["element_height"] = 50
+                    sizes["element_width"] = 250
+                    items_amount = len(condition.modelids_and_itemtypes)
+
+                case RaritiesCondition():
+                    sizes["element_height"] = 25
+                    sizes["element_width"] = 75
+                    items_amount = len(Rarity)
+
+                case DyeColorsCondition():
+                    sizes["element_height"] = 32
+                    sizes["element_width"] = 200
+                    items_amount = len(DyeColor) - 1
+
+                case SalvagesToMaterialsCondition():
+                    base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
+                    sizes["element_height"] = 48
+                    sizes["element_width"] = 250
+                    items_amount = len(condition.materials)
                     
-            sizes["columns"] = max(1, int(avail_width // (sizes["element_width"] + UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_X)))
+            sizes["columns"] = min(max(1, int(avail_width // (sizes["element_width"] + UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_X))), items_amount)
             sizes["rows"] = (items_amount + sizes["columns"] - 1) // sizes["columns"]
             sizes["width"] = avail_width
             table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
@@ -4553,7 +4625,7 @@ class UI:
                             ImGui.text(label)
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(f"Model ID: {model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
                         if index != last_index:
@@ -4588,7 +4660,7 @@ class UI:
                     exact_enum_match = manual_value in ui._sorted_model_id_values if manual_value is not None else False
 
                     if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
-                        if ImGui.begin_selectable(f"##manual_model_id_{manual_value}", False, (0, 34)):
+                        if ImGui.begin_selectable(f"##manual_model_id_{manual_value}", False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             ImGui.text(f"Manual Model ID: {manual_value}")
 
                         if ImGui.end_selectable():
@@ -4603,11 +4675,11 @@ class UI:
                         for model_id in matching_model_ids:
                             model_id_value = int(model_id.value)
                             already_selected = model_id_value in selected_model_ids
-                            if ImGui.begin_selectable(f"##model_id_enum_{model_id.name}", False, (0, 34)):
+                            if ImGui.begin_selectable(f"##model_id_enum_{model_id.name}", False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text(ui._humanize_name(model_id.name))
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f"{model_id_value}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f"{model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                             if ImGui.end_selectable() and not already_selected:
                                 condition.model_ids.append(model_id)
@@ -4644,7 +4716,7 @@ class UI:
                     for index, (item_type, model_file_id) in enumerate(UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.items()):
                         is_selected = item_type in condition.item_types
                         
-                        if ImGui.begin_selectable(f"##item_type_{item_type.name}", is_selected, (0, element_height), selected_color = UI.GREEN_COLOR.opacity(0.5).rgb_tuple if is_selected else None):
+                        if ImGui.begin_selectable(f"##item_type_{item_type.name}", is_selected, (0, element_height), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             ui._draw_texture_from_model_file_id(model_file_id, (element_height - spacing, element_height - spacing))
                             PyImGui.same_line(0, 5)
                             ImGui.text_aligned(ui._humanize_name(item_type.name), alignment=Alignment.MidLeft, height=element_height - spacing)
@@ -4706,7 +4778,7 @@ class UI:
                             ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(f"Model File ID: {model_file_id}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
                         
@@ -4745,7 +4817,7 @@ class UI:
                             manual_value = None
 
                     if manual_value is not None and manual_value not in selected_model_file_ids:
-                        if ImGui.begin_selectable(f"##manual_model_file_id_{id(condition)}_{manual_value}", False, (0, 36)):
+                        if ImGui.begin_selectable(f"##manual_model_file_id_{id(condition)}_{manual_value}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             ImGui.text(f"Manual Model File ID: {manual_value}")
 
                         if ImGui.end_selectable():
@@ -4757,14 +4829,14 @@ class UI:
                         for item, model_file_id, item_name in candidate_rows:
 
                             if PyImGui.is_rect_visible(10, 36):
-                                if ImGui.begin_selectable(f"##model_file_id_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
+                                if ImGui.begin_selectable(f"##model_file_id_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     ui._draw_item_texture(item)
                                     PyImGui.same_line(0, 8)
                                     PyImGui.begin_group()
                                     ImGui.text(item_name)
                                     x, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(f"Model File ID: {model_file_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    ImGui.text_colored(f"Model File ID: {model_file_id}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_group()
 
                                 if ImGui.end_selectable():
@@ -4790,20 +4862,15 @@ class UI:
         @staticmethod
         def ForModelFileIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelFileIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            condition_id = f"model_file_id_item_type_condition_{id(condition)}"
             popup_id = f"##model_file_id_item_type_condition_add_popup_{id(condition)}"
             search_state_key = f"model_file_id_item_types_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:model_file_id_item_type_rows:{id(condition)}"
             selected_entries = {(entry.model_file_id, entry.item_type) for entry in condition.model_file_ids_and_item_types}
-
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 56
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 56)
             
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.model_file_ids_and_item_types), available_height))
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model File ID", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
@@ -4835,7 +4902,7 @@ class UI:
                     if ImGui.begin_child(f"##model_file_id_item_type_candidates_{id(condition)}", (0, 320), border=True):
                         for item, key, item_name in candidate_rows:
                             if PyImGui.is_rect_visible(10, 36):
-                                if ImGui.begin_selectable(f"##model_file_id_item_type_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36)):
+                                if ImGui.begin_selectable(f"##model_file_id_item_type_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     ui._draw_item_texture(item)
                                     PyImGui.same_line(0, 8)
                                     PyImGui.begin_group()
@@ -4844,7 +4911,7 @@ class UI:
                                     PyImGui.set_cursor_pos(x, y - 4)
                                     ImGui.text_colored(
                                         f"{ui._humanize_name(item.item_type.name)} | Model File ID: {item.model_file_id}",
-                                        UI.GRAY_COLOR.color_tuple,
+                                        UI.SUBTLE_TEXT_COLOR.color_tuple,
                                         font_size=12,
                                     )
                                     PyImGui.end_group()
@@ -4872,20 +4939,21 @@ class UI:
 
                     PyImGui.end_popup()
 
-                if ImGui.begin_child(f"##added_model_file_id_item_type_candidates_{id(condition)}", (0, 0), border=False):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(condition.model_file_ids_and_item_types) - 1
                     for index, entry in enumerate(list(condition.model_file_ids_and_item_types)):
                         item = ui._find_item_by_model_file_id_and_item_type(entry.model_file_id, entry.item_type)
                         unique_id = f"model_file_id_item_type_condition_{id(condition)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
                                 condition.model_file_ids_and_item_types.pop(index)
                                 changed = True
                                 ImGui.end_child()
                                 break
 
                             PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item)
+                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
                             PyImGui.same_line(0, 8)
                             PyImGui.begin_group()
                             ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})")
@@ -4893,12 +4961,14 @@ class UI:
                             PyImGui.set_cursor_pos(x, y - 4)
                             ImGui.text_colored(
                                 f"{ui._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
-                                UI.GRAY_COLOR.color_tuple,
+                                UI.SUBTLE_TEXT_COLOR.color_tuple,
                                 font_size=12,
                             )
                             PyImGui.end_group()
                         ImGui.end_child()
-                ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -4906,6 +4976,7 @@ class UI:
         @staticmethod
         def ForModelIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            condition_id = f"model_id_item_type_condition_{id(condition)}"
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
             search_state_key = f"model_id_item_types_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:model_id_item_type_rows:{id(condition)}"
@@ -4914,15 +4985,10 @@ class UI:
                 int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
                 for model_id, _ in selected_models
             }
-
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 56
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.modelids_and_itemtypes), available_height))
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 50)
             
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model ID", -1):
                     PyImGui.open_popup(popup_id)
 
@@ -4954,7 +5020,7 @@ class UI:
                         for item, modelid_item_type, item_name in candidate_rows:
 
                             if PyImGui.is_rect_visible(10, 36):
-                                if ImGui.begin_selectable(f"##model_id_candidate_{id(condition)}_{item.item_type.name}_{modelid_item_type}", False, (0, 36)):
+                                if ImGui.begin_selectable(f"##model_id_candidate_{id(condition)}_{item.item_type.name}_{modelid_item_type}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     UI._draw_item_texture(item, (32, 32))
                                     PyImGui.same_line(0, 8)
                                     PyImGui.begin_group()
@@ -4962,11 +5028,11 @@ class UI:
                                     ImGui.text(item_name)
                                     if len(item.attributes) == 1:
                                         PyImGui.same_line(0, 8)
-                                        ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                                     _, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_group()
 
                                 if ImGui.end_selectable():
@@ -4982,10 +5048,10 @@ class UI:
                                         ImGui.text(item_name)
                                         if len(item.attributes) == 1:
                                             PyImGui.same_line(0, 8)
-                                            ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                            ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                         ImGui.separator()
-                                        ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.GRAY_COLOR.color_tuple, font_size=12)
-                                        ImGui.text_colored(f"Item Type: {ui._humanize_name(item.item_type.name)}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Item Type: {ui._humanize_name(item.item_type.name)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_tooltip()
                             else:
                                 ImGui.dummy(0, 36)
@@ -4996,18 +5062,19 @@ class UI:
 
                     PyImGui.end_popup()
 
-                if ImGui.begin_child(f"##model_id_rule_list_{id(condition)}", (0, 0), border=False):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
                     selected_items: list[tuple[ModelIdAndItemType, Any]] = []
                     for model_id, item_type in condition.modelids_and_itemtypes:
                         modelid_item_type = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
                         item_data = ui._find_item_by_model_id(modelid_item_type)
                         selected_items.append((ModelIdAndItemType(model_id, item_type), item_data))
 
+                    last_index = len(selected_items) - 1
                     for index, (modelid_item_type, item_data) in enumerate(selected_items):
                         unique_id = f"model_id_condition_{id(condition)}_{modelid_item_type}_{index}"
                         item_name = item_data.name if item_data is not None else f"Unknown Item ({modelid_item_type})"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, 50), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                             if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
                                 original_entry = next(
                                     (
@@ -5025,7 +5092,7 @@ class UI:
                                 break
 
                             PyImGui.same_line(0, 8)
-                            UI._draw_item_texture(item_data, (32, 32))
+                            UI._draw_item_texture(item_data, (element_height - 18, element_height - 18))
                             PyImGui.same_line(0, 8)
                             PyImGui.begin_group()
                             ImGui.text(item_name)
@@ -5034,12 +5101,14 @@ class UI:
                             item_type_name = ui._humanize_name(modelid_item_type.item_type.name)
                             ImGui.text_colored(
                                 f"{item_type_name} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""),
-                                UI.GRAY_COLOR.color_tuple,
+                                UI.SUBTLE_TEXT_COLOR.color_tuple,
                                 font_size=12,
                             )
                             PyImGui.end_group()
                         ImGui.end_child()
-                ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -5047,20 +5116,15 @@ class UI:
         @staticmethod
         def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            condition_id = f"encoded_names_condition_{id(condition)}"
             popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
             search_state_key = f"encoded_names_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:encoded_name_rows:{id(condition)}"
             selected_encoded_names = set(condition.encoded_names)
-            
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 56
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(condition.encoded_names), available_height))
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 56)
                         
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Encoded Name", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
@@ -5090,11 +5154,11 @@ class UI:
                         manual_encoded_name = current_search.strip()
 
                         if PyImGui.is_rect_visible(10, 40):
-                            if ImGui.begin_selectable(f"##manual_encoded_name_{id(condition)}", False, (0, 40)):
+                            if ImGui.begin_selectable(f"##manual_encoded_name_{id(condition)}", False, (0, 40), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text("Use typed encoded name")
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(manual_encoded_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(manual_encoded_name, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                             if ImGui.end_selectable():
                                 condition.encoded_names.append(ui._convert_str_to_encoded_bytes(manual_encoded_name))
@@ -5107,14 +5171,14 @@ class UI:
                         for item, encoded_name, item_name in candidate_rows:
 
                             if PyImGui.is_rect_visible(10, 40):
-                                if ImGui.begin_selectable(f"##encoded_name_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 40)):
+                                if ImGui.begin_selectable(f"##encoded_name_{id(condition)}_{item.item_type.name}_{item.model_id}", False, (0, 40), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     ui._draw_item_texture(item)
                                     PyImGui.same_line(0, 8)
                                     PyImGui.begin_group()
                                     ImGui.text(item_name)
                                     x, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(item_name, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    ImGui.text_colored(item_name, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_group()
 
                                 if ImGui.end_selectable():
@@ -5134,29 +5198,32 @@ class UI:
 
                     PyImGui.end_popup()
 
-                if ImGui.begin_child(f"##added_encoded_name_candidates_{id(condition)}", (0, 0), border=False):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(condition.encoded_names) - 1
                     for index, encoded_name in enumerate(condition.encoded_names):
                         item = ui._find_item_by_encoded_name(encoded_name)
                         unique_id = f"encoded_name_condition_{id(condition)}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, 56), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 36):
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
                                 condition.encoded_names.pop(index)
                                 changed = True
                                 ImGui.end_child()
                                 break
 
                             PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item)
+                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
                             PyImGui.same_line(0, 8)
                             PyImGui.begin_group()
                             ImGui.text(ui._get_item_display_name(item) if item is not None else "Custom Encoded Name")
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(string_table.decode(encoded_name), UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(string_table.decode(encoded_name), UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
-                ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -5424,7 +5491,7 @@ class UI:
                                 font_size=12,
                             )
                             if item.next_nick_week is not None:
-                                ImGui.text_colored(f"Next week starts: {item.next_nick_week.isoformat()}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f"Next week starts: {item.next_nick_week.isoformat()}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                             if item.acquisition:
                                 ImGui.separator()
@@ -5463,98 +5530,84 @@ class UI:
         @staticmethod
         def ForRaritiesCondition(ui: "UI", rule: Rule, condition: RaritiesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            
+            condition_id = f"rarities_condition_{id(condition)}"
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 25
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
             
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * len(Rarity), available_height))
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                if ImGui.begin_child(f"##rarities_{id(condition)}", (0, 0), border=False):
-                    for rarity in Rarity:
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(Rarity) - 1
+                    for index, rarity in enumerate(Rarity):
                         is_selected = rarity in condition.rarities
+                        
+                        
                         style.Text.push_color_direct(ui._get_rarity_color(rarity).rgb_tuple)
-                        selected = ImGui.checkbox(f"{rarity.name}##{id(condition)}", is_selected)
+                        selected = ImGui.checkbox(rarity.name, is_selected)
                         style.Text.pop_color_direct()
-
                         if selected != is_selected:
-                            if rarity in condition.rarities:
-                                condition.rarities.remove(rarity)
-                            else:
+                            if selected:
                                 condition.rarities.append(rarity)
+                            else:
+                                condition.rarities.remove(rarity)
                             changed = True
-                ImGui.end_child()
+                            
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
         @staticmethod
         def ForDyeColorsCondition(ui: "UI", rule: Rule, condition: DyeColorsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            condition_id = f"dye_colors_condition_{id(condition)}"
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 32)
             
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 25
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * (len(DyeColor) - 1), available_height))
-
-            width = PyImGui.get_content_region_avail()[0]
-            columns = max(1, int(width // 200))
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
-                if ImGui.begin_child(f"##dye_colors_{id(condition)}", (0, 0), border=False):
-                    PyImGui.columns(columns, f"##dye_colors_columns_{id(condition)}", False)
-                    
-                    for dye_color in ui._sorted_dye_colors:
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                visible_dye_colors = [dye_color for dye_color in ui._sorted_dye_colors if dye_color != DyeColor.NoColor]
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(visible_dye_colors) - 1
+                    for index, dye_color in enumerate(visible_dye_colors):
                         if dye_color == DyeColor.NoColor:
                             continue
 
                         is_selected = dye_color in condition.dye_colors
-                        PyImGui.begin_group()
-                        selected = ImGui.checkbox(f"##dye_{id(condition)}_{dye_color.name}", is_selected)
-                        hovered = PyImGui.is_item_hovered()
-                        PyImGui.same_line(0, 5)
-                        ImGui.image(ui.dye_textures.get(dye_color, ""), (24, 24))
-                        PyImGui.same_line(0, 5)
-                        ImGui.text_aligned(dye_color.name, height=24, alignment=Alignment.MidLeft)
-                        PyImGui.end_group()
+                        if ImGui.begin_selectable(
+                            f"##dye_{id(condition)}_{dye_color.name}",
+                            is_selected,
+                            (0, element_height),
+                            selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple,
+                            hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple,
+                        ):
+                            ImGui.image(ui.dye_textures.get(dye_color, ''), (24, 24))
+                            PyImGui.same_line(0, 5)
+                            ImGui.text_aligned(dye_color.name, height=24, alignment=Alignment.MidLeft)
 
-                        if not hovered and PyImGui.is_item_clicked(0):
-                            selected = not is_selected
-
-                        if selected != is_selected:
+                        if ImGui.end_selectable():
                             if dye_color in condition.dye_colors:
                                 condition.dye_colors.remove(dye_color)
                             else:
                                 condition.dye_colors.append(dye_color)
                             changed = True
-                        
-                        PyImGui.next_column()
-                    
-                    PyImGui.end_columns()
-                ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
         @staticmethod
         def ForSalvagesToMaterialsCondition(ui: "UI", rule: Rule, condition: SalvagesToMaterialsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            condition_id = f"salvage_materials_condition_{id(condition)}"
             popup_id = f"##salvage_material_condition_add_popup_{id(condition)}"
             search_state_key = f"salvage_materials_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:salvage_material_rows:{id(condition)}"
             selected_materials = set(condition.materials)
-
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 48
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * (len(condition.materials)), available_height))
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            element_height = sizes.get("element_height", 48)
             
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Material", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
@@ -5584,14 +5637,14 @@ class UI:
                     if ImGui.begin_child(f"##salvage_material_candidates_{id(condition)}", (0, 320), border=True):
                         for material, model_id, label in candidate_rows:
 
-                            if ImGui.begin_selectable(f"##salvage_material_{id(condition)}_{material.name}", False, (0, 34)):
+                            if ImGui.begin_selectable(f"##salvage_material_{id(condition)}_{material.name}", False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 UI._draw_item_texture(material, (32, 32))
                                 PyImGui.same_line(0, 8)
                                 PyImGui.begin_group()
                                 ImGui.text(label)
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f"Model ID: {model_id}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f"Model ID: {model_id}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                 PyImGui.end_group()
 
                             if ImGui.end_selectable():
@@ -5609,11 +5662,12 @@ class UI:
 
                     PyImGui.end_popup()
 
-                if ImGui.begin_child(f"##added_material_candidates_{id(condition)}", (0, 0), border=False):
+                if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
+                    last_index = len(condition.materials) - 1
                     for index, mid in enumerate(condition.materials):
                         material = ui._find_item_by_model_id(int(mid))
                         unique_id = f"salvage_material_condition_{id(condition)}_{material.name}_{index}" if material is not None else f"salvage_material_condition_{id(condition)}_{mid}_{index}"
-                        if ImGui.begin_child(f"##{unique_id}", (0, 48), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                             if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
                                 condition.materials.pop(index)
                                 changed = True
@@ -5627,10 +5681,12 @@ class UI:
                             ImGui.text(ui._humanize_name(material.name if material is not None else f"Unknown Material ({mid})"))
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                         ImGui.end_child()
-                ImGui.end_child()
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    ui._end_no_header_table()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -5665,13 +5721,13 @@ class UI:
                         attribute_popup_id = f"##requirement_attributes_popup_{editor_id}_{requirement}"
                         row_height = 56 if selected else 40
 
-                        if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, row_height), border_color=UI.GRAY_COLOR.rgb_tuple):
+                        if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, row_height), border_color=UI.SUBTLE_TEXT_COLOR.rgb_tuple, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             ImGui.text(string_table.decode(GWEncoded._requires_attribute_level(attribute_level=requirement, attribute=UI.ITEM_TYPE_ATTRIBUTES.get(detail_item_type or ItemType.Unknown, Attribute.None_))))
-                            ImGui.text_colored(value_text, UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(value_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             if selected and current_filter is not None:
                                 ImGui.text_colored(
                                     ui._format_requirement_attribute_summary(current_filter) + " (Right-click to edit attributes)",
-                                    UI.GRAY_COLOR.color_tuple,
+                                    UI.SUBTLE_TEXT_COLOR.color_tuple,
                                     font_size=11,
                                 )
 
@@ -5706,10 +5762,10 @@ class UI:
                                         is_allowed = attribute in current_filter.allowed_attributes
                                         is_disallowed = attribute in current_filter.disallowed_attributes
                                         state_label = "Allowed" if is_allowed else "Blocked" if is_disallowed else "Any"
-                                        state_color = UI.GREEN_COLOR.color_tuple if is_allowed else UI.RED_COLOR.color_tuple if is_disallowed else UI.GRAY_COLOR.color_tuple
+                                        state_color = UI.GREEN_COLOR.color_tuple if is_allowed else UI.RED_COLOR.color_tuple if is_disallowed else UI.SUBTLE_TEXT_COLOR.color_tuple
                                         selectable_id = f"##requirement_attribute_{editor_id}_{requirement}_{attribute.name}"
 
-                                        if ImGui.begin_selectable(selectable_id, False, (0, 36)):
+                                        if ImGui.begin_selectable(selectable_id, False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                             ImGui.text(ui._humanize_name(attribute.name))
                                             PyImGui.same_line(max(220, PyImGui.get_content_region_avail()[0] - 80), 0)
                                             ImGui.text_colored(state_label, state_color, font_size=12)
@@ -5772,11 +5828,11 @@ class UI:
                         )
 
                         if ImGui.begin_child(f"##inherent_selectables_{unique_id}", (0, 0), border=False):
-                            if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_inscribable", selected=condition.inscribable, size=selectable_size):
+                            if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_inscribable", selected=condition.inscribable, size=selectable_size, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text("Inscription Slot")
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored("Any inscribable version", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored("Any inscribable version", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             
                             if ImGui.end_selectable():
                                 condition.inscribable = not condition.inscribable
@@ -5787,7 +5843,7 @@ class UI:
                                 ImGui.begin_tooltip()
                                 ImGui.text("Inscription Slot", font_size=16)
                                 ImGui.separator()
-                                ImGui.text_colored("Matches any item with an inscription slot, regardless of the inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored("Matches any item with an inscription slot, regardless of the inherent upgrade.", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                 ImGui.end_tooltip()
                                     
                             for index, row_state in enumerate(row_states):
@@ -5798,16 +5854,16 @@ class UI:
                                 entry_size = (selected_selectable_size if already_selected else selectable_size)
                                 
                                 if PyImGui.is_rect_visible(10, entry_size[1]):
-                                    if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_{inherent_type.__name__}", selected=already_selected, size=entry_size):
+                                    if ImGui.begin_selectable(f"##inherent_candidate_{unique_id}_{inherent_type.__name__}", selected=already_selected, size=entry_size, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                         ImGui.text(row_state.label)
                                         x, y = PyImGui.get_cursor_pos()
                                         PyImGui.set_cursor_pos(x, y - 4)
-                                        ImGui.text_colored(row_state.description, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(row_state.description, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                                         if already_selected and inherent_filter is not None:
                                             PyImGui.begin_group()
                                             if len(row_state.range_instructions) == 0:
-                                                ImGui.text_colored("Fixed inherent upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                                ImGui.text_colored("Fixed inherent upgrade.", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                             else:
                                                 for instruction in row_state.range_instructions:
                                                     current_range = inherent_filter.ranges.get(
@@ -5816,7 +5872,7 @@ class UI:
                                                     )
                                                     min_value = max(int(instruction.min_value), min(int(instruction.max_value), int(current_range.min_value)))
                                                     max_value = max(min_value, min(int(instruction.max_value), int(current_range.max_value)))
-                                                    ImGui.text_colored(ui._humanize_name(instruction.target), UI.GRAY_COLOR.color_tuple, font_size=12)
+                                                    ImGui.text_colored(ui._humanize_name(instruction.target), UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                                     PyImGui.same_line(0, 8)
                                                     PyImGui.set_next_item_width(80)
                                                     new_min = ImGui.slider_int(
@@ -5937,12 +5993,12 @@ class UI:
 
                     if ImGui.begin_child(f"##requirements_condition_candidates_{id(condition)}", (0, 320), border=True):
                         for requirement_level in range(0, 14):
-                            if ImGui.begin_selectable(f"##weapon_requirements_condition_level_{id(condition)}_{requirement_level}", False, (0, 34)):
+                            if ImGui.begin_selectable(f"##weapon_requirements_condition_level_{id(condition)}_{requirement_level}", False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text(f"Requirement {requirement_level}")
                                 PyImGui.same_line(0, 8)
                                 count = sum(1 for entry in condition.requirements if entry.attribute_level == requirement_level)
                                 if count > 0:
-                                    ImGui.text_colored(f"{count} existing", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                    ImGui.text_colored(f"{count} existing", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                             if ImGui.end_selectable():
                                 selected_weapon_type: WeaponType | None = None
@@ -6003,10 +6059,10 @@ class UI:
                             ImGui.text(f"Requirement {requirement.attribute_level}")
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(summary_text, UI.GRAY_COLOR.color_tuple, font_size=12)
+                            ImGui.text_colored(summary_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             if value_summary:
                                 PyImGui.same_line(0, 8)
-                                ImGui.text_colored(value_summary, UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(value_summary, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
 
                             if PyImGui.is_item_clicked(0):
@@ -6038,7 +6094,7 @@ class UI:
                                         continue
 
                                     selected = attribute in requirement.attributes
-                                    if ImGui.begin_selectable(f"##weapon_requirements_condition_attribute_{unique_id}_{attribute.name}", selected, (0, 28)):
+                                    if ImGui.begin_selectable(f"##weapon_requirements_condition_attribute_{unique_id}_{attribute.name}", selected, (0, 28), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                         ImGui.text(attribute_label)
                                     if ImGui.end_selectable():
                                         if selected:
@@ -6115,7 +6171,7 @@ class UI:
                         ui.armor_upgrade_price_threshold = max(0, new_threshold)
 
                     quote_count = len(ui._get_trader_armor_upgrade_quotes())
-                    ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.GRAY_COLOR.color_tuple, font_size=12)
+                    ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                     if ImGui.button("Apply Threshold", -1):
                         quotes = ui._get_trader_armor_upgrade_quotes()
@@ -6170,7 +6226,7 @@ class UI:
                         for profession in Profession:
                             is_selected = profession == ui.profession
                             decoded_profession_name = string_table.decode(GWEncoded.PROFESSION.get(profession, bytes())) or ui._humanize_name(profession.name)
-                            if ImGui.begin_selectable(f"##profession_{id(condition)}_{profession.value}", is_selected):
+                            if ImGui.begin_selectable(f"##profession_{id(condition)}_{profession.value}", is_selected, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.image(os.path.join(ui.texture_path, "Profession_Icons", ProfessionTextureMap.get(profession.value, "")), (24, 24))
                                 PyImGui.same_line(0, 5)
                                 ImGui.text_aligned(decoded_profession_name, height=24, alignment=Alignment.MidLeft)
@@ -6189,7 +6245,7 @@ class UI:
                                 upgrade: ArmorUpgrade = upgrade_type()
                                 upgrade_label = ui._format_upgrade_label(upgrade)
                                 is_upgrade_selected = upgrade_type in selected_upgrade_types
-                                if ImGui.begin_selectable(f"##armor_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 20)):
+                                if ImGui.begin_selectable(f"##armor_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 20), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     rarity_color = UI._get_rarity_color(upgrade.rarity)
                                     ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
                                 if ImGui.end_selectable():
@@ -6209,10 +6265,10 @@ class UI:
                                     if quote is not None:
                                         ImGui.text_colored(f"Trader Value: {UI.format_currency(quote.quoted_value)}\n", UI._get_rarity_color(Rarity.Gold).color_tuple, font_size=13)
                                         PyImGui.separator()
-                                        ImGui.text_colored(f"Updated: {UI.format_time_ago(quote.checked_at)}\n", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Updated: {UI.format_time_ago(quote.checked_at)}\n", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     else:
                                         PyImGui.separator()
-                                        ImGui.text_colored("No matching trader quote found for this upgrade.", UI.GRAY_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored("No matching trader quote found for this upgrade.", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_tooltip()
                         except Exception as e:
                             ImGui.text_colored(f"Error loading upgrades: {str(e)}", (255, 0, 0, 255), font_size=12)
@@ -6240,7 +6296,7 @@ class UI:
                         for mod_type in [ItemUpgradeType.Prefix, ItemUpgradeType.Suffix, ItemUpgradeType.Inscription]:
                             is_selected = mod_type == ui.mod_type
                             mod_type_name = ui._humanize_name(mod_type.name)
-                            if ImGui.begin_selectable(f"##mod_type_{id(condition)}_{mod_type.value}", is_selected):
+                            if ImGui.begin_selectable(f"##mod_type_{id(condition)}_{mod_type.value}", is_selected, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text_aligned(mod_type_name, height=24, alignment=Alignment.MidLeft)
                             if ImGui.end_selectable():
                                 if ui.mod_type != mod_type:
@@ -6340,7 +6396,7 @@ class UI:
                                 else:
                                     is_upgrade_selected = upgrade_type in weapon_upgrades_by_type
                                     if PyImGui.is_rect_visible(10, 25):
-                                        if ImGui.begin_selectable(f"##weapon_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 25)):
+                                        if ImGui.begin_selectable(f"##weapon_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 25), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                             rarity_color = UI._get_rarity_color(upgrade.rarity)
                                             ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
                                         if ImGui.end_selectable():
@@ -6399,12 +6455,12 @@ class UI:
                             upgrade = cast(WeaponUpgrade | Inscription, upgrade_type())
                             option_label = ui._format_upgrade_label(upgrade)
                             already_selected = (upgrade_type, instruction.target) in selected_upgrade_range_keys
-                            if ImGui.begin_selectable(f"##upgrade_range_option_{id(condition)}_{upgrade_type.__name__}_{instruction.target}", False, (0, 36)):
+                            if ImGui.begin_selectable(f"##upgrade_range_option_{id(condition)}_{upgrade_type.__name__}_{instruction.target}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 rarity_color = UI._get_rarity_color(upgrade.rarity)
                                 ImGui.text_colored(option_label, rarity_color.color_tuple, font_size=14)
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f"{instruction.target}: {instruction.min_value} - {instruction.max_value}" + ("%" if instruction.target == "chance" else ""), UI.GRAY_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(f"{instruction.target}: {instruction.min_value} - {instruction.max_value}" + ("%" if instruction.target == "chance" else ""), UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             if ImGui.end_selectable() and not already_selected:
                                 new_entry = RangedUpgrade(upgrade=upgrade, target=instruction.target, min_value=float(instruction.min_value), max_value=float(instruction.max_value), item_types=[])
                                 condition.upgrade_ranges.append(new_entry)
