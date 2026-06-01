@@ -456,6 +456,10 @@ class Upgrade:
     @property
     def name(self) -> str:
         return self.__encoded_name.full
+
+    @property
+    def encoded_name(self) -> GWStringEncoded:
+        return self.__encoded_name
     
     @property
     def name_plain(self) -> str:
@@ -468,6 +472,10 @@ class Upgrade:
     @property
     def description(self) -> str:
         return self.__encoded_description.full
+
+    @property
+    def encoded_description(self) -> GWStringEncoded:
+        return self.__encoded_description
         
     @property
     def display_summary(self) -> str:
@@ -1162,7 +1170,14 @@ class OfAttributeUpgrade(WeaponSuffix):
         return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes()) + bytes([0x1, 0x0, 0x1, 0x0]), f"of {AttributeNames.get(self.attribute, self.attribute.name)}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Attribute"])
+        attribute_bytes = GWEncoded.ATTRIBUTE_NAMES.get(self.attribute, bytes())
+        replacement_bytes = bytes([0xB, 0x1]) + attribute_bytes + bytes([0x1, 0x0]) if attribute_bytes else bytes()
+        return GWStringEncoded(
+            self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes + bytes([0x1, 0x0]),
+            f"of {AttributeNames.get(self.attribute, self.attribute.name)}",
+            GWEncoded.PLACEHOLDER_TO_REMOVE,
+            [bytes(), replacement_bytes],
+        )
 
     def equals(self, other: object) -> bool:
         return (
@@ -1834,7 +1849,8 @@ class OfAptitudeUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0]), "of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Aptitude"])
+        replacement_bytes = bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfAxeMasteryUpgrade(OfAttributeUpgrade):
@@ -1930,7 +1946,8 @@ class OfDefenseUpgrade(WeaponSuffix):
         return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x77, 0xA, 0x1, 0x0]), "of Defense", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Defense"])
+        replacement_bytes = bytes([0x77, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Defense", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfDevotionUpgrade(WeaponSuffix):
@@ -1960,7 +1977,8 @@ class OfDevotionUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), "of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Devotion"])
+        replacement_bytes = bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfEnchantingUpgrade(WeaponSuffix):
@@ -1984,7 +2002,8 @@ class OfEnchantingUpgrade(WeaponSuffix):
         return GWStringEncoded(bytes([*self.get_text_color(), 0xA, 0x1, 0xA2, 0xA, 0x1, 0x1, self.enchantment_duration, 0x1, 0x1, 0x0]), f"Enchantments last {self.enchantment_duration}% longer")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x78, 0xA, 0x1, 0x0]), "of Enchanting", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Enchanting"])
+        replacement_bytes = bytes([0x78, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Enchanting", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfEnduranceUpgrade(WeaponSuffix):
@@ -2014,7 +2033,8 @@ class OfEnduranceUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), "of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Endurance"])
+        replacement_bytes = bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfFortitudeUpgrade(WeaponSuffix):
@@ -2043,7 +2063,8 @@ class OfFortitudeUpgrade(WeaponSuffix):
         return GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x79, 0xA, 0x1, 0x0]), "of Fortitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Fortitude"])
+        replacement_bytes = bytes([0x79, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Fortitude", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfHammerMasteryUpgrade(OfAttributeUpgrade):
@@ -2154,7 +2175,8 @@ class OfMasteryUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), "of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Mastery"])
+        replacement_bytes = bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfMemoryUpgrade(WeaponSuffix):
@@ -2184,7 +2206,8 @@ class OfMemoryUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), "of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Memory"])
+        replacement_bytes = bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfQuickeningUpgrade(WeaponSuffix):
@@ -2214,7 +2237,8 @@ class OfQuickeningUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), "of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Quickening"])
+        replacement_bytes = bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfScytheMasteryUpgrade(OfAttributeUpgrade):
@@ -2280,7 +2304,8 @@ class OfShelterUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
+        replacement_bytes = bytes([0x7B, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 #region OfSlayingUpgrade
 
@@ -2300,10 +2325,11 @@ class OfSlayingUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()) + bytes([0x1, 0x0, 0x1, 0x0, 0x0, 0x0]), 
+        replacement_bytes = bytes([0xB, 0x1]) + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()) + bytes([0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes + bytes([0x1, 0x0, 0x0, 0x0]), 
                                f"of {self.species.name}-Slaying", 
                                GWEncoded.PLACEHOLDER_TO_REMOVE, 
-                               ["", f"{self.species.name}-Slaying" if self.species != ItemBaneSpecies.Unknown else "Slaying"])
+                               [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfUndeadSlayingUpgrade(OfSlayingUpgrade):
@@ -2656,7 +2682,8 @@ class OfSwiftnessUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), "of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swiftness"])
+        replacement_bytes = bytes([0x7C, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfSwordsmanshipUpgrade(OfAttributeUpgrade):
@@ -2707,7 +2734,8 @@ class OfTheProfessionUpgrade(WeaponSuffix):
         return GWStringEncoded(encoded_bytes, f"{AttributeNames.get(self.attribute)}: {self.attribute_level} (if your rank is lower. No effect in PvP.)")
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + GWEncoded.THE_PROFESSION.get(self.profession, bytes()), f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", self.profession.name if self.profession != Profession._None else "Profession"])
+        replacement_bytes = GWEncoded.THE_PROFESSION.get(self.profession, bytes())
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, f"of {self.profession.name if self.profession != Profession._None else 'Unknown Profession'}", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
     def equals(self, other: object) -> bool:
         return (
@@ -3109,7 +3137,8 @@ class OfValorUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), "of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Valor"])
+        replacement_bytes = bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 @dataclass(eq=False)
 class OfWardingUpgrade(WeaponSuffix):
@@ -3139,7 +3168,8 @@ class OfWardingUpgrade(WeaponSuffix):
         )
 
     def create_encoded_name(self) -> GWStringEncoded:
-        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), "of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Warding"])
+        replacement_bytes = bytes([0x7D, 0xA, 0x1, 0x0])
+        return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + replacement_bytes, "of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, [bytes(), replacement_bytes])
 
 #endregion Suffixes
 

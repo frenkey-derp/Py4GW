@@ -1147,21 +1147,31 @@ class UI:
         self._live_search_results_cache.clear()
 
     def _get_filtered_inherent_option_entries(self, search_query: str) -> list[tuple[type[Upgrade], str, str]]:
-        cached = self._inherent_search_cache.get(search_query)
-        if cached is not None:
-            return cached
+        entries: list[tuple[type[Upgrade], str, str, str]] = []
+        for inherent_type in self.available_inherent_upgrade_types:
+            inherent = inherent_type()
+            if not isinstance(inherent, Inherent):
+                continue
+
+            label = inherent.name_plain or self._humanize_name(inherent_type.__name__)
+            description = inherent.description_plain
+            entries.append(
+                (
+                    inherent_type,
+                    label,
+                    description,
+                    self._build_search_blob(label, description, inherent_type.__name__),
+                )
+            )
 
         if not search_query:
-            result = [(inherent_type, label, description) for inherent_type, label, description, _ in self._inherent_option_entries]
-        else:
-            result = [
-                (inherent_type, label, description)
-                for inherent_type, label, description, search_blob in self._inherent_option_entries
-                if self._search_blob_matches(search_query, search_blob)
-            ]
+            return [(inherent_type, label, description) for inherent_type, label, description, _ in entries]
 
-        self._inherent_search_cache[search_query] = result
-        return result
+        return [
+            (inherent_type, label, description)
+            for inherent_type, label, description, search_blob in entries
+            if self._search_blob_matches(search_query, search_blob)
+        ]
 
     def _get_armor_upgrade_types_for_profession(self, profession: Profession) -> list[type[Upgrade]]:
         return self._armor_upgrade_types_by_profession.get(profession, [])
@@ -1170,21 +1180,28 @@ class UI:
         return self._weapon_upgrade_types_by_mod_type.get(mod_type, [])
 
     def _get_filtered_range_upgrade_options(self, search_query: str) -> list[tuple[type[WeaponUpgrade | Inscription], RangeInstruction]]:
-        cached = self._range_upgrade_search_cache.get(search_query)
-        if cached is not None:
-            return cached
+        entries = [
+            (
+                upgrade_type,
+                instruction,
+                self._build_search_blob(
+                    self._format_upgrade_type_label(upgrade_type),
+                    upgrade_type().__class__.__name__,
+                    upgrade_type().description_plain,
+                    instruction.target,
+                ),
+            )
+            for upgrade_type, instruction in self._get_range_upgrade_options()
+        ]
 
         if not search_query:
-            result = [(upgrade_type, instruction) for upgrade_type, instruction, _ in self._range_upgrade_option_entries]
-        else:
-            result = [
-                (upgrade_type, instruction)
-                for upgrade_type, instruction, search_blob in self._range_upgrade_option_entries
-                if self._search_blob_matches(search_query, search_blob)
-            ]
+            return [(upgrade_type, instruction) for upgrade_type, instruction, _ in entries]
 
-        self._range_upgrade_search_cache[search_query] = result
-        return result
+        return [
+            (upgrade_type, instruction)
+            for upgrade_type, instruction, search_blob in entries
+            if self._search_blob_matches(search_query, search_blob)
+        ]
 
     def _find_item_by_model_file_id(self, model_file_id: int) -> ItemData | None:
         return self._item_by_model_file_id.get(model_file_id)

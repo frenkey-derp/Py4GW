@@ -1,10 +1,13 @@
 import re
 import struct
-from typing import Optional
+from typing import Optional, Sequence, TypeAlias
 from Py4GWCoreLib.enums_src.GameData_enums import Ailment, Attribute, DamageType, Profession, Reduced_Ailment
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.native_src.internals import string_table
 from Py4GWCoreLib.item_mods_src.types import ItemBaneSpecies
+
+PlaceholderReplacement: TypeAlias = bytes | Sequence[int]
+
 
 class GWStringEncoded:
     COLOR_TAG_RE = re.compile(r"<c=[^>]+>(.*?)</c>", re.IGNORECASE)
@@ -14,11 +17,11 @@ class GWStringEncoded:
         "<c=@ItemRare>",
     )
 
-    def __init__(self, encoded: bytes | list[int], fallback: str, placeholder_bytes: bytes = bytes(), placeholder_replacement: Optional[list[str]] = None):
+    def __init__(self, encoded: bytes | list[int], fallback: str, placeholder_bytes: bytes = bytes(), placeholder_replacement: Optional[Sequence[PlaceholderReplacement]] = None):
         self.encoded = bytes(encoded) if isinstance(encoded, list) else encoded
         self._fallback = fallback
         self.placeholder_bytes = placeholder_bytes
-        self.placeholder_replacement = placeholder_replacement
+        self.placeholder_replacement: list[bytes] | None = [value if isinstance(value, bytes) else bytes(value) for value in placeholder_replacement] if placeholder_replacement else None
         self.__plain = ""
         self.__plain_singular = ""
         self.__bonuses_only = ""
@@ -66,9 +69,9 @@ class GWStringEncoded:
             s = self.replace_multiple_whitespace(s.replace(string_table.decode(self.placeholder_bytes), "").strip())
         
         if self.placeholder_replacement and ('%str1%' in s or '%str2%' in s or '%str3%' in s):
-            s = s.replace('%str1%', self.placeholder_replacement[0] if len(self.placeholder_replacement) > 0 else "")
-            s = s.replace('%str2%', self.placeholder_replacement[1] if len(self.placeholder_replacement) > 1 else "")
-            s = s.replace('%str3%', self.placeholder_replacement[2] if len(self.placeholder_replacement) > 2 else "")
+            s = s.replace('%str1%', string_table.decode(self.placeholder_replacement[0]) if len(self.placeholder_replacement) > 0 else "")
+            s = s.replace('%str2%', string_table.decode(self.placeholder_replacement[1]) if len(self.placeholder_replacement) > 1 else "")
+            s = s.replace('%str3%', string_table.decode(self.placeholder_replacement[2]) if len(self.placeholder_replacement) > 2 else "")
         
         return s.strip()
 

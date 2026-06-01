@@ -11,6 +11,16 @@ PERSISTENT = True
 if TYPE_CHECKING:
     from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 
+
+def _combine_upgrade_display_strings(upgrade: Optional["Upgrade"], unknown_label: str) -> GWStringEncoded:
+    if upgrade is None:
+        return GWStringEncoded(bytes(), unknown_label)
+
+    return GWEncoded.combine_encoded_strings(
+        [upgrade.encoded_name, upgrade.encoded_description],
+        fallback=f"{upgrade.name}\n{upgrade.description}",
+    )
+
 @dataclass
 class ItemProperty:
     modifier: DecodedModifier
@@ -535,7 +545,7 @@ class PrefixProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}")
+        return _combine_upgrade_display_strings(self.upgrade, f"Unknown (ID {self.upgrade_id})")
 
 @dataclass
 class ReceiveLessDamage(ItemProperty):
@@ -604,7 +614,7 @@ class InherentProperty(ItemProperty):
     upgrade_id: ItemUpgradeId = ItemUpgradeId.Inherent
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}")
+        return _combine_upgrade_display_strings(self.upgrade, f"Unknown (ID {self.upgrade_id})")
     
 @dataclass
 class SuffixProperty(ItemProperty):    
@@ -612,7 +622,7 @@ class SuffixProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}")
+        return _combine_upgrade_display_strings(self.upgrade, f"Unknown (ID {self.upgrade_id})")
 
 @dataclass
 class AttributeRequirement(ItemProperty):
@@ -659,7 +669,7 @@ class InscriptionProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}")
+        return _combine_upgrade_display_strings(self.upgrade, f"Unknown (ID {self.upgrade_id})")
     
 @dataclass
 class UpgradeRuneProperty(ItemProperty):    
@@ -667,7 +677,7 @@ class UpgradeRuneProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}\n{self.upgrade.description if self.upgrade else ''}\n")
+        return _combine_upgrade_display_strings(self.upgrade, f"Unknown (ID {self.upgrade_id})")
     
 @dataclass
 class AppliesToRuneProperty(ItemProperty):    
@@ -675,7 +685,10 @@ class AppliesToRuneProperty(ItemProperty):
     upgrade: "Upgrade"
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWStringEncoded(bytes(), f"{self.upgrade.name if self.upgrade else f'Unknown (ID {self.upgrade_id})'}")
+        if self.upgrade is None:
+            return GWStringEncoded(bytes(), f"Unknown (ID {self.upgrade_id})")
+
+        return self.upgrade.encoded_name
 
 @dataclass
 class TooltipProperty(ItemProperty):    
