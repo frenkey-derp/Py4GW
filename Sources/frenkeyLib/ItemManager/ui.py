@@ -2322,7 +2322,6 @@ class UI:
                 self._open_rule_delete_popup(config_info, rule)
 
             ImGui.end_popup()
-            self._draw_rule_delete_popup()
             return True
 
         return False
