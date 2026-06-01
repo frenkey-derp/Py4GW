@@ -2133,6 +2133,7 @@ class UI:
                 
         # style.TableBorderLight.push_color_direct((255,255,255,255))
         # style.TableBorderStrong.push_color_direct((255,255,255,255))
+
         style.CellPadding.push_style_var_direct(10, 10)
         if ImGui.begin_table("##item_manager_explorer", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column("Navigation", PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -2208,16 +2209,16 @@ class UI:
                             self.show_preview_window = not self.show_preview_window
                         
                         ImGui.end_table()
-
                     style.CellPadding.pop_style_var_direct()
+
                     self._draw_save_as_profile_popup(active_config)
                     self.draw_config(self.config)
 
             ImGui.end_child()
 
             ImGui.end_table()
-
         style.CellPadding.pop_style_var_direct()
+
         # style.TableBorderLight.pop_color_direct()
         # style.TableBorderStrong.pop_color_direct()
 
@@ -2875,8 +2876,8 @@ class UI:
 
             if ImGui.begin_child(f'##sort_arguments_members_{unique_id}', (0, 0), border=False):
                 style = ImGui.get_style()
+            
                 style.CellPadding.push_style_var_direct(2, 2)
-                
                 if ImGui.begin_table(f'##sort_arguments_table_{unique_id}', 6, PyImGui.TableFlags.SizingStretchProp):
                     PyImGui.table_setup_column('Up', PyImGui.TableColumnFlags.WidthFixed, 30)
                     PyImGui.table_setup_column('Down', PyImGui.TableColumnFlags.WidthFixed, 30)
@@ -2939,8 +2940,6 @@ class UI:
                     
                 
                     ImGui.end_table()
-                pass
-            
                 style.CellPadding.pop_style_var_direct()
                     
             ImGui.end_child()
@@ -4428,6 +4427,7 @@ class UI:
             
             return True
         
+        style.CellPadding.pop_style_var_direct()
         return False
     
     def _end_no_header_table(self) -> None:        
@@ -4474,6 +4474,7 @@ class UI:
             sizes["element_width"] = 0
             items_amount = 0
             base_height = 0
+            content_height = -1
             
             match condition:                
                 case ModelIdsCondition():
@@ -4526,17 +4527,62 @@ class UI:
                     sizes["element_height"] = 48
                     sizes["element_width"] = 250
                     items_amount = len(condition.materials)
+
+                case ArmorCondition() | EnergyCondition() | FullStacksQuantityCondition() | ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition():
+                    content_height = 20
+
+                case DamageCondition():
+                    content_height = 86
                     
-            sizes["columns"] = min(max(1, int(avail_width // (sizes["element_width"] + UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_X))), items_amount)
-            sizes["rows"] = (items_amount + sizes["columns"] - 1) // sizes["columns"]
+                case NickItemCondition():
+                    base_height = 25
+                    sizes["element_height"] = 28
+                    sizes["element_width"] = avail_width
+                    items_amount = condition.weeks_before_next_cycle
+
+                case IsMaterialCondition():
+                    content_height = 40 + spacing_y
+
+                case WeaponRequirementCondition():
+                    content_height = math.ceil((4 * (40 + spacing_y)) + 12)
+
+                case InherentFiltersCondition():
+                    content_height = math.ceil(140 + max(1, len(condition.inherents)) * 90)
+
+                case WeaponRequirementsCondition():
+                    content_height = math.ceil(32 + (spacing_y + 12) + max(1, len(condition.requirements)) * 232)
+
+                case HalvesCastAndRechargeAttributeCondition():
+                    content_height = 30
+
+                case ArmorUpgradesCondition():
+                    content_height = math.ceil(150 + max(1, len(condition.armor_upgrades)) * 24)
+
+                case MaxWeaponUpgradesCondition():
+                    content_height = math.ceil(140 + max(1, len(condition.weapon_upgrades)) * 70)
+
+                case UpgradeRangesCondition():
+                    content_height = math.ceil(32 + (spacing_y + 12) + max(1, len(condition.upgrade_ranges)) * 100)
+
+                case _:
+                    content_height = 180
+                    
             sizes["width"] = avail_width
-            table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
-            table_height = math.ceil(sizes["rows"] * table_row_height)
-            
             sizes["wrapper_height"] = window_padding_y + (header_height + spacing_y) + (base_height + spacing_y) + spacing_y
-            sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
-            height = sizes["wrapper_height"] + sizes["content_height"]
+
+            if content_height >= 0:
+                sizes["content_height"] = max(0, content_height)
+                
+            else:         
+                sizes["columns"] = min(max(1, int(avail_width // (sizes["element_width"] + UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_X))), max(items_amount, 1))
+                sizes["rows"] = (items_amount + sizes["columns"] - 1) // sizes["columns"]
+                table_row_height = sizes["element_height"] + (UI.ConditionEditor.NO_HEADER_TABLE_CELL_PADDING_Y * 2)
+                table_height = math.ceil(sizes["rows"] * table_row_height)
+                
+                sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
             
+            
+            height = sizes["wrapper_height"] + sizes["content_height"]
             sizes["height"] = max(height, avail_height) if is_last_condition else height            
                     
             return sizes
@@ -5231,10 +5277,9 @@ class UI:
         @staticmethod
         def ForExactItemTypeCondition(ui: "UI", rule: Rule, condition: ExactItemTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            
-            size = size if size is not None else (-1, 30)
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 selected_label = ui._humanize_name(condition.item_type.name) if condition.item_type is not None else "Select an item type"
                 PyImGui.set_next_item_width(-1)
                 if PyImGui.begin_combo(f"##exact_item_type_{id(condition)}", selected_label, PyImGui.ImGuiComboFlags.NoFlag):
@@ -5249,10 +5294,9 @@ class UI:
         @staticmethod
         def ForStackQuantityCondition(ui: "UI", rule: Rule, condition: StackQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            size = size if size is not None else (0, 72)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 available_width = PyImGui.get_content_region_avail()[0]
                 slider_width = max(80, (available_width - 8) / 2)
 
@@ -5279,10 +5323,9 @@ class UI:
         @staticmethod
         def ForDamageCondition(ui: "UI", rule: Rule, condition: DamageCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            size = size if size is not None else (0, 148)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 available_width = PyImGui.get_content_region_avail()[0]
                 slider_width = max(80, (available_width - 8) / 2)
 
@@ -5325,10 +5368,9 @@ class UI:
         @staticmethod
         def ForArmorCondition(ui: "UI", rule: Rule, condition: ArmorCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            size = size if size is not None else (0, 72)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 available_width = PyImGui.get_content_region_avail()[0]
                 slider_width = max(80, (available_width - 8) / 2)
 
@@ -5354,10 +5396,9 @@ class UI:
         @staticmethod
         def ForEnergyCondition(ui: "UI", rule: Rule, condition: EnergyCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            size = size if size is not None else (0, 72)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 available_width = PyImGui.get_content_region_avail()[0]
                 slider_width = max(80, (available_width - 8) / 2)
 
@@ -5383,10 +5424,9 @@ class UI:
         @staticmethod
         def ForFullStacksQuantityCondition(ui: "UI", rule: Rule, condition: FullStacksQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            size = size if size is not None else (0, 72)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 available_width = PyImGui.get_content_region_avail()[0]
                 slider_width = max(80, (available_width - 8) / 2)
 
@@ -5419,16 +5459,15 @@ class UI:
         def ForNickItemCondition(ui: "UI", rule: Rule, condition: NickItemCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
             style = ImGui.get_style()
             spacing = style.ItemSpacing.value2 or 0
             row_height = 24 + 4
             slider_height = 32
             preview_height = min(320, max(row_height + spacing, len(preview_items) * (row_height)))
-            container_height = slider_height + 16 + preview_height + spacing
-            size = size if size is not None else (0, container_height)
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 PyImGui.set_next_item_width(-1)
                 new_weeks = ImGui.slider_int(
                     f"##nick_item_weeks_{id(condition)}",
@@ -5450,7 +5489,7 @@ class UI:
                     f"##nick_item_preview_{id(condition)}",
                     3,
                     PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.BordersOuterV | PyImGui.TableFlags.BordersOuterH,
-                    height=preview_height,
+                    height=sizes.get("content_height", 0)
                 ):
                     PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 34)
                     PyImGui.table_setup_column("Name")
@@ -5500,7 +5539,7 @@ class UI:
 
                     ImGui.end_table()
                     
-                    style.CellPadding.pop_style_var_direct()
+                style.CellPadding.pop_style_var_direct()
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -5508,9 +5547,9 @@ class UI:
         @staticmethod
         def ForIsMaterialCondition(ui: "UI", rule: Rule, condition: IsMaterialCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            size = size if size is not None else (0, 60)
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 rare_materials = ImGui.checkbox("Include rare materials", condition.rare_materials)
                 ImGui.show_tooltip("Enable this to match rare materials.")
 
@@ -5698,15 +5737,9 @@ class UI:
             item_types = sorted(set(item_types), key=lambda item_type: item_type.name)
             detail_item_type = item_types[0] if len(item_types) == 1 else None
             editor_id = str(id(condition))
-
-            style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            element_height = 25
-            base_height = 30 + element_height
-            available_height = PyImGui.get_content_region_avail()[1]
-            size = size if size is not None else (0, min(base_height + (element_height + spacing) * (14), available_height))
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.begin_child(f"##requirement_rows_{editor_id}", (0, 0), border=False):
                     for requirement in range(0, 14):
                         selected = requirement in condition.requirements
@@ -5802,8 +5835,9 @@ class UI:
             unique_id = str(id(condition))
             search_state_key = f"inherent_filters_condition_{unique_id}"
             recalc_cache_key = f"condition_editor:inherent_rows:{unique_id}"
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 try:
                     selectable_size = (0, 45)
                     selected_selectable_size = (0, 90)
@@ -5940,7 +5974,8 @@ class UI:
         @staticmethod
         def ForInscribableCondition(ui: "UI", rule: Rule, condition: InscribableCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 inscribable = ImGui.checkbox("Must be inscribable", condition.inscribable)
                 if inscribable != condition.inscribable:
                     condition.inscribable = inscribable
@@ -5952,7 +5987,8 @@ class UI:
         @staticmethod
         def ForUnidentifiedCondition(ui: "UI", rule: Rule, condition: UnidentifiedCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 identified = ImGui.checkbox("Must be identified", condition.identified)
                 if identified != condition.identified:
                     condition.identified = identified
@@ -5965,11 +6001,11 @@ class UI:
             changed = False
             popup_id = f"##requirements_condition_add_popup_{id(condition)}"
             search_state_key = f"weapon_requirements_condition_attribute_search_{id(condition)}"
-            size = size if size is not None else (0, 0)
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             weapon_types = sorted(WEAPON_TYPES, key=lambda item_type: item_type.name)
             weapon_type_label = "Select Item Type" if condition.weapon_type == ItemType.Unknown else ui._humanize_name(condition.weapon_type.name)
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 PyImGui.set_next_item_width(-1)
                 if PyImGui.begin_combo(f"##weapon_requirements_condition_item_type_{id(condition)}", weapon_type_label, PyImGui.ImGuiComboFlags.NoFlag):
                     for weapon_type in weapon_types:
@@ -6137,7 +6173,8 @@ class UI:
         @staticmethod
         def ForHalvesCastAndRechargeAttributeCondition(ui: "UI", rule: Rule, condition: HalvesCastAndRechargeAttributeCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 ImGui.text_wrapped(f"Match items with a '{UI.HalvesCastingTimeAttributeUpgrade_INSTANCE.description_plain}' or '{UI.HalvesRechargeTimeAttributeUpgrade_INSTANCE.description_plain}' modifier of the items attribute.")
             UI.ConditionEditor.EndConditionContainer()
             
@@ -6150,8 +6187,9 @@ class UI:
             trader_open = MerchantWindow.IsOpen()
             kind = TraderPriceCheckManager.get_kind()
             selected_upgrade_types: set[type[Upgrade]] = {type(existing_upgrade) for existing_upgrade in condition.armor_upgrades}
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 PyImGui.begin_disabled(not trader_open or kind != "runes")
                 if ImGui.button("Select From Trader Prices", -1):
                     PyImGui.open_popup(popup_id)
@@ -6285,7 +6323,8 @@ class UI:
             weapon_upgrades_by_type: dict[type[Upgrade], UpgradeAndItemType] = {}
             for existing_upgrade in condition.weapon_upgrades:
                 weapon_upgrades_by_type.setdefault(type(existing_upgrade.upgrade), existing_upgrade)
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.begin_table(f"##weapon_upgrade_condition_table_{id(condition)}", 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
                     PyImGui.table_setup_column("Mod Type", PyImGui.TableColumnFlags.WidthFixed, 150)
                     PyImGui.table_setup_column("Upgrades", PyImGui.TableColumnFlags.WidthStretch)
@@ -6430,7 +6469,8 @@ class UI:
             upgrade_ranges_by_type: dict[type[Upgrade], RangedUpgrade] = {}
             for existing_upgrade in condition.upgrade_ranges:
                 upgrade_ranges_by_type.setdefault(type(existing_upgrade.upgrade), existing_upgrade)
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, size):
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Range Upgrade", -1):
                     ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
@@ -6700,111 +6740,6 @@ class UI:
         clamped_height = max(minimum_height, estimated_height)
         
         return min(clamped_height, max_height)
-
-    def _estimate_condition_editor_height(self, rule: Rule, condition: Condition, max_height: float = 500) -> float:
-        style = ImGui.get_style()
-        spacing = max(style.ItemSpacing.value2 or 0, 4)
-        control_height = 32
-        section_gap = spacing + 12
-        row_25 = 25 + spacing
-        row_28 = 28 + spacing
-        row_40 = 40 + spacing
-        row_48 = 48 + spacing
-        row_56 = 56 + spacing
-        row_50 = 50 + (spacing / 2)
-        row_60 = 60 + spacing
-
-        def clamp(content_height: float) -> float:
-            return self._clamp_condition_editor_height(content_height, max_height=max_height)
-
-        match condition:
-            case ModelIdsCondition():
-                return clamp(70 + (spacing / 2) + max(1, len(condition.model_ids)) * row_50)
-
-            case ItemTypesCondition():
-                available_width = max(PyImGui.get_content_region_avail()[0], 200)
-                columns = max(1, int(available_width // 200))
-                rows = max(1, (len(ItemType) + columns - 1) // columns)
-                return clamp(control_height + rows * row_25)
-
-            case EncodedNamesCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.encoded_names)) * row_56)
-
-            case ModelFileIdsCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.model_file_ids)) * row_56)
-
-            case ModelFileIdsAndItemTypesCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.model_file_ids_and_item_types)) * row_56)
-
-            case ModelIdsAndItemTypesCondition():
-                return clamp(70 + (spacing / 2) + (max(1, len(condition.modelids_and_itemtypes)) * row_50))
-
-            case ExactItemTypeCondition():
-                return clamp(control_height + row_25 + 6)
-
-            case FullStacksQuantityCondition():
-                return clamp(control_height + row_25 + 6)
-            
-            case StackQuantityCondition():
-                return clamp(control_height + row_25 + 6)
-
-            case DamageCondition():
-                return clamp(control_height + (row_28 * 4) + 18)
-
-            case ArmorCondition():
-                return clamp(control_height + row_25 + 6)
-
-            case EnergyCondition():
-                return clamp(control_height + row_25 + 6)
-
-            case NickItemCondition():
-                return clamp(control_height + 24 + min(320, max(40, len(self._get_nick_item_preview_items(condition.weeks_before_next_cycle)) * row_28)))
-
-            case WeaponRequirementsCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.requirements)) * 232)
-
-            case IsMaterialCondition():
-                return clamp(control_height + (row_25 * 2) + 8)
-
-            case RaritiesCondition():
-                return clamp(control_height + 8 + max(1, len(Rarity)) * row_25)
-
-            case DyeColorsCondition():
-                available_width = max(PyImGui.get_content_region_avail()[0], 200)
-                columns = max(1, int(available_width // 200))
-                dye_count = len([dye_color for dye_color in DyeColor if dye_color != DyeColor.NoColor])
-                rows = max(1, (dye_count + columns - 1) // columns)
-                return clamp(control_height + rows * row_28)
-
-            case SalvagesToMaterialsCondition():
-                return clamp(control_height + control_height + 12 + max(1, len(condition.materials)) * row_48)
-
-            case WeaponRequirementCondition():
-                return clamp(4 * row_40 + 12)
-
-            case InherentFiltersCondition():
-                return clamp(140 + max(1, len(condition.inherents)) * 90)
-
-            case InscribableCondition():
-                return clamp(control_height + 8 + row_28)
-
-            case UnidentifiedCondition():
-                return clamp(control_height + 8 + row_28)
-
-            case HalvesCastAndRechargeAttributeCondition():
-                return clamp(control_height + 8 + row_28)
-
-            case ArmorUpgradesCondition():
-                return clamp(150 + max(1, len(condition.armor_upgrades)) * 24)
-
-            case MaxWeaponUpgradesCondition():
-                return clamp(140 + max(1, len(condition.weapon_upgrades)) * 70)
-
-            case UpgradeRangesCondition():
-                return clamp(control_height + section_gap + max(1, len(condition.upgrade_ranges)) * 100)
-
-            case _:
-                return clamp(180)
 
     def _draw_custom_rule(self, rule: CustomRule) -> bool:
         changed = False

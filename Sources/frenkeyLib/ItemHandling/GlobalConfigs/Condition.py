@@ -1346,7 +1346,7 @@ class UpgradeMatchCondition(Condition):
 
 class MaxWeaponUpgradesCondition(UpgradeMatchCondition):
     """Matches selected max-value weapon upgrades or inscriptions, optionally limited by item type."""
-    ui_selectable: ClassVar[bool] = True
+    ui_selectable: ClassVar[bool] = False
 
     def __init__(self, upgrades: Optional[list[UpgradeAndItemType]] = None):
         self.weapon_upgrades: list[UpgradeAndItemType] = upgrades if upgrades is not None else []
@@ -1419,7 +1419,7 @@ class MaxWeaponUpgradesCondition(UpgradeMatchCondition):
 
 class ArmorUpgradesCondition(UpgradeMatchCondition):
     """Matches armor containing selected runes or insignias."""
-    ui_selectable: ClassVar[bool] = True
+    ui_selectable: ClassVar[bool] = False
 
     def __init__(self, upgrades: Optional[list[ArmorUpgrade]] = None):
         self.armor_upgrades: list[ArmorUpgrade] = upgrades if upgrades is not None else []
@@ -1461,7 +1461,7 @@ class ArmorUpgradesCondition(UpgradeMatchCondition):
 
 class UpgradeRangesCondition(UpgradeMatchCondition):
     """Matches upgrades whose numeric values fall inside configured ranges."""
-    ui_selectable: ClassVar[bool] = True
+    ui_selectable: ClassVar[bool] = False
 
     def __init__(self, upgrade_ranges: Optional[list[RangedUpgrade]] = None):
         self.upgrade_ranges: list[RangedUpgrade] = upgrade_ranges if upgrade_ranges is not None else []
