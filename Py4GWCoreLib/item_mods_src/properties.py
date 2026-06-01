@@ -108,28 +108,28 @@ class ArmorPlusAttacking(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0]), "(while attacking)"))
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0])))
 
 @dataclass
 class ArmorPlusCasting(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_CASTING_BYTES, "(while casting)"))
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_CASTING_BYTES))
 
 @dataclass
 class ArmorPlusEnchanted(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"))
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES))
 
 @dataclass
 class ArmorPlusHexed(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"))
+        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES))
 
 @dataclass
 class ArmorPlusAbove(ItemProperty):
@@ -137,7 +137,7 @@ class ArmorPlusAbove(ItemProperty):
     health_threshold: int = 50
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, "(while health above 50 %)"), "(while health above 50 %)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES), "(while health above 50 %)")
 
 @dataclass
 class ArmorPlusVsDamage(ItemProperty):
@@ -148,7 +148,7 @@ class ArmorPlusVsDamage(ItemProperty):
         base = GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
         clause_bytes = GWEncoded.VS_DAMAGE_BYTES.get(self.damage_type)
         if clause_bytes:
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_bytes, f"(vs. {self.damage_type.name} damage)"), f"(vs. {self.damage_type.name} damage)")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_bytes), f"(vs. {self.damage_type.name} damage)")
         return GWStringEncoded(base.encoded, f"{base.fallback} (vs. {self.damage_type.name} damage)")
 
 @dataclass
@@ -156,14 +156,14 @@ class ArmorPlusVsElemental(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES), "(vs. elemental damage)")
 
 @dataclass
 class ArmorPlusVsPhysical(ItemProperty):
     armor: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES), "(vs. physical damage)")
 
 @dataclass
 class ArmorPlusVsSpecies(ItemProperty):
@@ -180,7 +180,7 @@ class ArmorPlusWhileBelow(ItemProperty):
     health_threshold: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class AttributePlusOne(ItemProperty):
@@ -194,7 +194,7 @@ class AttributePlusOne(ItemProperty):
             base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
             clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
             
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw), f"({self.chance}% chance while using skills)")
         return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
 @dataclass
@@ -203,7 +203,7 @@ class AttributePlusOneItem(ItemProperty):
     attribute_level: int = 1
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class DamageCustomized(ItemProperty):
@@ -217,14 +217,14 @@ class DamagePlusEnchanted(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES), "(while Enchanted)")
 
 @dataclass
 class DamagePlusHexed(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES), "(while Hexed)")
 
 @dataclass
 class DamagePlusPercent(ItemProperty):
@@ -238,14 +238,14 @@ class DamagePlusStance(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES), "(while in a Stance)")
 
 @dataclass
 class DamagePlusVsHexed(ItemProperty):
     damage_increase: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.VS_HEXED_FOES_BYTES, "(vs. Hexed foes)"), "(vs. Hexed foes)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.VS_HEXED_FOES_BYTES), "(vs. Hexed foes)")
 
 @dataclass
 class DamagePlusVsSpecies(ItemProperty):
@@ -253,7 +253,7 @@ class DamagePlusVsSpecies(ItemProperty):
     species: ItemBaneSpecies
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SPECIES.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SPECIES.get(self.species, bytes())])), f"(vs. {self.species.name})")
 
 @dataclass
 class DamagePlusWhileBelow(ItemProperty):
@@ -261,7 +261,7 @@ class DamagePlusWhileBelow(ItemProperty):
     health_threshold: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class DamagePlusWhileAbove(ItemProperty):
@@ -269,7 +269,7 @@ class DamagePlusWhileAbove(ItemProperty):
     health_threshold: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES), f"(while Health is above {self.health_threshold}%)")
 
 @dataclass
 class DamageTypeProperty(ItemProperty):
@@ -330,14 +330,14 @@ class EnergyPlusEnchanted(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES), "(while Enchanted)")
 
 @dataclass
 class EnergyPlusHexed(ItemProperty):
     energy: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES), "(while Hexed)")
 
 @dataclass
 class EnergyPlusWhileBelow(ItemProperty):
@@ -345,14 +345,14 @@ class EnergyPlusWhileBelow(ItemProperty):
     health_threshold: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES), f"(while Health is below {self.health_threshold}%)")
 
 @dataclass
 class Furious(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesCastingTimeAttribute(ItemProperty):
@@ -363,7 +363,7 @@ class HalvesCastingTimeAttribute(ItemProperty):
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
             base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells")
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
         return GWStringEncoded(bytes(), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
 @dataclass
@@ -371,7 +371,7 @@ class HalvesCastingTimeGeneral(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesCastingTimeItemAttribute(ItemProperty):
@@ -379,7 +379,7 @@ class HalvesCastingTimeItemAttribute(ItemProperty):
     attribute : Attribute = field(default=Attribute.None_)
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesSkillRechargeAttribute(ItemProperty):
@@ -390,7 +390,7 @@ class HalvesSkillRechargeAttribute(ItemProperty):
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
             base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells")
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
         return GWEncoded._encoded(bytes(), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
 @dataclass
@@ -398,7 +398,7 @@ class HalvesSkillRechargeGeneral(ItemProperty):
     chance: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HalvesSkillRechargeItemAttribute(ItemProperty):
@@ -406,7 +406,7 @@ class HalvesSkillRechargeItemAttribute(ItemProperty):
     attribute : Attribute = field(default=Attribute.None_)
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])), f"(Chance: {self.chance}%)")
 
 @dataclass
 class HeadpieceAttribute(ItemProperty):
@@ -455,21 +455,21 @@ class HealthPlusEnchanted(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES), "(while Enchanted)")
 
 @dataclass
 class HealthPlusHexed(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES), "(while Hexed)")
 
 @dataclass
 class HealthPlusStance(ItemProperty):
     health: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES), "(while in a Stance)")
 
 @dataclass
 class EnergyPlusWhileAbove(ItemProperty):
@@ -477,7 +477,7 @@ class EnergyPlusWhileAbove(ItemProperty):
     health_threshold: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES), f"(while Health is above {self.health_threshold}%)")
 
 @dataclass
 class HealthStealOnHit(ItemProperty):
@@ -499,7 +499,7 @@ class IncreaseConditionDuration(ItemProperty):
         encoded = GWEncoded.CONDITION_INCREASE_BYTES.get(self.condition)
         fallback = f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
         if encoded:
-            return GWStringEncoded(bytes([*self.get_text_color(), *encoded, *GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)")]), fallback)
+            return GWStringEncoded(bytes([*self.get_text_color(), *encoded, *GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES)]), fallback)
         return GWStringEncoded(bytes(), fallback)
 
 @dataclass
@@ -550,21 +550,21 @@ class ReceiveLessPhysDamageEnchanted(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES), "(while Enchanted)")
 
 @dataclass
 class ReceiveLessPhysDamageHexed(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES), "(while Hexed)")
 
 @dataclass
 class ReceiveLessPhysDamageStance(ItemProperty):
     damage_reduction: int
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES), "(while in a Stance)")
 
 @dataclass
 class ReduceConditionDuration(ItemProperty):
@@ -574,7 +574,7 @@ class ReduceConditionDuration(ItemProperty):
         encoded = GWEncoded.REDUCED_CONDITION_BYTES.get(self.condition)
         fallback = f"Reduces {self.condition.name} duration on you by 20%"
         base = GWStringEncoded(bytes([*self.get_text_color(), *encoded]), fallback) if encoded else GWStringEncoded(bytes(), fallback)
-        return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)"), "(Stacking)")
+        return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES), "(Stacking)")
 
 @dataclass
 class ReduceConditionTupleDuration(ItemProperty):
@@ -588,7 +588,7 @@ class ReduceConditionTupleDuration(ItemProperty):
         fallback_2 = f"Reduces {self.condition_2.name.replace('_', ' ')} duration on you by 20%"
         base_1 = bytes([*GWEncoded.ITEM_UNCOMMON, *encoded_1]) if encoded_1 else bytes()
         base_2 = bytes([*GWEncoded.ITEM_UNCOMMON, *encoded_2]) if encoded_2 else bytes()
-        suffix = GWEncoded._dull_parenthesized(bytes([0xB2, 0xA, 0x1, 0x0]), "(Non-stacking)")
+        suffix = GWEncoded._dull_parenthesized(bytes([0xB2, 0xA, 0x1, 0x0]))
         encoded = bytes([*base_1, *suffix, *base_2, *suffix])
         fallback = f"{fallback_1} (Non-stacking)\n{fallback_2} (Non-stacking)"
         return GWStringEncoded(encoded, fallback)

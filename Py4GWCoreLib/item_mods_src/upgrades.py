@@ -463,7 +463,7 @@ class Upgrade:
     
     @property
     def description_plain(self) -> str:
-        return self.__encoded_description.bonuses_only or self.__encoded_description.plain or "no encoded description (short)"
+        return self.__encoded_description.plain or "no encoded description (short)"
     
     @property
     def description(self) -> str:
@@ -559,7 +559,7 @@ class IncreaseConditionDurationUpgrade(WeaponPrefix):
         fallback = f"Lengthens {self.condition.name.replace('_', ' ')} duration on foes by 33%"
         
         if encoded:
-            return GWStringEncoded(bytes([*self.get_text_color(), *encoded, *GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)")]), fallback)
+            return GWStringEncoded(bytes([*self.get_text_color(), *encoded, *GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES)]), fallback)
         
         return GWStringEncoded(bytes(), fallback)
 
@@ -603,12 +603,14 @@ class AdeptUpgrade(WeaponPrefix):
         return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x94, 0x5D, 0x1, 0x0]), f"Adept")
     
     def create_encoded_description(self) -> GWStringEncoded:
-        parts = [
-            GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
-        ]
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time on spells of item's attribute (Chance: {self.chance}%)",
+        )
         
-        return GWEncoded.combine_encoded_strings(parts, "no encoded description")
-
 @dataclass(eq=False)
 class BarbedUpgrade(IncreaseConditionDurationUpgrade):
     id = ItemUpgrade.Barbed
@@ -766,7 +768,13 @@ class FuriousUpgrade(WeaponPrefix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.DOUBLE_ADRENALINE_BYTES]), "Double Adrenaline on hit"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.DOUBLE_ADRENALINE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Double Adrenaline on hit (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x6F, 0xA, 0x1, 0x0]), "Furious")
@@ -980,7 +988,13 @@ class SwiftUpgrade(WeaponPrefix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time of spells (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + bytes([0x1, 0x81, 0x95, 0x5D, 0x1, 0x0]), "Swift")
@@ -1138,10 +1152,13 @@ class OfAttributeUpgrade(WeaponSuffix):
     def create_encoded_description(self) -> GWStringEncoded:
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
-            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            base = bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level])
             clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
             
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+            return GWEncoded._encoded(
+                GWEncoded._join_segments(base, GWEncoded._dull_parenthesized(clause_raw)),
+                f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)",
+            )
         return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
     def create_encoded_name(self) -> GWStringEncoded:
@@ -1808,7 +1825,13 @@ class OfAptitudeUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time on spells of item's attribute (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x96, 0x5D, 0x1, 0x0]), "of Aptitude", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Aptitude"])
@@ -1928,7 +1951,13 @@ class OfDevotionUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES),
+            ),
+            f"Health +{self.health} (while Enchanted)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x97, 0x5D, 0x1, 0x0]), "of Devotion", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Devotion"])
@@ -1976,7 +2005,13 @@ class OfEnduranceUpgrade(WeaponSuffix):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES),
+            ),
+            f"Health +{self.health} (while in a Stance)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x98, 0x5D, 0x1, 0x0]), "of Endurance", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Endurance"])
@@ -2110,7 +2145,13 @@ class OfMasteryUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Item's attribute +1 (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x99, 0x5D, 0x1, 0x0]), "of Mastery", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Mastery"])
@@ -2134,7 +2175,13 @@ class OfMemoryUpgrade(WeaponSuffix):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves skill recharge on spells of item's attribute (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9A, 0x5D, 0x1, 0x0]), "of Memory", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Memory"])
@@ -2158,7 +2205,13 @@ class OfQuickeningUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves skill recharge of spells (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9B, 0x5D, 0x1, 0x0]), "of Quickening", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Quickening"])
@@ -2218,7 +2271,13 @@ class OfShelterUpgrade(WeaponSuffix):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES),
+            ),
+            f"Armor +{self.armor} (vs. physical damage)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7B, 0xA, 0x1, 0x0]), "of Shelter", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Shelter"])
@@ -2232,7 +2291,13 @@ class OfSlayingUpgrade(WeaponSuffix):
     damage_increase: int = 20
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase, f"Damage +{self.damage_increase}%"), GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SPECIES.get(self.species, bytes())]), f"(vs. {self.species.name})"), f"(vs. {self.species.name})")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), bytes([*GWEncoded.DAMAGE_TEXT, 0x1, 0x0]), self.damage_increase),
+                GWEncoded._dull_parenthesized(bytes([*GWEncoded.VS_STR1, *GWEncoded.SPECIES.get(self.species, bytes())])),
+            ),
+            f"Damage +{self.damage_increase}% (vs. {self.species.name})",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0xB, 0x1]) + GWEncoded.SLAYING_SUFFIXES.get(self.species, bytes()) + bytes([0x1, 0x0, 0x1, 0x0, 0x0, 0x0]), 
@@ -2582,7 +2647,13 @@ class OfSwiftnessUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time of spells (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7C, 0xA, 0x1, 0x0]), "of Swiftness", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Swiftness"])
@@ -3029,7 +3100,13 @@ class OfValorUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health, "Health"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.HEALTH_BYTES, self.health),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES),
+            ),
+            f"Health +{self.health} (while Hexed)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x1, 0x81, 0x9C, 0x5D, 0x1, 0x0]), "of Valor", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Valor"])
@@ -3053,7 +3130,13 @@ class OfWardingUpgrade(WeaponSuffix):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES),
+            ),
+            f"Armor +{self.armor} (vs. elemental damage)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color(True) + GWEncoded.STR1_OF_STR2 + GWEncoded.PLACEHOLDER_TO_REMOVE + bytes([0x7D, 0xA, 0x1, 0x0]), "of Warding", GWEncoded.PLACEHOLDER_TO_REMOVE, ["", "Warding"])
@@ -3092,7 +3175,7 @@ class ReduceConditionDurationInscription(OffhandOrShieldInscription):
             encoded = GWEncoded.REDUCED_CONDITION_BYTES.get(self.condition)
             base = GWStringEncoded(bytes([*self.get_text_color(), *encoded]), fallback) if encoded else GWStringEncoded(bytes(), fallback)
             
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES, "(Stacking)"), fallback)
+            return GWEncoded._encoded(GWEncoded._join_segments(base.encoded, GWEncoded._dull_parenthesized(GWEncoded.STACKING_BYTES)), fallback)
         
         return super().create_encoded_description()
 
@@ -3104,11 +3187,10 @@ class ArmorVsDamageTypeInscription(OffhandOrShieldInscription):
         if self.damage_type is None:
             return super().create_encoded_description()
         
-        base = GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor")
-        clause_bytes = GWEncoded.VS_DAMAGE_BYTES.get(self.damage_type)
-        if clause_bytes:
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_bytes, f"(vs. {self.damage_type.name} damage)"), f"(vs. {self.damage_type.name} damage)")
-        return GWStringEncoded(bytes(), f"{base.fallback} (vs. {self.damage_type.name} damage)")
+        base = GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor)
+        clause_bytes = GWEncoded._dull_parenthesized(GWEncoded.VS_DAMAGE_BYTES.get(self.damage_type, bytes()))
+        
+        return GWStringEncoded(GWEncoded._join_segments(base, clause_bytes), f"Armor +{self.armor} (vs. {self.damage_type.name} damage)")
 
 class EquippableItemInscription(Inscription):
     target_item_type = ItemType.EquippableItem
@@ -3137,7 +3219,13 @@ class BeJustAndFearNot(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"))
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES),
+            ),
+            f"Armor +{self.armor} (while Hexed)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x90, 0x5D, 0x1, 0x0]), f"Be Just And Fear Not")
@@ -3172,7 +3260,13 @@ class DownButNotOut(OffhandInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES),
+            ),
+            f"Armor +{self.armor} (while Health is below {self.health_threshold}%)",
+        )
 
     
     def create_encoded_name(self) -> GWStringEncoded:
@@ -3197,7 +3291,13 @@ class FaithIsMyShield(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"))
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES),
+            ),
+            f"Armor +{self.armor} (while Enchanted)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8D, 0x5D, 0x1, 0x0]), f"Faith Is My Shield")
@@ -3222,7 +3322,13 @@ class ForgetMeNot(OffhandInscription):
     
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]), "Halves skill recharge on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_ITEM_ATTRIBUTE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves skill recharge on spells of item's attribute (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x93, 0x5D, 0x1, 0x0]), f"Forget Me Not")
@@ -3256,7 +3362,13 @@ class HailToTheKing(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, "(while health above 50 %)"), "(while health above 50 %)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES),
+            ),
+            f"Armor +{self.armor} (while Health is above {self.health_threshold}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8F, 0x5D, 0x1, 0x0]), f"Hail To The King")
@@ -3318,7 +3430,13 @@ class KnowingIsHalfTheBattle(OffhandInscription):
     )
         
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_CASTING_BYTES, "(while casting)"))
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_CASTING_BYTES),
+            ),
+            f"Armor +{self.armor} (while casting)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8C, 0x5D, 0x1, 0x0]), f"Knowing Is Half The Battle")
@@ -3391,12 +3509,13 @@ class LiveForToday(OffhandInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        parts = [
-            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
-            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
-        ]
-        
-        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ENERGY_REGEN_BYTES, 0x1, 0x1, abs(self.energy_regeneration), 0x1, 0x1, 0x0]),
+            ),
+            f"Energy +{self.energy} Energy regeneration -{abs(self.energy_regeneration)}",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x91, 0x5D, 0x1, 0x0]), f"Live For Today")
@@ -3420,7 +3539,13 @@ class ManForAllSeasons(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES, "(vs. elemental damage)"), "(vs. elemental damage)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.VS_ELEMENTAL_DAMAGE_BYTES),
+            ),
+            f"Armor +{self.armor} (vs. elemental damage)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x89, 0x5D, 0x1, 0x0]), f"Man For All Seasons")
@@ -3444,7 +3569,13 @@ class MightMakesRight(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0]), "(while attacking)"))
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(bytes([0xB4, 0xA, 0x1, 0x0])),
+            ),
+            f"Armor +{self.armor} (while attacking)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8B, 0x5D, 0x1, 0x0]), f"Might Makes Right")
@@ -3468,7 +3599,13 @@ class SerenityNow(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves skill recharge of spells (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x92, 0x5D, 0x1, 0x0]), f"Serenity Now")
@@ -3492,7 +3629,13 @@ class SurvivalOfTheFittest(OffhandInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor, "Armor"), GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES, "(vs. physical damage)"), "(vs. physical damage)")    
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ARMOR_BYTES, self.armor),
+                GWEncoded._dull_parenthesized(GWEncoded.VS_PHYSICAL_DAMAGE_BYTES),
+            ),
+            f"Armor +{self.armor} (vs. physical damage)",
+        )
    
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x8A, 0x5D, 0x1, 0x0]), f"Survival Of The Fittest")
@@ -3560,7 +3703,13 @@ class DanceWithDeath(WeaponInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (while in a Stance)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAD, 0x5D, 0x1, 0x0]), f"Dance With Death")
@@ -3584,7 +3733,13 @@ class DontFearTheReaper(WeaponInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (while Hexed)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAC, 0x5D, 0x1, 0x0]), f"Dont Fear The Reaper")
@@ -3608,7 +3763,13 @@ class DontThinkTwice(WeaponInscription):
     )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]), "Halves casting time of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time of spells (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB0, 0x5D, 0x1, 0x0]), f"Dont Think Twice")
@@ -3632,7 +3793,13 @@ class GuidedByFate(WeaponInscription):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (while Enchanted)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA9, 0x5D, 0x1, 0x0]), f"Guided By Fate")
@@ -3666,7 +3833,13 @@ class StrengthAndHonor(WeaponInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (while Health is above {self.health_threshold}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAA, 0x5D, 0x1, 0x0]), f"Strength And Honor")
@@ -3732,7 +3905,13 @@ class TooMuchInformation(WeaponInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.VS_HEXED_FOES_BYTES, "(vs. Hexed foes)"), "(vs. Hexed foes)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.VS_HEXED_FOES_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (vs. Hexed foes)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA8, 0x5D, 0x1, 0x0]), f"Too Much Information")
@@ -3766,7 +3945,13 @@ class VengeanceIsMine(WeaponInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_percent(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase, "Damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_percent_bytes(self.get_text_color(), GWEncoded.DAMAGE_BYTES, self.damage_increase),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES),
+            ),
+            f"Damage +{self.damage_increase}% (while Health is below {self.health_threshold}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xAB, 0x5D, 0x1, 0x0]), f"Vengeance Is Mine")
@@ -3816,7 +4001,13 @@ class LetTheMemoryLiveAgain(MartialWeaponInscription):
     )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]), "Halves skill recharge of spells"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_RECHARGE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves skill recharge of spells (Chance: {self.chance}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x73, 0x5D, 0x1, 0x0]), f"Let The Memory Live Again")
@@ -4007,7 +4198,13 @@ class MasterOfMyDomain(OffhandOrShieldInscription):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]), "Item's attribute +1"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.ITEM_ATTRIBUTE_PLUS_ONE_BYTES, self.attribute_level]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Item's attribute +1 (Chance: {self.chance}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xA7, 0x5D, 0x1, 0x0]), f"Master Of My Domain")
@@ -4061,7 +4258,13 @@ class NothingToFear(OffhandOrShieldInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, 0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0, 0x1, 0x1, self.damage_reduction, 0x1, 0x1, 0x0]),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES),
+            ),
+            f"Received physical damage -{self.damage_reduction} (while Hexed)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7D, 0x5D, 0x1, 0x0]), f"Nothing To Fear")
@@ -4155,7 +4358,13 @@ class RunForYourLife(OffhandOrShieldInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES, "(while in a Stance)"), "(while in a Stance)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, 0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0, 0x1, 0x1, self.damage_reduction, 0x1, 0x1, 0x0]),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_IN_A_STANCE_BYTES),
+            ),
+            f"Received physical damage -{self.damage_reduction} (while in a Stance)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7E, 0x5D, 0x1, 0x0]), f"Run For Your Life")  
@@ -4179,7 +4388,13 @@ class ShelteredByFaith(OffhandOrShieldInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_minus_num(self.get_text_color(), bytes([0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0]), self.damage_reduction, "Received physical damage"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, 0x1, 0x81, 0x4F, 0x5D, 0x1, 0x0, 0x1, 0x1, self.damage_reduction, 0x1, 0x1, 0x0]),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES),
+            ),
+            f"Received physical damage -{self.damage_reduction} (while Enchanted)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0x7C, 0x5D, 0x1, 0x0]), f"Sheltered By Faith")
@@ -4405,7 +4620,13 @@ class AptitudeNotAttitude(SpellcastingWeaponInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._encoded(bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]), "Halves casting time on spells of item's attribute"), GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                bytes([*self.get_text_color(), *GWEncoded.HALVES_CASTING_ITEM_ATTRIBUTE_BYTES]),
+                GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+            ),
+            f"Halves casting time on spells of item's attribute (Chance: {self.chance}%)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB2, 0x5D, 0x1, 0x0]), f"Aptitude Not Attitude")
@@ -4439,7 +4660,13 @@ class DontCallItAComeback(SpellcastingWeaponInscription):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES, f"(while Health is below {self.health_threshold}%)"), f"(while Health is below {self.health_threshold}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_BELOW_BYTES),
+            ),
+            f"Energy +{self.energy} (while Health is below {self.health_threshold}%)",
+        )
         
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB6, 0x5D, 0x1, 0x0]), f"Don't Call It A Comeback")
@@ -4473,7 +4700,13 @@ class HaleAndHearty(SpellcastingWeaponInscription):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES, f"(while Health is above {self.health_threshold}%)"), f"(while Health is above {self.health_threshold}%)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEALTH_ABOVE_BYTES),
+            ),
+            f"Energy +{self.energy} (while Health is above {self.health_threshold}%)",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB5, 0x5D, 0x1, 0x0]), f"Hale And Hearty")
@@ -4497,7 +4730,13 @@ class HaveFaith(SpellcastingWeaponInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES, "(while Enchanted)"), "(while Enchanted)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_ENCHANTED_BYTES),
+            ),
+            f"Energy +{self.energy} (while Enchanted)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB4, 0x5D, 0x1, 0x0]), f"Have Faith")
@@ -4521,7 +4760,13 @@ class IAmSorrow(SpellcastingWeaponInscription):
      )
     
     def create_encoded_description(self) -> GWStringEncoded:
-        return GWEncoded._append_line_with_fallback(GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"), GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES, "(while Hexed)"), "(while Hexed)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                GWEncoded._dull_parenthesized(GWEncoded.WHILE_HEXED_BYTES),
+            ),
+            f"Energy +{self.energy} (while Hexed)",
+        )
 
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB7, 0x5D, 0x1, 0x0]), f"I Am Sorrow")
@@ -4555,12 +4800,13 @@ class SeizeTheDay(SpellcastingWeaponInscription):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        parts = [
-            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
-            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
-        ]
-        
-        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ENERGY_REGEN_BYTES, 0x1, 0x1, abs(self.energy_regeneration), 0x1, 0x1, 0x0]),
+            ),
+            f"Energy +{self.energy} Energy regeneration -{abs(self.energy_regeneration)}",
+        )
     
     def create_encoded_name(self) -> GWStringEncoded:
         return GWStringEncoded(self.get_text_color() + GWEncoded.INSCRIPTION_STR1 + bytes([0x1, 0x81, 0xB3, 0x5D, 0x1, 0x0]), f"Seize The Day")
@@ -4804,10 +5050,17 @@ class AttributePlusOneUpgrade(Inherent):
     def create_encoded_description(self) -> GWStringEncoded:
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
-            base = GWStringEncoded(bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]), f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}")
+            base = GWStringEncoded(
+                bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x1, 0x1, self.attribute_level]),
+                f"{GWEncoded._attribute_name(self.attribute)} +{self.attribute_level}",
+            )
             clause_raw = bytes([0xC1, 0xA, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0])
             
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(clause_raw, f"({self.chance}% chance while using skills)"), f"({self.chance}% chance while using skills)")
+            return GWEncoded._encoded(
+                GWEncoded._join_segments(base.encoded, GWEncoded._dull_parenthesized(clause_raw)),
+                f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)",
+            )
+        
         return GWStringEncoded(bytes(), f"{GWEncoded._attribute_name(self.attribute)} +1 ({self.chance}% chance while using skills)")
 
 
@@ -5618,10 +5871,10 @@ class ArmorVsSpeciesUpgrade(Inherent):
 
     def create_encoded_description(self) -> GWStringEncoded:
         if self.species is None:
-            return GWStringEncoded(bytes(), f"Armor +{self.armor} vs. ({_humanize_identifier(self.__class__.__name__)})")
+            return GWStringEncoded(bytes(), f"Armor +{self.armor} vs. ({_humanize_identifier(self.__class__.__name__)}) [no species set]")
         
         encoed_bytes = bytes([*self.get_text_color(), 0x84, 0xA, 0xA, 0x1, 0x44, 0xA, 0x1, 0x0, 0x1, 0x1, self.armor, 0x1, *GWEncoded.ITEM_DULL, 0xA8, 0xA, 0xA, 0x1, 0xAF, 0xA, 0xA, 0x1, *GWEncoded.SPECIES.get(self.species, bytes()), 0x1, 0x0, 0x1, 0x0, 0x1, 0x0, 0x2, 0x0, 0x2, 0x1, 0x2, 0x0])
-        return GWStringEncoded(encoed_bytes, f"Armor +{self.armor} vs. ({_humanize_identifier(self.__class__.__name__)})")
+        return GWStringEncoded(encoed_bytes, f"Armor +{self.armor} vs. ({_humanize_identifier(self.__class__.__name__)}) [not decoded]")
 
 @dataclass(eq=False)
 class ArmorVsUndeadUpgrade(ArmorVsSpeciesUpgrade):
@@ -5979,7 +6232,13 @@ class HalvesCastingTimeAttributeUpgrade(Inherent):
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
             base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x47, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells")
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+            return GWEncoded._encoded(
+                GWEncoded._join_segments(
+                    base.encoded,
+                    GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+                ),
+                f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)",
+            )
         return GWStringEncoded(bytes(), f"Halves casting time of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
 @dataclass(eq=False)
@@ -6542,7 +6801,13 @@ class HalvesRechargeTimeAttributeUpgrade(Inherent):
         attribute_bytes = GWEncoded._attribute_bytes(self.attribute)
         if attribute_bytes:
             base = GWEncoded._encoded(bytes([*self.get_text_color(), 0x81, 0xA, 0xA, 0x1, 0x58, 0xA, 0x1, 0x0, 0xB, 0x1, *attribute_bytes, 0x1, 0x0, 0x1, 0x0]), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells")
-            return GWEncoded._append_line_with_fallback(base, GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0]), f"(Chance: {self.chance}%)"), f"(Chance: {self.chance}%)")
+            return GWEncoded._encoded(
+                GWEncoded._join_segments(
+                    base.encoded,
+                    GWEncoded._dull_parenthesized(bytes([0x87, 0xA, 0xA, 0x1, 0x48, 0xA, 0x1, 0x0, 0x1, 0x1, self.chance, 0x1, 0x1, 0x0, 0x1, 0x0])),
+                ),
+                f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)",
+            )
         return GWEncoded._encoded(bytes(), f"Halves skill recharge of {GWEncoded._attribute_name(self.attribute)} spells (Chance: {self.chance}%)")
 
 
@@ -7146,12 +7411,13 @@ class EnergyPlusEnergyRegenerationMinusUpgrade(Inherent):
      )
 
     def create_encoded_description(self) -> GWStringEncoded:
-        parts = [
-            GWEncoded._bonus_plus_num(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy, "Energy"),
-            GWEncoded._bonus_minus_num(self.get_text_color(), GWEncoded.ENERGY_REGEN_BYTES, abs(self.energy_regeneration), "Energy regeneration")
-        ]
-        
-        return GWEncoded.combine_encoded_strings(parts, f"{_humanize_identifier(self.__class__.__name__)} (no encoded description)")
+        return GWEncoded._encoded(
+            GWEncoded._join_segments(
+                GWEncoded._bonus_plus_num_bytes(self.get_text_color(), GWEncoded.ENERGY_BYTES, self.energy),
+                bytes([*self.get_text_color(), *GWEncoded.MINUS_NUM_TEMPLATE, *GWEncoded.ENERGY_REGEN_BYTES, 0x1, 0x1, abs(self.energy_regeneration), 0x1, 0x1, 0x0]),
+            ),
+            f"Energy +{self.energy} Energy regeneration -{abs(self.energy_regeneration)}",
+        )
     
 
     

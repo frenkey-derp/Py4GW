@@ -451,6 +451,7 @@ class GWEncoded():
     WHILE_ABOVE_BYTES = bytes([0xBC, 0xA]) #while %str1% is above %num1%
     
     SEPARATING_BYTES = bytes([0xA, 0x1])
+    SEGMENT_SEPARATOR = bytes([0x2, 0x0])
     
     WHILE_HEALTH_ABOVE_BYTES = WHILE_ABOVE_BYTES + SEPARATING_BYTES + HEALTH_BYTES + bytes([0x1, 0x1, 0x32, 0x1]) # next byte is the health threshold
     WHILE_HEALTH_BELOW_BYTES = WHILE_BELOW_BYTES + SEPARATING_BYTES + HEALTH_BYTES + bytes([0x1, 0x1, 0x32, 0x1]) # next byte is the health threshold
@@ -614,24 +615,42 @@ class GWEncoded():
 
 
     @staticmethod
-    def _dull_parenthesized(raw: bytes, fallback: str) -> bytes:
+    def _dull_parenthesized(raw: bytes) -> bytes:
         return bytes([*GWEncoded.ITEM_DULL, *GWEncoded.PARENTHESIS_STR1, *raw, 0x1, 0x0])
 
 
     @staticmethod
+    def _join_segments(*segments: bytes) -> bytes:
+        non_empty = [segment for segment in segments if segment]
+        if not non_empty:
+            return bytes()
+        return GWEncoded.SEGMENT_SEPARATOR.join(non_empty)
+
+
+    @staticmethod
     def _append_line(base: GWStringEncoded, line_bytes: bytes) -> GWStringEncoded:
-        return GWEncoded._encoded(base.encoded + line_bytes, base.fallback)
+        return GWEncoded._encoded(GWEncoded._join_segments(base.encoded, line_bytes), base.fallback)
 
 
     @staticmethod
     def _append_line_with_fallback(base: GWStringEncoded, line_bytes: bytes, fallback_suffix: str) -> GWStringEncoded:
         separator = "\n" if base.fallback else ""
-        return GWEncoded._encoded(base.encoded + line_bytes, f"{base.fallback}{separator}{fallback_suffix}")
+        return GWEncoded._encoded(GWEncoded._join_segments(base.encoded, line_bytes), f"{base.fallback}{separator}{fallback_suffix}")
 
 
     @staticmethod
     def combine_encoded_strings(parts: list[GWStringEncoded], fallback: str = "") -> GWStringEncoded:
-        encoded = b"".join(part.encoded for part in parts if part.encoded)
+        encoded = GWEncoded._join_segments(*(part.encoded for part in parts if part.encoded))
         fallback_parts = [part.fallback for part in parts if part.fallback]
         combined_fallback = "\n".join(fallback_parts) if fallback_parts else fallback
         return GWStringEncoded(encoded, combined_fallback or fallback)
+    
+    
+        
+    @staticmethod
+    def _bonus_plus_num_bytes(bonus_color: bytes, token: bytes, value: int) -> bytes:
+        return bytes([*bonus_color, *GWEncoded.PLUS_NUM_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0])
+
+    @staticmethod
+    def _bonus_plus_percent_bytes(bonus_color: bytes, token: bytes, value: int) -> bytes:
+        return bytes([*bonus_color, *GWEncoded.PLUS_PERCENT_TEMPLATE, *token, 0x1, 0x1, value, 0x1, 0x1, 0x0])
