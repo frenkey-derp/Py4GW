@@ -291,6 +291,11 @@ class ConfigInfo(Generic[TConfig]):
 
         Py4GW.Console.Log("Item Manager", f"No load handler available for {self.name}.", Py4GW.Console.MessageType.Warning)
 
+class UpgradeTexture(NamedTuple):
+    prefix: int = 0
+    suffix: int = 0
+    inherent: int = 0
+    
 class UI:
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
@@ -302,7 +307,7 @@ class UI:
     RED_COLOR : Color = ColorPalette.GetColor("red")
     SUBTLE_TEXT_COLOR : Color = Color(90, 90, 90)
     SCREEN_SIZE : tuple[float, float] = (0.0, 0.0)
-    RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
+    CUSTOM_RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
     
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     _RULE_TYPES_CACHE: list[type[Rule]] | None = None
@@ -346,6 +351,7 @@ class UI:
     ITEM_UPGRADE_MODEL_FILE_IDS = {
         ItemType.Bow : (91655, 91653),
     }
+    
     
     ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS = {
         ItemType.Salvage : 116994,
@@ -398,7 +404,6 @@ class UI:
         # ItemType.Unknown : ModelID.Unknown
     }
     
-    UpgradeTexture = NamedTuple("UpgradeTextures", [("prefix", str), ("suffix", str)])
     HalvesCastingTimeAttributeUpgrade_INSTANCE = HalvesCastingTimeAttributeUpgrade()
     HalvesRechargeTimeAttributeUpgrade_INSTANCE = HalvesRechargeTimeAttributeUpgrade()
 
@@ -530,51 +535,55 @@ class UI:
         self._armor_upgrade_quote_cache: dict[Any, TraderQuote] = {}
         self.texture_path = os.path.join(Py4GW.Console.get_projects_path(), "Textures")
 
-        self.weapon_upgrade_textures : dict[ItemType, UI.UpgradeTexture] = {
-                ItemType.Axe : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "00893-Axe_Haft.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "00905-Axe_Grip.png"),
+        self.weapon_upgrade_textures : dict[ItemType, UpgradeTexture] = {
+                ItemType.Axe : UpgradeTexture(
+                    prefix=19872,
+                    suffix=91650,
                 ),
-                ItemType.Bow : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "00894-Bow_String.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "00906-Bow_Grip.png"),
+                ItemType.Bow : UpgradeTexture(
+                    prefix=91655,
+                    suffix=91653,
                 ),
-                ItemType.Daggers : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "06323-Dagger_Tang.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "06331-Dagger_Handle.png"),
+                ItemType.Daggers : UpgradeTexture(
+                    prefix=164837,
+                    suffix=164856,
                 ),
-                ItemType.Hammer : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "00895-Hammer_Haft.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "00907-Hammer_Grip.png"),
+                ItemType.Hammer : UpgradeTexture(
+                    prefix=19873,
+                    suffix=91654,
                 ),
-                ItemType.Offhand : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "15551-Focus_Core.png"),
+                ItemType.Offhand : UpgradeTexture(
+                    suffix=205913,
+                    inherent=205889,
                 ),
-                ItemType.Scythe : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "15543-Scythe_Snathe.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "15553-Scythe_Grip.png"),
+                ItemType.Scythe : UpgradeTexture(
+                    prefix=205895,
+                    suffix=205917,
                 ),
-                ItemType.Shield : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "15554-Shield_Handle.png"),
+                ItemType.Shield : UpgradeTexture(
+                    suffix=205920,
                 ),
-                ItemType.Spear : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "15544-Spearhead.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "15555-Spear_Grip.png"),
+                ItemType.Spear : UpgradeTexture(
+                    prefix=205896,
+                    suffix=205921,
                 ),
-                ItemType.Staff : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "00896-Staff_Head.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "00908-Staff_Wrapping.png"),
+                ItemType.Staff : UpgradeTexture(
+                    prefix=164795,
+                    suffix=164796,
                 ),
-                ItemType.Sword : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "Item Models", "00897-Sword_Hilt.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "00909-Sword_Pommel.png"),
+                ItemType.Sword : UpgradeTexture(
+                    prefix=20015,
+                    suffix=91656,
                 ),
-                ItemType.Wand : UI.UpgradeTexture(
-                    prefix=os.path.join(self.texture_path, "missing_texture.png"),
-                    suffix=os.path.join(self.texture_path, "Item Models", "15552-Wand_Wrapping.png"),
+                ItemType.Wand : UpgradeTexture(
+                    suffix=205916,
                 ),
+                
+                ItemType.Weapon : UpgradeTexture(inherent=205892),
+                ItemType.MartialWeapon : UpgradeTexture(inherent=205890),
+                ItemType.OffhandOrShield : UpgradeTexture(inherent=205891),
+                ItemType.EquippableItem : UpgradeTexture(inherent=205889),
+                ItemType.SpellcastingWeapon : UpgradeTexture(inherent=205889),
             }
 
         self.dye_textures: dict[int, str] = {
@@ -1435,14 +1444,18 @@ class UI:
         return ITEM_DAMAGE_RANGES.get(item_type, {}).get(min(requirement, 9))
 
     @staticmethod
-    def _draw_texture_from_model_file_id(model_file_id: Optional[int], size: tuple[float, float]) -> None:
+    def _get_texture_path_for_model_file_id(model_file_id: Optional[int]) -> str:
         model_file_id = Item.GetTrueModelFileID(model_file_id) if model_file_id is not None else None
-        model_file_texture : Optional[str] = f"gwdat://{int(model_file_id)}" if model_file_id is not None and int(model_file_id) > 0 else None
+        return f"gwdat://{int(model_file_id)}" if model_file_id is not None and int(model_file_id) > 0 else ""
+    
+    @staticmethod
+    def _draw_texture_from_model_file_id(model_file_id: Optional[int], size: tuple[float, float]) -> None:
+        model_file_texture = UI._get_texture_path_for_model_file_id(model_file_id)
         UI._draw_texture_or_dummy(model_file_texture, size)
 
     @staticmethod
     def _draw_texture_or_dummy(texture: Optional[str], size: tuple[float, float]) -> None:
-        if texture is not None:
+        if texture is not None and texture != "":
             ImGui.image(texture, size)
         else:
             ImGui.dummy(*size)
@@ -4481,20 +4494,15 @@ class UI:
     class ConditionEditor:
         NO_HEADER_TABLE_CELL_PADDING_Y = 4
         NO_HEADER_TABLE_CELL_PADDING_X = 4
-
-        class ConditionSizes:
-            def __init__(self):
-                self.width : float = 0
-                self.height : float = 0
-                self.element_height : float = 0
-                self.element_width : float = 0
-                self.spacing : float = 0
-                
                 
         @staticmethod
         def GetSizes(rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> dict[str, int]:
             sizes = {}
             style = ImGui.get_style()
+            
+            is_custom_rule = isinstance(rule, CustomRule)
+            single_condition = len(rule.conditions) == 1
+            show_condition_wrapper = not single_condition or is_custom_rule
             
             header_height = 24
             spacing_x = style.ItemSpacing.value1 or 0
@@ -4505,11 +4513,11 @@ class UI:
             
             sizes["spacing"] = spacing_y
             
-            avail = PyImGui.get_content_region_avail() if size is None else size
-            avail_width = avail[0]
-            avail_height = avail[1]
+            avail = PyImGui.get_content_region_avail()
+            avail_width = avail[0] if size is None else size[0]
+            avail_height = avail[1] if size is None else size[1]
             
-            max_height = UI.RULE_CONTENT_RECT[1]
+            max_height = UI.CUSTOM_RULE_CONTENT_RECT[1] if isinstance(rule, CustomRule) else avail[1]
             
             is_last_condition = rule.conditions and condition == rule.conditions[-1]
     
@@ -4518,7 +4526,7 @@ class UI:
             items_amount = 0
             base_height = 0
             content_height = -1
-            
+                        
             match condition:                
                 case ModelIdsCondition():
                     base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
@@ -4557,7 +4565,7 @@ class UI:
 
                 case RaritiesCondition():
                     sizes["element_height"] = 25
-                    sizes["element_width"] = 75
+                    sizes["element_width"] = 150
                     items_amount = len(Rarity)
 
                 case DyeColorsCondition():
@@ -4579,9 +4587,9 @@ class UI:
                     
                 case NickItemCondition():
                     base_height = 25
-                    sizes["element_height"] = 28
+                    sizes["element_height"] = 24
                     sizes["element_width"] = avail_width
-                    items_amount = condition.weeks_before_next_cycle
+                    items_amount = condition.weeks_before_next_cycle + 1
 
                 case IsMaterialCondition():
                     content_height = 40 + spacing_y
@@ -4610,9 +4618,10 @@ class UI:
                 case _:
                     content_height = 180
                     
+            sizes["title_height"] = (window_padding_y + (header_height + spacing_y)) if show_condition_wrapper else 0
+            sizes["wrapper_height"] = (sizes["title_height"] + (base_height + spacing_y) + spacing_y)
             sizes["width"] = avail_width
-            sizes["wrapper_height"] = window_padding_y + (header_height + spacing_y) + (base_height + spacing_y) + spacing_y
-
+            
             if content_height >= 0:
                 sizes["content_height"] = max(0, content_height)
                 
@@ -4623,13 +4632,17 @@ class UI:
                 table_height = math.ceil(sizes["rows"] * table_row_height)
                 
                 sizes["content_height"] = min(table_height, max_height - sizes["wrapper_height"])
+                
+            if size is None:                      
+                height = sizes["wrapper_height"] + sizes["content_height"]
+                sizes["height"] = max(height, avail_height) if is_last_condition else height            
             
+            else:
+                sizes["content_height"] = 0
+                sizes["width"] = size[0]
+                sizes["height"] = size[1]
             
-            height = sizes["wrapper_height"] + sizes["content_height"]
-            sizes["height"] = max(height, avail_height) if is_last_condition else height            
-                    
             return sizes
-        
         
         @staticmethod
         def BeginConditionContainer(ui : "UI", rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> bool:
@@ -5520,12 +5533,9 @@ class UI:
             changed = False
             preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            last_index = len(preview_items) - 1
 
             style = ImGui.get_style()
-            spacing = style.ItemSpacing.value2 or 0
-            row_height = 24 + 4
-            slider_height = 32
-            preview_height = min(320, max(row_height + spacing, len(preview_items) * (row_height)))
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 PyImGui.set_next_item_width(-1)
@@ -5554,21 +5564,22 @@ class UI:
                     PyImGui.table_setup_column("Icon", PyImGui.TableColumnFlags.WidthFixed, 34)
                     PyImGui.table_setup_column("Name")
                     PyImGui.table_setup_column("Next Cycle", PyImGui.TableColumnFlags.WidthFixed, 90)
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
 
-                    for item in preview_items:
+                    for index, item in enumerate(preview_items):
                         weeks_until_next_nick = item.weeks_until_next_nick
                         if weeks_until_next_nick is None:
                             continue
 
-                        PyImGui.table_next_column()
                         ui._draw_item_texture(item, size=(24, 24))
                         hovered = PyImGui.is_item_hovered()
-
                         PyImGui.table_next_column()
+                        
                         ImGui.text_aligned(ui._get_item_display_name(item), alignment=Alignment.MidLeft, height=24)
                         hovered = PyImGui.is_item_hovered() or hovered
-
                         PyImGui.table_next_column()
+                        
                         ImGui.text_aligned(
                             ui._format_nick_weeks_label(weeks_until_next_nick),
                             alignment=Alignment.MidLeft,
@@ -5597,6 +5608,9 @@ class UI:
                                 ImGui.text_wrapped(item.acquisition)
                             ImGui.end_tooltip()
 
+                        if index != last_index:
+                            PyImGui.table_next_column()
+                    
                     ImGui.end_table()
                     
                 style.CellPadding.pop_style_var_direct()
@@ -6368,6 +6382,7 @@ class UI:
                                         PyImGui.separator()
                                         ImGui.text_colored("No matching trader quote found for this upgrade.", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_tooltip()
+                                    
                         except Exception as e:
                             ImGui.text_colored(f"Error loading upgrades: {str(e)}", (255, 0, 0, 255), font_size=12)
                     ImGui.end_child()
@@ -6444,9 +6459,10 @@ class UI:
                                             ImGui.separator()
                                             for item_type in item_types:
                                                 is_upgrade_selected = item_type in selected_item_types
-                                                texture = ui.weapon_upgrade_textures.get(item_type)
-                                                if texture:
-                                                    ImGui.image_toggle_button(f"##{id(condition)}_{variant}_{item_type.name}", texture.prefix if ui.mod_type == ItemUpgradeType.Prefix else texture.suffix, is_upgrade_selected, 24, 24)
+                                                upgrade_textures = ui.weapon_upgrade_textures.get(item_type)
+                                                if upgrade_textures:
+                                                    model_file_id = ui._get_texture_path_for_model_file_id(upgrade_textures.prefix if ui.mod_type == ItemUpgradeType.Prefix else upgrade_textures.suffix)
+                                                    ImGui.image_toggle_button(f"##{id(condition)}_{variant}_{item_type.name}", model_file_id, is_upgrade_selected, 24, 24)
                                                     encoded = upgrade.create_upgrade_name(item_type)
                                                     if PyImGui.is_item_clicked(0):
                                                         io = PyImGui.get_io()
@@ -6489,15 +6505,23 @@ class UI:
                                                     PyImGui.same_line(0, 5)
                                         ImGui.end_child()
                                         if not hovered:
+                                            
                                             ImGui.show_tooltip(upgrade.description_plain)
                                     else:
                                         ImGui.dummy(0, 70)
                                 else:
                                     is_upgrade_selected = upgrade_type in weapon_upgrades_by_type
                                     if PyImGui.is_rect_visible(10, 25):
-                                        if ImGui.begin_selectable(f"##weapon_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 25), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                                        if ImGui.begin_selectable(f"##weapon_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 28), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                                            
+                                            upgrade_textures = ui.weapon_upgrade_textures.get(upgrade.target_item_type, None)
+                                            model_file_id = upgrade_textures.inherent if upgrade_textures else None
+                                            ui._draw_texture_from_model_file_id(model_file_id, (20, 20))
+                                            
+                                            PyImGui.same_line(0, 5)
+                                            
                                             rarity_color = UI._get_rarity_color(upgrade.rarity)
-                                            ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
+                                            ImGui.text_aligned(upgrade_label, color=rarity_color.color_tuple, font_size=14, height=20, alignment=Alignment.MidLeft)
                                         if ImGui.end_selectable():
                                             if is_upgrade_selected:
                                                 condition.weapon_upgrades = [existing_upgrade for existing_upgrade in condition.weapon_upgrades if not isinstance(existing_upgrade.upgrade, upgrade_type)]
@@ -6605,7 +6629,8 @@ class UI:
                                         is_upgrade_selected = item_type in selected_item_types
                                         texture = ui.weapon_upgrade_textures.get(item_type)
                                         if texture:
-                                            ImGui.image_toggle_button(f"##{id(condition)}_{index}_{item_type.name}", texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix, is_upgrade_selected, 24, 24)
+                                            texture_path = ui._get_texture_path_for_model_file_id(texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix)
+                                            ImGui.image_toggle_button(f"##{id(condition)}_{index}_{item_type.name}", texture_path, is_upgrade_selected, 24, 24)
                                             encoded = upgrade_range.upgrade.create_upgrade_name(item_type)
                                             if PyImGui.is_item_clicked(0):
                                                 io = PyImGui.get_io()
@@ -6828,7 +6853,7 @@ class UI:
         
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
             avail = PyImGui.get_content_region_avail()
-            UI.RULE_CONTENT_RECT = (avail[0], avail[1])
+            UI.CUSTOM_RULE_CONTENT_RECT = (avail[0], avail[1])
             
             if not rule.conditions:
                 ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
@@ -6940,14 +6965,13 @@ class UI:
                 ImGui.text_wrapped("This rule matches items based on a combination of rarity and item type. You can specify pairs of rarities and item types to match against the item.")
                 
                 avail = PyImGui.get_content_region_avail()
-                rarity_width = min((avail[0] - 5) * 0.5, 200)
+                rarity_width = min((avail[0] - 5) * 0.5, 150)
                 item_type_width = avail[0] - rarity_width - 5
-                height = avail[1]
                 changed = False
                 
-                changed = UI.ConditionEditor.ForRaritiesCondition(self, rule, rule._rarity_condition(), size=(rarity_width, height)) or changed
+                changed = UI.ConditionEditor.ForRaritiesCondition(self, rule, rule._rarity_condition(), size=(rarity_width, 0)) or changed
                 PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForItemTypesCondition(self, rule, rule._item_type_condition(), size=(item_type_width, height)) or changed
+                changed = UI.ConditionEditor.ForItemTypesCondition(self, rule, rule._item_type_condition(), size=(item_type_width, 0)) or changed
 
                 return changed
             

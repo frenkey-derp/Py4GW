@@ -401,6 +401,7 @@ def main():
             add_row("Item Name", item.names.singular if item else "N/A")
             add_row("Item Data", item.data.english_name if item and item.data else "N/A")
             add_row("Model ID", str(item.model_id) if item else "N/A")
+            add_row("Model File ID", str(item.model_file_id) if item else "N/A")
             add_row("Item Type", str(item.item_type.name) if item else "N/A")
             add_row("Rarity", Rarity(item.rarity).name if item else "N/A")
             add_row("Stack Size", str(item.quantity) if item else "N/A")

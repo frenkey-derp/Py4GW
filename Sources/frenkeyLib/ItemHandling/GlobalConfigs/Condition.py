@@ -1270,6 +1270,8 @@ class UnidentifiedCondition(Condition):
 
 
 class DyeColorsCondition(Condition):
+    ui_selectable: ClassVar[bool] = False
+    
     """Matches dye items whose color is one of the selected dye colors."""
     def __init__(self, dye_colors: Optional[list[DyeColor]] = None):
         self.dye_colors: list[DyeColor] = dye_colors if dye_colors is not None else []
