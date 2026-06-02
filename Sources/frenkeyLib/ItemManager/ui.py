@@ -89,6 +89,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     InherentFilter,
     InherentFiltersCondition,
     InscribableCondition,
+    IsCustomizedCondition,
     IsMaterialCondition,
     ItemTypesCondition,
     MaxWeaponUpgradesCondition,
@@ -354,7 +355,7 @@ class UI:
     
     
     ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS = {
-        ItemType.Salvage : 116994,
+        ItemType.Salvage : 24886,
         ItemType.Rune_Mod : 151854,
         ItemType.Materials_Zcoins : 19672,
         ItemType.Dye : 9383,
@@ -390,7 +391,7 @@ class UI:
         ItemType.Present : 193281,        
         ItemType.Minipet : 284865,
         
-        ItemType.Quest_Item : 230579,
+        ItemType.Quest_Item : 88537,
         ItemType.Bundle : 358543,
         
         ItemType.Costume_Headpiece : 2654,
@@ -605,6 +606,7 @@ class UI:
         self._all_item_data_cache: list[ItemData] = []
         self._item_by_model_file_id: dict[int, ItemData] = {}
         self._item_by_model_id: dict[int, ItemData] = {}
+        self._item_by_model_id_and_item_type: dict[tuple[int, ItemType], ItemData] = {}
         self._item_by_model_file_id_and_item_type: dict[tuple[int, ItemType], ItemData] = {}
         self._item_by_encoded_name: dict[bytes, ItemData] = {}
         self._sorted_model_ids: list[ModelID] = sorted([model_id for model_id in ModelID], key=lambda model_id: model_id.name)
@@ -830,11 +832,12 @@ class UI:
         text_luminance = UI._get_relative_luminance(text_color)
         subtle_color = text_color.desaturate(0.25)
 
+        dark_lift = 0.55
         if text_luminance >= 110:
             return Color(
-                max(0, min(255, int(round(subtle_color.r * 0.45)))),
-                max(0, min(255, int(round(subtle_color.g * 0.45)))),
-                max(0, min(255, int(round(subtle_color.b * 0.45)))),
+                max(0, min(255, int(round(subtle_color.r * dark_lift)))),
+                max(0, min(255, int(round(subtle_color.g * dark_lift)))),
+                max(0, min(255, int(round(subtle_color.b * dark_lift)))),
                 text_color.a,
             )
 
@@ -842,7 +845,7 @@ class UI:
         if strongest_channel <= 0:
             return Color(90, 90, 90, text_color.a)
 
-        lift = 90.0 / strongest_channel
+        lift = 120.0 / strongest_channel
         return Color(
             max(0, min(255, int(round(subtle_color.r * lift)))),
             max(0, min(255, int(round(subtle_color.g * lift)))),
@@ -990,6 +993,7 @@ class UI:
 
         self._item_by_model_file_id = {}
         self._item_by_model_id = {}
+        self._item_by_model_id_and_item_type = {}
         self._item_by_model_file_id_and_item_type = {}
         self._item_by_encoded_name = {}
         encoded_name_items: dict[tuple[ItemType, str], ItemData] = {}
@@ -1006,6 +1010,9 @@ class UI:
 
             if model_id > 0 and model_id not in self._item_by_model_id:
                 self._item_by_model_id[model_id] = item
+
+            if model_id > 0:
+                self._item_by_model_id_and_item_type.setdefault((model_id, item_type), item)
 
             if model_file_id > 0:
                 self._item_by_model_file_id_and_item_type.setdefault((model_file_id, item_type), item)
@@ -1203,14 +1210,27 @@ class UI:
             if self._search_blob_matches(search_query, search_blob)
         ]
 
-    def _find_item_by_model_file_id(self, model_file_id: int) -> ItemData | None:
-        return self._item_by_model_file_id.get(model_file_id)
+    def _find_item_by_model_file_id(self, model_file_id: int, item_type: ItemType | None = None) -> ItemData | None:
+        if item_type is not None:
+            typed_item = self._item_by_model_file_id_and_item_type.get((int(model_file_id), item_type))
+            if typed_item is not None:
+                return typed_item
 
-    def _find_item_by_model_id(self, model_id: int) -> ItemData | None:
-        return self._item_by_model_id.get(model_id)
+        return self._item_by_model_file_id.get(int(model_file_id))
+
+    def _find_item_by_model_id(self, model_id: int, item_type: ItemType | None = None) -> ItemData | None:
+        if item_type is not None:
+            typed_item = self._item_by_model_id_and_item_type.get((int(model_id), item_type))
+            if typed_item is not None:
+                return typed_item
+
+        return self._item_by_model_id.get(int(model_id))
 
     def _find_item_by_model_file_id_and_item_type(self, model_file_id: int, item_type: ItemType) -> ItemData | None:
-        return self._item_by_model_file_id_and_item_type.get((int(model_file_id), item_type))
+        return self._find_item_by_model_file_id(model_file_id, item_type)
+
+    def _find_item_by_model_id_and_item_type(self, model_id: int, item_type: ItemType) -> ItemData | None:
+        return self._find_item_by_model_id(model_id, item_type)
 
     def _find_item_by_encoded_name(self, encoded_name: bytes) -> ItemData | None:
         return self._item_by_encoded_name.get(encoded_name)
@@ -1362,12 +1382,12 @@ class UI:
     def _build_model_id_item_type_candidate_rows(
         self,
         matching_items: list[ItemData],
-        selected_model_ids: set[int],
-    ) -> list[tuple[ItemData, int, str]]:
+        selected_entries: set[tuple[int, ItemType]],
+    ) -> list[tuple[ItemData, tuple[int, ItemType], str]]:
         return [
-            (item, int(item.model_id), item.name or f"Model {item.model_id}")
+            (item, (int(item.model_id), item.item_type), item.name or f"Model {item.model_id}")
             for item in matching_items
-            if int(item.model_id) not in selected_model_ids
+            if (int(item.model_id), item.item_type) not in selected_entries
         ]
 
     def _build_salvage_material_candidate_rows(
@@ -4596,7 +4616,7 @@ class UI:
                     sizes["element_width"] = 250
                     items_amount = len(condition.materials)
 
-                case ArmorCondition() | EnergyCondition() | FullStacksQuantityCondition() | ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition():
+                case ArmorCondition() | EnergyCondition() | FullStacksQuantityCondition() | ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition() | IsCustomizedCondition():
                     content_height = 20
 
                 case DamageCondition():
@@ -4785,6 +4805,11 @@ class UI:
                         lambda normalized_query: cast(list[Any], ui._filter_cached_entries(ui._model_id_search_cache, normalized_query, ui._model_id_search_entries)),
                     )
                     matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
+                    available_model_ids = [
+                        model_id
+                        for model_id in matching_model_ids
+                        if int(model_id.value) not in selected_model_ids
+                    ]
 
                     manual_value: int | None = None
                     if search_query:
@@ -4808,16 +4833,15 @@ class UI:
                             ImGui.show_tooltip("Add this raw integer model id even if it is not part of the ModelID enum yet.")
 
                     if ImGui.begin_child("##model_id_enum_candidates", (0, 320), border=True):
-                        for model_id in matching_model_ids:
+                        for model_id in available_model_ids:
                             model_id_value = int(model_id.value)
-                            already_selected = model_id_value in selected_model_ids
                             if ImGui.begin_selectable(f"##model_id_enum_{model_id.name}", False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                 ImGui.text(ui._humanize_name(model_id.name))
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
                                 ImGui.text_colored(f"{model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
-                            if ImGui.end_selectable() and not already_selected:
+                            if ImGui.end_selectable():
                                 condition.model_ids.append(model_id)
                                 changed = True
                                 PyImGui.close_current_popup()
@@ -5116,10 +5140,12 @@ class UI:
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
             search_state_key = f"model_id_item_types_condition_{id(condition)}"
             popup_rows_cache_key = f"condition_editor:model_id_item_type_rows:{id(condition)}"
-            selected_models = [(model_id, item_type) for model_id, item_type in condition.modelids_and_itemtypes]
-            selected_model_ids = {
-                int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                for model_id, _ in selected_models
+            selected_entries = {
+                (
+                    int(entry.model_id.value) if isinstance(entry.model_id, ModelID) else int(entry.model_id),
+                    entry.item_type,
+                )
+                for entry in condition.modelids_and_itemtypes
             }
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             element_height = sizes.get("element_height", 50)
@@ -5145,18 +5171,22 @@ class UI:
                     matching_items = cast(list[ItemData], matching_items_raw)
                     candidate_rows = ui._get_recalculated_value(
                         popup_rows_cache_key,
-                        (current_search, ui._build_int_signature(selected_model_ids)),
-                        lambda: ui._build_model_id_item_type_candidate_rows(matching_items, selected_model_ids),
+                        (
+                            current_search,
+                            tuple(sorted((model_id, item_type.name) for model_id, item_type in selected_entries)),
+                        ),
+                        lambda: ui._build_model_id_item_type_candidate_rows(matching_items, selected_entries),
                     )
 
                     if ImGui.begin_child(f"##model_id_candidates_{id(condition)}", (0, 320), border=True):
                         if search_changed:
                             PyImGui.set_scroll_y(0)
 
-                        for item, modelid_item_type, item_name in candidate_rows:
+                        for item, entry_key, item_name in candidate_rows:
+                            model_id_value, item_type = entry_key
 
                             if PyImGui.is_rect_visible(10, 36):
-                                if ImGui.begin_selectable(f"##model_id_candidate_{id(condition)}_{item.item_type.name}_{modelid_item_type}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                                if ImGui.begin_selectable(f"##model_id_candidate_{id(condition)}_{item_type.name}_{model_id_value}", False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     UI._draw_item_texture(item, (32, 32))
                                     PyImGui.same_line(0, 8)
                                     PyImGui.begin_group()
@@ -5168,14 +5198,18 @@ class UI:
 
                                     _, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
-                                    ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                    ImGui.text_colored(
+                                        f"{ui._humanize_name(item_type.name)} | Model ID: {model_id_value}",
+                                        UI.SUBTLE_TEXT_COLOR.color_tuple,
+                                        font_size=12,
+                                    )
                                     PyImGui.end_group()
 
                                 if ImGui.end_selectable():
                                     try:
-                                        condition.modelids_and_itemtypes.append(ModelIdAndItemType(ModelID(modelid_item_type), item.item_type))
+                                        condition.modelids_and_itemtypes.append(ModelIdAndItemType(ModelID(model_id_value), item_type))
                                     except ValueError:
-                                        condition.modelids_and_itemtypes.append(ModelIdAndItemType(modelid_item_type, item.item_type))
+                                        condition.modelids_and_itemtypes.append(ModelIdAndItemType(model_id_value, item_type))
                                     changed = True
                                     PyImGui.close_current_popup()
 
@@ -5186,8 +5220,8 @@ class UI:
                                             PyImGui.same_line(0, 8)
                                             ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                         ImGui.separator()
-                                        ImGui.text_colored(f"Model ID: {modelid_item_type}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                                        ImGui.text_colored(f"Item Type: {ui._humanize_name(item.item_type.name)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Model ID: {model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Item Type: {ui._humanize_name(item_type.name)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_tooltip()
                             else:
                                 ImGui.dummy(0, 36)
@@ -5202,7 +5236,7 @@ class UI:
                     selected_items: list[tuple[ModelIdAndItemType, Any]] = []
                     for model_id, item_type in condition.modelids_and_itemtypes:
                         modelid_item_type = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                        item_data = ui._find_item_by_model_id(modelid_item_type)
+                        item_data = ui._find_item_by_model_id(modelid_item_type, item_type)
                         selected_items.append((ModelIdAndItemType(model_id, item_type), item_data))
 
                     last_index = len(selected_items) - 1
@@ -6080,9 +6114,21 @@ class UI:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
-                identified = ImGui.checkbox("Must be identified", condition.identified)
+                identified = ImGui.checkbox(f"Item has to be {("identified" if condition.identified else "unidentified")}", condition.identified)
                 if identified != condition.identified:
                     condition.identified = identified
+                    changed = True
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForIsCustomizedCondition(ui: "UI", rule: Rule, condition: IsCustomizedCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                customized = ImGui.checkbox(f"Item has to be {("customized" if condition.customized else "not customized")}", condition.customized)
+                if customized != condition.customized:
+                    condition.customized = customized
                     changed = True
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -6790,6 +6836,9 @@ class UI:
             case UnidentifiedCondition():
                 return UI.ConditionEditor.ForUnidentifiedCondition(self, rule, condition, size)
 
+            case IsCustomizedCondition():
+                return UI.ConditionEditor.ForIsCustomizedCondition(self, rule, condition, size)
+
             case HalvesCastAndRechargeAttributeCondition():
                 return UI.ConditionEditor.ForHalvesCastAndRechargeAttributeCondition(self, rule, condition, size)
             
@@ -6830,6 +6879,7 @@ class UI:
             InherentFiltersCondition,
             InscribableCondition,
             UnidentifiedCondition,
+            IsCustomizedCondition,
             HalvesCastAndRechargeAttributeCondition,
             ArmorUpgradesCondition,
             MaxWeaponUpgradesCondition,
@@ -6951,7 +7001,7 @@ class UI:
                 return changed
 
             case SalvagesToMaterialRule():
-                ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials. We rely on the scraped salvage data from the GW-Wiki which is stored in our ITEM_DATA.")
+                ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials. We rely on the scraped salvage data from the GW-Wiki which is stored in our items data collection.")
                 return UI.ConditionEditor.ForSalvagesToMaterialsCondition(self, rule, rule.condition)
 
             case ModelIdsAndItemTypesRule():

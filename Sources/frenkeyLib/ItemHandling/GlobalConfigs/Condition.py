@@ -1269,6 +1269,25 @@ class UnidentifiedCondition(Condition):
         self.identified = bool(data.get("identified", False))
 
 
+class IsCustomizedCondition(Condition):
+    """Matches items based on whether they are customized."""
+    def __init__(self, customized: bool = True):
+        super().__init__()
+        self.customized = customized
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        return context.item_snapshot is not None and context.item_snapshot.is_customized == self.customized
+
+    def _comparison_data(self) -> Any:
+        return (self.customized,)
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"customized": self.customized}
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        self.customized = bool(data.get("customized", True))
+
+
 class DyeColorsCondition(Condition):
     ui_selectable: ClassVar[bool] = False
     
