@@ -38,7 +38,7 @@ class DataCollectorRuntime:
         self.run_throttle = ThrottledTimer(250)
         self.collectors : dict[str, BaseCollector] = {
             'Allies': ALLIES,
-            'Armorer': ARMORERS,
+            'Armorers': ARMORERS,
             'Artisans': ARTISANS,
             'Collectors': COLLECTORS,
             'Consumable Crafters': CONSUMABLE_CRAFTERS,

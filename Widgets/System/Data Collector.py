@@ -91,7 +91,8 @@ def main():
     if not DATA_COLLECTOR.ensure_state():
         return
     
-    DATA_COLLECTOR.run()
+    # Disabled until we have fixed some remaining issues
+    # DATA_COLLECTOR.run()
 
 __all__ = ['main']
 
