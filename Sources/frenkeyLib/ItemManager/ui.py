@@ -508,6 +508,8 @@ class UI:
         self.context_menu_rule : Rule | None = None
         self.context_menu_config : ConfigInfo | None = None
         self.context_menu_sorting_group : SlotGroupConfig | None = None
+        self._condition_clipboard_payload: dict[str, Any] | None = None
+        self._condition_clipboard_label: str = ''
         self._drag_rule: Rule | None = None
         self._drag_rule_source_config: ConfigInfo[RuleConfig] | None = None
         self._drag_rule_source_index: int = -1
@@ -2163,6 +2165,86 @@ class UI:
 
         return custom_rule
 
+    def _clone_condition(self, condition: Condition) -> Condition | None:
+        return Condition.from_dict(condition.to_dict())
+
+    def _get_condition_clipboard(self) -> Condition | None:
+        if self._condition_clipboard_payload is None:
+            return None
+
+        return Condition.from_dict(self._condition_clipboard_payload)
+
+    def _copy_condition_to_clipboard(self, condition: Condition) -> None:
+        self._condition_clipboard_payload = condition.to_dict()
+        self._condition_clipboard_label = self._humanize_name(type(condition).__name__).replace('Condition', '')
+
+    def _can_paste_condition_into_rule(self, rule: Rule) -> bool:
+        clipboard_condition = self._get_condition_clipboard()
+        if clipboard_condition is None:
+            return False
+
+        clipboard_type = type(clipboard_condition)
+        if isinstance(rule, CustomRule):
+            return self._supports_custom_condition_editor(clipboard_type)
+
+        return any(type(existing_condition) is clipboard_type for existing_condition in rule.conditions)
+
+    def _paste_condition_into_rule(self, rule: Rule) -> bool:
+        clipboard_condition = self._get_condition_clipboard()
+        if clipboard_condition is None:
+            return False
+
+        clipboard_type = type(clipboard_condition)
+        replacement_index = next((index for index, existing_condition in enumerate(rule.conditions) if type(existing_condition) is clipboard_type), None)
+
+        if replacement_index is not None:
+            rule.conditions[replacement_index] = clipboard_condition
+            return True
+
+        if isinstance(rule, CustomRule) and self._supports_custom_condition_editor(clipboard_type):
+            rule.conditions.append(clipboard_condition)
+            return True
+
+        return False
+
+    def _can_paste_condition_over(self, rule: Rule, condition: Condition) -> bool:
+        clipboard_condition = self._get_condition_clipboard()
+        if clipboard_condition is None:
+            return False
+
+        if isinstance(rule, CustomRule):
+            return self._supports_custom_condition_editor(type(clipboard_condition))
+
+        return type(clipboard_condition) is type(condition)
+
+    def _paste_condition_over(self, rule: Rule, condition: Condition) -> bool:
+        clipboard_condition = self._get_condition_clipboard()
+        if clipboard_condition is None:
+            return False
+
+        if isinstance(rule, CustomRule):
+            if not self._supports_custom_condition_editor(type(clipboard_condition)):
+                return False
+            try:
+                condition_index = rule.conditions.index(condition)
+            except ValueError:
+                rule.conditions.append(clipboard_condition)
+                return True
+
+            rule.conditions.insert(condition_index + 1, clipboard_condition)
+            return True
+
+        try:
+            condition_index = rule.conditions.index(condition)
+        except ValueError:
+            return False
+
+        if type(clipboard_condition) is not type(condition):
+            return False
+
+        rule.conditions[condition_index] = clipboard_condition
+        return True
+
     def draw_preview_window(self, config_info: ConfigInfo):    
         preview_config = self._get_config_info_by_type(self.preview_window_config_type)
         if preview_config is None:
@@ -2354,6 +2436,14 @@ class UI:
                     converted_rule = self._convert_rule_to_custom(config_info, rule)
                     if converted_rule is not None:
                         self.context_menu_rule = converted_rule
+                        PyImGui.close_current_popup()
+
+            if self._can_paste_condition_into_rule(rule):
+                paste_label = f'Paste Condition: {self._condition_clipboard_label}' if self._condition_clipboard_label else 'Paste Condition'
+                if ImGui.menu_item(paste_label):
+                    if self._paste_condition_into_rule(rule):
+                        config_info.save()
+                        self._set_active_rule(rule)
                         PyImGui.close_current_popup()
 
             ImGui.separator()
@@ -4689,6 +4779,8 @@ class UI:
             size = size if size is not None else (0, 0)
             title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
             delete_popup_id = f"Delete Condition##{id(condition)}"
+            context_popup_id = f"##condition_context_{id(condition)}"
+            request_delete_popup = False
             
             
             is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper)
@@ -4735,6 +4827,53 @@ class UI:
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup_modal()
+
+                if (PyImGui.is_window_hovered() or PyImGui.is_item_hovered()) and PyImGui.is_mouse_clicked(1):
+                    PyImGui.open_popup(context_popup_id)
+
+                if PyImGui.begin_popup(context_popup_id):
+                    ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
+                    ImGui.separator()
+
+                    if ImGui.menu_item('Copy Condition'):
+                        ui._copy_condition_to_clipboard(condition)
+                        PyImGui.close_current_popup()
+
+                    if ui._can_paste_condition_over(rule, condition):
+                        paste_label = f'Paste Condition: {ui._condition_clipboard_label}' if ui._condition_clipboard_label else 'Paste Condition'
+                        if ImGui.menu_item(paste_label):
+                            if ui._paste_condition_over(rule, condition):
+                                ui._save_active_config()
+                                PyImGui.close_current_popup()
+
+                    if is_custom_rule:
+                        try:
+                            condition_index = rule.conditions.index(condition)
+                        except ValueError:
+                            condition_index = -1
+
+                        ImGui.separator()
+                        if condition_index > 0 and ImGui.menu_item('Move Up'):
+                            rule.conditions[condition_index - 1], rule.conditions[condition_index] = rule.conditions[condition_index], rule.conditions[condition_index - 1]
+                            ui._save_active_config()
+                            PyImGui.close_current_popup()
+
+                        if 0 <= condition_index < len(rule.conditions) - 1 and ImGui.menu_item('Move Down'):
+                            rule.conditions[condition_index], rule.conditions[condition_index + 1] = rule.conditions[condition_index + 1], rule.conditions[condition_index]
+                            ui._save_active_config()
+                            PyImGui.close_current_popup()
+
+                        if condition_index >= 0:
+                            ImGui.separator()
+
+                        if ImGui.menu_item('Delete Condition'):
+                            request_delete_popup = True
+
+                    ImGui.end_popup()
+
+                if request_delete_popup:
+                    PyImGui.close_current_popup()
+                    PyImGui.open_popup(delete_popup_id)
                     
                 return True
             
