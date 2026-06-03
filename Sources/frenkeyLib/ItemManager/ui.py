@@ -2579,6 +2579,17 @@ class UI:
         self._drag_condition_preview_subtitle = re.sub(r":class:`([^`]+)`", r"\1", self._drag_condition_preview_subtitle).replace("**", "").strip()
         self._drag_window_pos = self.window_pos
 
+    def _begin_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig, index: int) -> None:
+        self._drag_sorting_group = group
+        self._drag_sorting_group_source_config = config_info
+        self._drag_sorting_group_source_index = index
+        self._drag_sorting_group_target_index = -1
+        self._drag_sorting_group_target_rect = None
+        self._drag_sorting_group_target_after = False
+        self._drag_sorting_group_preview_label = group.name or f"Slot Group #{index + 1}"
+        self._drag_sorting_group_preview_subtitle = self._slot_group_selection_summary(group)
+        self._drag_window_pos = self.window_pos
+
     def _apply_rule_drag(self, config_info: ConfigInfo[RuleConfig]) -> None:
         if self._drag_rule_source_config is not config_info or self._drag_rule is None:
             self._clear_rule_drag()
@@ -2644,17 +2655,6 @@ class UI:
         self._clear_condition_drag()
         return changed
 
-    def _begin_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig, index: int) -> None:
-        self._drag_sorting_group = group
-        self._drag_sorting_group_source_config = config_info
-        self._drag_sorting_group_source_index = index
-        self._drag_sorting_group_target_index = -1
-        self._drag_sorting_group_target_rect = None
-        self._drag_sorting_group_target_after = False
-        self._drag_sorting_group_preview_label = group.name or f"Slot Group #{index + 1}"
-        self._drag_sorting_group_preview_subtitle = self._slot_group_selection_summary(group)
-        self._drag_window_pos = self.window_pos
-
     def _apply_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig]) -> None:
         if self._drag_sorting_group_source_config is not config_info or self._drag_sorting_group is None:
             self._clear_sorting_group_drag()
@@ -2686,6 +2686,12 @@ class UI:
             self._set_active_sorting_group(self._drag_sorting_group)
 
         self._clear_sorting_group_drag()
+
+    def _trim_and_single_line_preview_subtitle(self, subtitle: str, max_length: int = 45) -> str:
+        single_line = subtitle.splitlines()[0] if subtitle else ""
+        if len(single_line) > max_length:
+            return single_line[:max_length - 3] + "..."
+        return single_line
 
     def _draw_rule_drag_preview(self) -> None:
         if self._drag_rule is None:
@@ -2744,7 +2750,7 @@ class UI:
         overlay.DrawText(
             preview_x + 10,
             preview_y + 24,
-            self._drag_rule_preview_subtitle,
+            self._trim_and_single_line_preview_subtitle(self._drag_rule_preview_subtitle),
             subtitle_color,
             centered=False,
             scale=1.0,
@@ -2806,7 +2812,7 @@ class UI:
         overlay.DrawText(
             preview_x + 10,
             preview_y + 24,
-            self._drag_condition_preview_subtitle[:43] + ("..." if len(self._drag_condition_preview_subtitle) > 45 else ""),
+            self._trim_and_single_line_preview_subtitle(self._drag_condition_preview_subtitle),
             subtitle_color,
             centered=False,
             scale=1.0,
@@ -2858,7 +2864,7 @@ class UI:
             inner_color,
         )
         overlay.DrawText(preview_x + 10, preview_y + 8, self._drag_sorting_group_preview_label, text_color, centered=False, scale=1.0)
-        overlay.DrawText(preview_x + 10, preview_y + 24, self._drag_sorting_group_preview_subtitle, subtitle_color, centered=False, scale=1.0)
+        overlay.DrawText(preview_x + 10, preview_y + 24, self._trim_and_single_line_preview_subtitle(self._drag_sorting_group_preview_subtitle), subtitle_color, centered=False, scale=1.0)
         overlay.EndDraw()
 
     def _get_rule_copy_target_config(self, config_info: ConfigInfo) -> ConfigInfo | None:
@@ -3734,8 +3740,18 @@ class UI:
                 child_visible_bottom = child_pos[1] + child_size[1]
                 group_rects: dict[int, tuple[float, float, float, float]] = {}
                 group_gap_values: list[float] = []
+                style = ImGui.get_style()
 
-                if ImGui.begin_selectable('##sorting_default_sorter', selected=self.sorting_group is None, size=(0, 48), border=True, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                style.ButtonActive.push_color_direct((0,0,0,0))
+                style.Button.push_color_direct((0,0,0,0))
+                style.ButtonHovered.push_color_direct((0,0,0,0))
+
+                cx, cy = PyImGui.get_cursor_pos()
+                PyImGui.button('##sorting_default_sorter_button', -1, 48)
+                PyImGui.set_item_allow_overlap()
+                PyImGui.set_cursor_pos(cx, cy)
+
+                if ImGui.begin_selectable('##sorting_default_sorter', selected=self.sorting_group is None, size=(0, 48), border=True, child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                     ImGui.text('Default Sort Policy')
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
@@ -3743,10 +3759,18 @@ class UI:
                 if ImGui.end_selectable():
                     self._set_active_sorting_group(None)
 
+                self.rules_hovered = self.rules_hovered or PyImGui.is_item_hovered()
+
                 for index, group in enumerate(config.slot_groups):
                     group_label = group.name or f'Slot Group #{index + 1}'
                     group_summary = self._slot_group_selection_summary(group)
-                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+
+                    cx, cy = PyImGui.get_cursor_pos()
+                    PyImGui.button(f"##sorting_group_nav_button_{index}", -1, 56)
+                    PyImGui.set_item_allow_overlap()
+                    PyImGui.set_cursor_pos(cx, cy)
+
+                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True, child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                         PyImGui.begin_disabled(not group.enabled)
                         ImGui.text(group_label)
                         x, y = PyImGui.get_cursor_pos()
@@ -3757,8 +3781,7 @@ class UI:
                         self._set_active_sorting_group(group)
 
                     hovered = PyImGui.is_item_hovered()
-                    active = PyImGui.is_mouse_down(0)
-                    dragging = PyImGui.is_mouse_dragging(0, 0.01)
+                    self.rules_hovered = self.rules_hovered or hovered
 
                     if hovered and PyImGui.is_mouse_clicked(1):
                         self.context_menu_id = f"sorting_group_{index}"
@@ -3767,9 +3790,11 @@ class UI:
                         PyImGui.open_popup(self.context_menu_id)
 
                     item_min, item_max, item_size = ImGui.get_item_rect()
+                    hovered = PyImGui.is_item_hovered()
+                    clicked = PyImGui.is_item_clicked(0)
                     in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
-
-                    if self._drag_sorting_group is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
+                    
+                    if self._drag_sorting_group is None and clicked and hovered:
                         self._begin_sorting_group_drag(config_info, group, index)
 
                     if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None:
@@ -3783,6 +3808,10 @@ class UI:
                         if in_rect:
                             self._drag_sorting_group_target_index = index
                             self._drag_sorting_group_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
+
+                style.ButtonActive.pop_color_direct()
+                style.Button.pop_color_direct()
+                style.ButtonHovered.pop_color_direct()
 
                 if len(config.slot_groups) > 0:
                     PyImGui.dummy(0, 10)
@@ -4188,9 +4217,6 @@ class UI:
                         if self._drag_condition is None and clicked and hovered:
                             self._begin_rule_drag(config_info, rule, i)
                             
-                        # if self._drag_rule is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
-                        #     self._begin_rule_drag(config_info, rule, i)
-
                         if self._drag_rule_source_config is config_info and self._drag_rule is not None:
                             rule_rects[i] = (item_min[0], item_min[1], item_max[0], item_max[1])
 
@@ -4203,8 +4229,9 @@ class UI:
                             if in_rect:
                                 self._drag_rule_target_index = i
                                 self._drag_rule_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
-
-                        self.show_rule_type_tooltip(rule.__class__)
+                        else:
+                            self.show_rule_type_tooltip(rule.__class__)
+                    
                     else:
                         PyImGui.dummy(0, item_height)
 
