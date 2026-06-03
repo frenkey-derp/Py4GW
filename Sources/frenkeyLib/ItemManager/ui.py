@@ -37,9 +37,9 @@ from Py4GWCoreLib.Overlay import Overlay
 from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
-from Py4GWCoreLib.ImGui_src.types import Alignment
+from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar
 from Py4GWCoreLib.UIManager import MerchantWindow
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession, Range
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession, Range
 from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, ItemAction, ItemType, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
@@ -305,6 +305,7 @@ class UI:
     SELECTABLE_HOVERED_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.3)
     SELECTABLE_ACTIVE_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.7)
     
+    GENDER : Gender = Gender.Unknown
     RED_COLOR : Color = ColorPalette.GetColor("red")
     SUBTLE_TEXT_COLOR : Color = Color(90, 90, 90)
     SCREEN_SIZE : tuple[float, float] = (0.0, 0.0)
@@ -1496,6 +1497,25 @@ class UI:
         return ITEM_DAMAGE_RANGES.get(item_type, {}).get(min(requirement, 9))
 
     @staticmethod
+    def _get_item_data_texture(item: Optional[ItemData]) -> str:
+        if not item:
+            return ""
+        
+        match UI.GENDER:
+            case Gender.Male:
+                return item.male_texture_path or ""
+            
+            case Gender.Female:
+                return item.female_texture_path or ""
+            
+            case _:
+                return item.real_texture_path or ""
+            
+    @staticmethod
+    def _get_texture_path_for_model_file_id_direct(model_file_id: Optional[int]) -> str:
+        return f"gwdat://{int(model_file_id)}" if model_file_id is not None and int(model_file_id) > 0 else ""
+    
+    @staticmethod
     def _get_texture_path_for_model_file_id(model_file_id: Optional[int]) -> str:
         model_file_id = Item.GetTrueModelFileID(model_file_id) if model_file_id is not None else None
         return f"gwdat://{int(model_file_id)}" if model_file_id is not None and int(model_file_id) > 0 else ""
@@ -2334,6 +2354,11 @@ class UI:
         if not open_:
             self.show_preview_window = False
 
+    def _get_player_gender(self) -> Gender:
+        agent = Player.GetAgent()
+        living_agent = agent.GetAsAgentLiving() if agent else None
+        return (Gender.Female if living_agent.is_female else Gender.Male) if living_agent else Gender.Unknown
+
     def draw_explorer(self):
         self._refresh_global_config_profile_context()
         style = ImGui.get_style()
@@ -2344,6 +2369,8 @@ class UI:
         UI.SELECTABLE_ACTIVE_COLOR = style.HeaderActive.opacity(0.95)
         UI.SELECTABLE_HOVERED_COLOR = style.HeaderHovered.opacity(0.75)
         UI.SUBTLE_TEXT_COLOR = UI._build_subtle_text_color(style.Text)
+        
+        UI.GENDER = self._get_player_gender()
                 
         # style.TableBorderLight.push_color_direct((255,255,255,255))
         # style.TableBorderStrong.push_color_direct((255,255,255,255))
@@ -5090,6 +5117,37 @@ class UI:
             ImGui.end_child()
             
         @staticmethod
+        def DrawCard(id : str, title: str, description: str, texture: Optional[str] = None, show_delete: bool = True, height: float = 0, on_delete: Optional[Callable] = None) -> None:
+            if ImGui.begin_child(f"##{id}", (0, height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                avail = PyImGui.get_content_region_avail()
+                if height <= 0:
+                    height = avail[1]
+                                    
+                if texture is not None:
+                    UI._draw_texture_or_dummy(texture, (height - 20, height - 20))
+
+                PyImGui.same_line(0, 8)
+                PyImGui.begin_group()
+                ImGui.text(title)
+                x, y = PyImGui.get_cursor_pos()
+                PyImGui.set_cursor_pos(x, y - 4)
+                ImGui.text_colored(description, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                PyImGui.end_group()
+                
+                if show_delete:
+                    delete_btn_size = (16, 16)
+                    PyImGui.set_cursor_pos(avail[0], 4)
+                    
+                    PyImGui.push_style_var2(ImGuiStyleVar.FramePadding, 4, 1)
+                    if PyImGui.button(f"x##{id}", *delete_btn_size):
+                        if on_delete:
+                            on_delete()
+                            
+                    PyImGui.pop_style_var(1)
+                        
+            ImGui.end_child()
+        
+        @staticmethod
         def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = "##model_ids_rule_add_popup"
@@ -5116,19 +5174,12 @@ class UI:
                         label = ui._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
                         unique_id = f"model_ids_rule_{id(condition)}_{model_id_value}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                                condition.model_ids.pop(index)
-                                changed = True
-
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(label)
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
+                        UI.ConditionEditor.DrawCard(unique_id, 
+                                                    label, 
+                                                    f"Model ID: {model_id_value}", 
+                                                    height=element_height, 
+                                                    on_delete=lambda index=index: condition.model_ids.pop(index))
+                        
                         if index != last_index:
                             PyImGui.table_next_column()
                         
@@ -5269,24 +5320,13 @@ class UI:
                         item = ui._find_item_by_model_file_id(model_file_id)
                         unique_id = f"model_file_id_condition_{id(condition)}_{model_file_id}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
-                                condition.model_file_ids.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})")
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model File ID: {model_file_id}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
-                        
+                        UI.ConditionEditor.DrawCard(unique_id,
+                                                    ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})",
+                                                    f"Model File ID: {model_file_id}",
+                                                    height=element_height,
+                                                    texture=UI._get_item_data_texture(item) if item is not None else None,
+                                                    on_delete=lambda index=index: condition.model_file_ids.pop(index))
+                                            
                         if index != last_index:
                             PyImGui.table_next_column()
                             
@@ -5450,27 +5490,13 @@ class UI:
                         item = ui._find_item_by_model_file_id_and_item_type(entry.model_file_id, entry.item_type)
                         unique_id = f"model_file_id_item_type_condition_{id(condition)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
-                                condition.model_file_ids_and_item_types.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
+                        UI.ConditionEditor.DrawCard(unique_id,
+                                                    ui._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})",
+                                                    f"{ui._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
+                                                    height=element_height,
+                                                    texture=UI._get_item_data_texture(item),
+                                                    on_delete=lambda index=index: condition.model_file_ids_and_item_types.pop(index))
 
-                            PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})")
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(
-                                f"{ui._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
-                                UI.SUBTLE_TEXT_COLOR.color_tuple,
-                                font_size=12,
-                            )
-                            PyImGui.end_group()
-                        ImGui.end_child()
                         if index != last_index:
                             PyImGui.table_next_column()
                     ui._end_no_header_table()
@@ -5589,38 +5615,13 @@ class UI:
                         unique_id = f"model_id_condition_{id(condition)}_{modelid_item_type}_{index}"
                         item_name = item_data.name if item_data is not None else f"Unknown Item ({modelid_item_type})"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                                original_entry = next(
-                                    (
-                                        existing_model_id
-                                        for existing_model_id in condition.modelids_and_itemtypes
-                                        if (int(existing_model_id.model_id.value) if isinstance(existing_model_id.model_id, ModelID) else int(existing_model_id.model_id)) == (int(modelid_item_type.model_id.value) if isinstance(modelid_item_type.model_id, ModelID) else int(modelid_item_type.model_id))
-                                        and existing_model_id.item_type == modelid_item_type.item_type
-                                    ),
-                                    None,
-                                )
-                                if original_entry is not None:
-                                    condition.modelids_and_itemtypes.remove(original_entry)
-                                    changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            UI._draw_item_texture(item_data, (element_height - 18, element_height - 18))
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(item_name)
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            item_type_name = ui._humanize_name(modelid_item_type.item_type.name)
-                            ImGui.text_colored(
-                                f"{item_type_name} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""),
-                                UI.SUBTLE_TEXT_COLOR.color_tuple,
-                                font_size=12,
-                            )
-                            PyImGui.end_group()
-                        ImGui.end_child()
+                        UI.ConditionEditor.DrawCard(unique_id,
+                                                    item_name,
+                                                    f"{ui._humanize_name(modelid_item_type.item_type.name)} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""),
+                                                    height=element_height,
+                                                    texture=UI._get_item_data_texture(item_data),
+                                                    on_delete=lambda index=index: condition.modelids_and_itemtypes.pop(index))
+                        
                         if index != last_index:
                             PyImGui.table_next_column()
                     ui._end_no_header_table()
@@ -5719,23 +5720,13 @@ class UI:
                         item = ui._find_item_by_encoded_name(encoded_name)
                         unique_id = f"encoded_name_condition_{id(condition)}_{index}"
 
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, element_height - 20):
-                                condition.encoded_names.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            ui._draw_item_texture(item, (element_height - 20, element_height - 20))
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._get_item_display_name(item) if item is not None else "Custom Encoded Name")
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(string_table.decode(encoded_name), UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
+                        UI.ConditionEditor.DrawCard(unique_id,
+                                                    ui._get_item_display_name(item) if item is not None else "Custom Encoded Name",
+                                                    string_table.decode(encoded_name),
+                                                    height=element_height,
+                                                    texture=UI._get_item_data_texture(item),
+                                                    on_delete=lambda index=index: condition.encoded_names.pop(index))
+                        
                         if index != last_index:
                             PyImGui.table_next_column()
                     ui._end_no_header_table()
@@ -6176,23 +6167,14 @@ class UI:
                     for index, mid in enumerate(condition.materials):
                         material = ui._find_item_by_model_id(int(mid))
                         unique_id = f"salvage_material_condition_{id(condition)}_{material.name}_{index}" if material is not None else f"salvage_material_condition_{id(condition)}_{mid}_{index}"
-                        if ImGui.begin_child(f"##{unique_id}", (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 30):
-                                condition.materials.pop(index)
-                                changed = True
-                                ImGui.end_child()
-                                break
-
-                            PyImGui.same_line(0, 8)
-                            UI._draw_item_texture(material, (32, 32)) if material is not None else ImGui.dummy(32, 32)
-                            PyImGui.same_line(0, 8)
-                            PyImGui.begin_group()
-                            ImGui.text(ui._humanize_name(material.name if material is not None else f"Unknown Material ({mid})"))
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(f"Model ID: {int(material.model_id) if material is not None else int(mid)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                            PyImGui.end_group()
-                        ImGui.end_child()
+                        
+                        UI.ConditionEditor.DrawCard(unique_id,
+                                                    ui._get_item_display_name(material) if material is not None else f"Unknown Material ({mid})",
+                                                    f"Model ID: {mid}",
+                                                    height=element_height,
+                                                    texture=UI._get_item_data_texture(material),
+                                                    on_delete=lambda index=index: condition.materials.pop(index))
+                        
                         if index != last_index:
                             PyImGui.table_next_column()
                     ui._end_no_header_table()
@@ -6554,7 +6536,7 @@ class UI:
 
                         open_config_popup = False
                         if ImGui.begin_child(f"##{unique_id}", (0, 58), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_COPY}##{unique_id}", 28, 26):
+                            if ImGui.button(f"{IconsFontAwesome5.ICON_COPY}##{unique_id}", 28, 26):
                                 duplicate_requirement = AttributeRequirement.from_dict(requirement.to_dict())
                                 if duplicate_requirement is not None:
                                     duplicate_requirement.weapon_type = condition.weapon_type
@@ -6566,7 +6548,7 @@ class UI:
                                 open_config_popup = True
 
                             PyImGui.same_line(0, 4)
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 28, 26):
+                            if ImGui.button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 28, 26):
                                 condition.requirements.pop(index)
                                 changed = True
                                 ImGui.end_child()
@@ -6869,7 +6851,7 @@ class UI:
                                                 is_upgrade_selected = item_type in selected_item_types
                                                 upgrade_textures = ui.weapon_upgrade_textures.get(item_type)
                                                 if upgrade_textures:
-                                                    model_file_id = ui._get_texture_path_for_model_file_id(upgrade_textures.prefix if ui.mod_type == ItemUpgradeType.Prefix else upgrade_textures.suffix)
+                                                    model_file_id = ui._get_texture_path_for_model_file_id_direct(upgrade_textures.prefix if ui.mod_type == ItemUpgradeType.Prefix else upgrade_textures.suffix)
                                                     ImGui.image_toggle_button(f"##{id(condition)}_{variant}_{item_type.name}", model_file_id, is_upgrade_selected, 24, 24)
                                                     encoded = upgrade.create_upgrade_name(item_type)
                                                     if PyImGui.is_item_clicked(0):
@@ -7037,7 +7019,7 @@ class UI:
                                         is_upgrade_selected = item_type in selected_item_types
                                         texture = ui.weapon_upgrade_textures.get(item_type)
                                         if texture:
-                                            texture_path = ui._get_texture_path_for_model_file_id(texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix)
+                                            texture_path = ui._get_texture_path_for_model_file_id_direct(texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix)
                                             ImGui.image_toggle_button(f"##{id(condition)}_{index}_{item_type.name}", texture_path, is_upgrade_selected, 24, 24)
                                             encoded = upgrade_range.upgrade.create_upgrade_name(item_type)
                                             if PyImGui.is_item_clicked(0):
@@ -7073,7 +7055,7 @@ class UI:
                                 style.WindowPadding.pop_style_var()
                                 style.ChildBg.pop_color_direct()
                             PyImGui.table_next_column()
-                            if ImGui.icon_button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 40):
+                            if ImGui.button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 40):
                                 condition.upgrade_ranges.pop(index)
                                 changed = True
                             ImGui.end_table()
