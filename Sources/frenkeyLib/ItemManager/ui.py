@@ -4999,15 +4999,18 @@ class UI:
             show_condition_wrapper = not single_condition or is_custom_rule
             size = size if size is not None else (0, 0)
             title = ui._humanize_name(type(condition).__name__).replace("Condition", "")
-            delete_popup_id = f"Delete Condition##{id(condition)}"
-            context_popup_id = f"##condition_context_{id(condition)}"
+            
+            unique_condition_id = id(condition)
+            
+            delete_popup_id = f"Delete Condition##{unique_condition_id}"
+            context_popup_id = f"##condition_context_{unique_condition_id}"
             request_delete_popup = False
             child_flags = PyImGui.WindowFlags.NoBringToFrontOnFocus
             if active_condition_drag:
                 child_flags |= PyImGui.WindowFlags.NoInputs
             
             
-            is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper, flags=child_flags)
+            is_open = ImGui.begin_child(f"##condition_container{unique_condition_id}", size, border=show_condition_wrapper, flags=child_flags)
             if is_open:
                 description = inspect.getdoc(type(condition)) or ""
                 description = re.sub(r":class:`([^`]+)`", r"\1", description).replace("**", "").strip()
@@ -5023,9 +5026,14 @@ class UI:
                     ImGui.dummy(width - est_text_width - 12, 0)
                     PyImGui.end_group()
                     
-                    ui._condition_drag_handle_state[id(condition)] = (PyImGui.is_item_hovered(), PyImGui.is_item_clicked(0))
+                    ui._condition_drag_handle_state[unique_condition_id] = (PyImGui.is_item_hovered(), PyImGui.is_item_clicked(0))
                     if description:
-                        ImGui.show_tooltip(description)
+                        if PyImGui.is_item_hovered():
+                            if PyImGui.begin_tooltip():
+                                ImGui.text(description)
+                                ImGui.separator()
+                                ImGui.text_colored("Drag to reorder or right-click for more options", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_tooltip()
                     
                     if is_custom_rule:      
                         PyImGui.set_cursor_pos_y(y - 4)
@@ -5040,7 +5048,7 @@ class UI:
                         
                     ImGui.separator()
                 else:
-                    ui._condition_drag_handle_state[id(condition)] = (False, False)
+                    ui._condition_drag_handle_state[unique_condition_id] = (False, False)
 
                 PyImGui.set_next_window_size((360, 0), PyImGui.ImGuiCond.Always)
                 if PyImGui.begin_popup_modal(delete_popup_id, True, PyImGui.WindowFlags.AlwaysAutoResize):
@@ -5061,7 +5069,7 @@ class UI:
 
                     PyImGui.end_popup_modal()
 
-                if (PyImGui.is_window_hovered() or PyImGui.is_item_hovered()) and PyImGui.is_mouse_clicked(1):
+                if ui._condition_drag_handle_state[unique_condition_id][0] and PyImGui.is_mouse_clicked(1):
                     PyImGui.open_popup(context_popup_id)
 
                 if PyImGui.begin_popup(context_popup_id):
