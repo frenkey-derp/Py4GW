@@ -4989,7 +4989,13 @@ class UI:
                 width = PyImGui.get_content_region_avail()[0]
                 
                 if show_condition_wrapper:
+                    est_text_width = PyImGui.calc_text_size(title)[0] * 1.15
+                    PyImGui.begin_group()
                     ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
+                    PyImGui.same_line(0, 0)
+                    ImGui.dummy(width - est_text_width - 12, 0)
+                    PyImGui.end_group()
+                    
                     ui._condition_drag_handle_state[id(condition)] = (PyImGui.is_item_hovered(), PyImGui.is_item_clicked(0))
                     if description:
                         ImGui.show_tooltip(description)
