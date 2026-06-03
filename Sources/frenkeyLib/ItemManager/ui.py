@@ -510,6 +510,13 @@ class UI:
         self.context_menu_sorting_group : SlotGroupConfig | None = None
         self._condition_clipboard_payload: dict[str, Any] | None = None
         self._condition_clipboard_label: str = ''
+        self._condition_drag_handle_state: dict[int, tuple[bool, bool]] = {}
+        
+        self._drag_start_time: float = 0.0
+        self._dragging: bool = False
+        self._drag_clicked_item: Any | None = None
+        self._drag_window_pos: tuple[float, float] | None = None
+        
         self._drag_rule: Rule | None = None
         self._drag_rule_source_config: ConfigInfo[RuleConfig] | None = None
         self._drag_rule_source_index: int = -1
@@ -518,7 +525,6 @@ class UI:
         self._drag_rule_target_after: bool = False
         self._drag_rule_preview_label: str = ""
         self._drag_rule_preview_subtitle: str = ""
-        self._drag_window_pos: tuple[float, float] | None = None
         self._drag_condition: Condition | None = None
         self._drag_condition_source_rule: CustomRule | None = None
         self._drag_condition_source_index: int = -1
@@ -1663,6 +1669,20 @@ class UI:
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
+            mouse_down = PyImGui.is_mouse_down(0)
+            time_now = time.monotonic()
+            
+            if self._drag_start_time == 0 and mouse_down:
+                self._drag_start_time = time_now
+            
+            elif not mouse_down:
+                self._drag_start_time = 0
+                self._dragging = False
+                self._drag_clicked_item = None
+            
+            else:
+                self._dragging = self._drag_start_time > 0 and (time_now - self._drag_start_time) >= 0.085
+            
             self.main_window_focused = PyImGui.is_window_focused()
             self.window_pos = PyImGui.get_window_pos()
             self.draw_explorer()
@@ -2187,6 +2207,13 @@ class UI:
         self._condition_clipboard_payload = condition.to_dict()
         self._condition_clipboard_label = self._humanize_name(type(condition).__name__).replace('Condition', '')
 
+    def _remember_drag_clicked_item(self, item_key: Any, clicked: bool) -> None:
+        if clicked:
+            self._drag_clicked_item = item_key
+
+    def _can_start_drag_from_item(self, item_key: Any, hovered: bool) -> bool:
+        return hovered and self._dragging and self._drag_clicked_item == item_key
+
     def _can_paste_condition_into_rule(self, rule: Rule) -> bool:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
@@ -2557,6 +2584,7 @@ class UI:
         self._drag_window_pos = None
 
     def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: Rule, index: int) -> None:
+        self._drag_clicked_item = None
         self._drag_rule = rule
         self._drag_rule_source_config = config_info
         self._drag_rule_source_index = index
@@ -2568,6 +2596,7 @@ class UI:
         self._drag_window_pos = self.window_pos
 
     def _begin_condition_drag(self, rule: CustomRule, condition: Condition, index: int) -> None:
+        self._drag_clicked_item = None
         self._drag_condition = condition
         self._drag_condition_source_rule = rule
         self._drag_condition_source_index = index
@@ -2580,6 +2609,7 @@ class UI:
         self._drag_window_pos = self.window_pos
 
     def _begin_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig, index: int) -> None:
+        self._drag_clicked_item = None
         self._drag_sorting_group = group
         self._drag_sorting_group_source_config = config_info
         self._drag_sorting_group_source_index = index
@@ -3793,8 +3823,10 @@ class UI:
                     hovered = PyImGui.is_item_hovered()
                     clicked = PyImGui.is_item_clicked(0)
                     in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
+                    item_key = ('sorting_group', id(group))
+                    self._remember_drag_clicked_item(item_key, clicked)
                     
-                    if self._drag_sorting_group is None and clicked and hovered:
+                    if self._drag_sorting_group is None and self._can_start_drag_from_item(item_key, hovered):
                         self._begin_sorting_group_drag(config_info, group, index)
 
                     if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None:
@@ -4213,8 +4245,10 @@ class UI:
                         hovered = PyImGui.is_item_hovered()
                         clicked = PyImGui.is_item_clicked(0)
                         in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
+                        item_key = ('rule', id(rule))
+                        self._remember_drag_clicked_item(item_key, clicked)
                         
-                        if self._drag_condition is None and clicked and hovered:
+                        if self._drag_condition is None and self._drag_rule is None and self._can_start_drag_from_item(item_key, hovered):
                             self._begin_rule_drag(config_info, rule, i)
                             
                         if self._drag_rule_source_config is config_info and self._drag_rule is not None:
@@ -4956,6 +4990,7 @@ class UI:
                 
                 if show_condition_wrapper:
                     ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
+                    ui._condition_drag_handle_state[id(condition)] = (PyImGui.is_item_hovered(), PyImGui.is_item_clicked(0))
                     if description:
                         ImGui.show_tooltip(description)
                     
@@ -4971,6 +5006,8 @@ class UI:
                             PyImGui.open_popup(delete_popup_id)
                         
                     ImGui.separator()
+                else:
+                    ui._condition_drag_handle_state[id(condition)] = (False, False)
 
                 PyImGui.set_next_window_size((360, 0), PyImGui.ImGuiCond.Always)
                 if PyImGui.begin_popup_modal(delete_popup_id, True, PyImGui.WindowFlags.AlwaysAutoResize):
@@ -7222,6 +7259,7 @@ class UI:
         ImGui.separator()
         
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
+            self._condition_drag_handle_state.clear()
             io = PyImGui.get_io()
             child_pos = PyImGui.get_window_pos()
             child_size = PyImGui.get_window_size()
@@ -7241,11 +7279,10 @@ class UI:
                         changed = True
                         
                     item_min, item_max, item_size = ImGui.get_item_rect()
-                    hovered = PyImGui.is_item_hovered()
-                    clicked = PyImGui.is_item_clicked(0)
+                    header_hovered, header_clicked = self._condition_drag_handle_state.get(id(condition), (False, False))
                     in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
                     
-                    if self._drag_condition is None and clicked and hovered:
+                    if self._drag_condition is None and header_clicked and header_hovered:
                         self._begin_condition_drag(rule, condition, index)
                         active_drag = True
 
