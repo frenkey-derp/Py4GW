@@ -519,6 +519,15 @@ class UI:
         self._drag_rule_preview_label: str = ""
         self._drag_rule_preview_subtitle: str = ""
         self._drag_rule_window_pos: tuple[float, float] | None = None
+        self._drag_condition: Condition | None = None
+        self._drag_condition_source_rule: CustomRule | None = None
+        self._drag_condition_source_index: int = -1
+        self._drag_condition_target_index: int = -1
+        self._drag_condition_target_rect: tuple[float, float, float, float] | None = None
+        self._drag_condition_target_after: bool = False
+        self._drag_condition_preview_label: str = ""
+        self._drag_condition_preview_subtitle: str = ""
+        self._drag_condition_window_pos: tuple[float, float] | None = None
         self._drag_sorting_group: SlotGroupConfig | None = None
         self._drag_sorting_group_source_config: ConfigInfo[SortingConfig] | None = None
         self._drag_sorting_group_source_index: int = -1
@@ -1641,19 +1650,19 @@ class UI:
         
     def draw_main_window(self) -> None:
         active_rule_drag = self._drag_rule_source_config is self.config and self._drag_rule is not None
+        active_condition_drag = self._drag_condition is not None
         active_sorting_drag = self._drag_sorting_group_source_config is self.config and self._drag_sorting_group is not None
         
-        if active_rule_drag:
-            self._draw_rule_drag_preview()
-        if active_sorting_drag:
-            self._draw_sorting_group_drag_preview()
             
         window_flags = PyImGui.WindowFlags.NoMove if self.rules_hovered else PyImGui.WindowFlags.NoFlag
         if active_rule_drag and self._drag_rule_window_pos is not None:
             PyImGui.set_next_window_pos(self._drag_rule_window_pos, PyImGui.ImGuiCond.Always)
+        elif active_condition_drag and self._drag_condition_window_pos is not None:
+            PyImGui.set_next_window_pos(self._drag_condition_window_pos, PyImGui.ImGuiCond.Always)
         elif active_sorting_drag and self._drag_sorting_group_window_pos is not None:
             PyImGui.set_next_window_pos(self._drag_sorting_group_window_pos, PyImGui.ImGuiCond.Always)
 
+            
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
             name="Item Manager",
@@ -1676,6 +1685,15 @@ class UI:
                 self._draw_manage_profile_window(manage_config)
                 
         ImGui.End(self.module_config.main_ini_key)
+        
+        if active_rule_drag:
+            self._draw_rule_drag_preview()
+            
+        if active_condition_drag:
+            self._draw_condition_drag_preview()
+            
+        if active_sorting_drag:
+            self._draw_sorting_group_drag_preview()
 
         
     def draw(self):
@@ -2525,6 +2543,17 @@ class UI:
         self._drag_rule_preview_subtitle = ""
         self._drag_rule_window_pos = None
 
+    def _clear_condition_drag(self) -> None:
+        self._drag_condition = None
+        self._drag_condition_source_rule = None
+        self._drag_condition_source_index = -1
+        self._drag_condition_target_index = -1
+        self._drag_condition_target_rect = None
+        self._drag_condition_target_after = False
+        self._drag_condition_preview_label = ""
+        self._drag_condition_preview_subtitle = ""
+        self._drag_condition_window_pos = None
+
     def _clear_sorting_group_drag(self) -> None:
         self._drag_sorting_group = None
         self._drag_sorting_group_source_config = None
@@ -2546,6 +2575,18 @@ class UI:
         self._drag_rule_preview_label = rule.name or f"{rule.__class__.__name__} #{index}"
         self._drag_rule_preview_subtitle = UI._humanize_name(rule.action.name)
         self._drag_rule_window_pos = self.window_pos
+
+    def _begin_condition_drag(self, rule: CustomRule, condition: Condition, index: int) -> None:
+        self._drag_condition = condition
+        self._drag_condition_source_rule = rule
+        self._drag_condition_source_index = index
+        self._drag_condition_target_index = -1
+        self._drag_condition_target_rect = None
+        self._drag_condition_target_after = False
+        self._drag_condition_preview_label = self._humanize_name(type(condition).__name__).replace("Condition", "")
+        self._drag_condition_preview_subtitle = inspect.getdoc(type(condition)) or ""
+        self._drag_condition_preview_subtitle = re.sub(r":class:`([^`]+)`", r"\1", self._drag_condition_preview_subtitle).replace("**", "").strip()
+        self._drag_condition_window_pos = self.window_pos
 
     def _apply_rule_drag(self, config_info: ConfigInfo[RuleConfig]) -> None:
         if self._drag_rule_source_config is not config_info or self._drag_rule is None:
@@ -2578,6 +2619,39 @@ class UI:
             self._set_active_rule(self._drag_rule)
 
         self._clear_rule_drag()
+
+    def _apply_condition_drag(self, rule: CustomRule) -> bool:
+        if self._drag_condition_source_rule is not rule or self._drag_condition is None:
+            self._clear_condition_drag()
+            return False
+
+        if self._drag_condition_target_rect is None:
+            self._clear_condition_drag()
+            return False
+
+        if self._drag_condition_target_index < 0 or self._drag_condition_source_index < 0:
+            self._clear_condition_drag()
+            return False
+
+        try:
+            source_index = rule.conditions.index(self._drag_condition)
+        except ValueError:
+            self._clear_condition_drag()
+            return False
+
+        insert_index = self._drag_condition_target_index + (1 if self._drag_condition_target_after else 0)
+        if insert_index > source_index:
+            insert_index -= 1
+
+        insert_index = max(0, min(insert_index, len(rule.conditions) - 1))
+        changed = False
+        if insert_index != source_index:
+            rule.conditions.remove(self._drag_condition)
+            rule.conditions.insert(insert_index, self._drag_condition)
+            changed = True
+
+        self._clear_condition_drag()
+        return changed
 
     def _begin_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig, index: int) -> None:
         self._drag_sorting_group = group
@@ -2680,6 +2754,68 @@ class UI:
             preview_x + 10,
             preview_y + 24,
             self._drag_rule_preview_subtitle,
+            subtitle_color,
+            centered=False,
+            scale=1.0,
+        )
+        overlay.EndDraw()
+
+    def _draw_condition_drag_preview(self) -> None:
+        if self._drag_condition is None:
+            return
+
+        io = PyImGui.get_io()
+        preview_x = io.mouse_pos_x
+        preview_y = io.mouse_pos_y
+        preview_w = 300
+        preview_h = 42
+
+        insert_color = Utils.TupleToColor((1.0, 1.0, 1.0, 0.95))
+        outer_color = Utils.TupleToColor((0.18, 0.45, 0.72, 0.92))
+        inner_color = Utils.TupleToColor((0.10, 0.16, 0.24, 0.95))
+        text_color = Utils.TupleToColor((0.97, 0.95, 0.88, 1.0))
+        subtitle_color = Utils.TupleToColor(UI.SUBTLE_TEXT_COLOR.color_tuple)
+
+        overlay = Overlay()
+        overlay.BeginDraw()
+        if self._drag_condition_target_rect is not None:
+            x1, y1, x2, y2 = self._drag_condition_target_rect
+            overlay.DrawQuadFilled(x1 - 2, y1, x2 + 4, y1, x2 + 4, y2, x1 - 2, y2, insert_color)
+
+        overlay.DrawQuadFilled(
+            preview_x,
+            preview_y,
+            preview_x + preview_w,
+            preview_y,
+            preview_x + preview_w,
+            preview_y + preview_h,
+            preview_x,
+            preview_y + preview_h,
+            outer_color,
+        )
+        overlay.DrawQuadFilled(
+            preview_x + 2,
+            preview_y + 2,
+            preview_x + preview_w - 2,
+            preview_y + 2,
+            preview_x + preview_w - 2,
+            preview_y + preview_h - 2,
+            preview_x + 2,
+            preview_y + preview_h - 2,
+            inner_color,
+        )
+        overlay.DrawText(
+            preview_x + 10,
+            preview_y + 8,
+            self._drag_condition_preview_label,
+            text_color,
+            centered=False,
+            scale=1.0,
+        )
+        overlay.DrawText(
+            preview_x + 10,
+            preview_y + 24,
+            self._drag_condition_preview_subtitle[:43] + ("..." if len(self._drag_condition_preview_subtitle) > 45 else ""),
             subtitle_color,
             centered=False,
             scale=1.0,
@@ -4774,6 +4910,7 @@ class UI:
         @staticmethod
         def BeginConditionContainer(ui : "UI", rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> bool:
             is_custom_rule = isinstance(rule, CustomRule)
+            active_condition_drag = ui._drag_condition_source_rule is rule and ui._drag_condition is not None
             single_condition = len(rule.conditions) == 1
             show_condition_wrapper = not single_condition or is_custom_rule
             size = size if size is not None else (0, 0)
@@ -4781,9 +4918,12 @@ class UI:
             delete_popup_id = f"Delete Condition##{id(condition)}"
             context_popup_id = f"##condition_context_{id(condition)}"
             request_delete_popup = False
+            child_flags = PyImGui.WindowFlags.NoBringToFrontOnFocus
+            if active_condition_drag:
+                child_flags |= PyImGui.WindowFlags.NoInputs
             
             
-            is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper)
+            is_open = ImGui.begin_child(f"##condition_container{id(condition)}", size, border=show_condition_wrapper, flags=child_flags)
             if is_open:
                 description = inspect.getdoc(type(condition)) or ""
                 description = re.sub(r":class:`([^`]+)`", r"\1", description).replace("**", "").strip()
@@ -7034,6 +7174,7 @@ class UI:
 
     def _draw_custom_rule(self, rule: CustomRule) -> bool:
         changed = False
+        active_drag = self._drag_condition_source_rule is rule and self._drag_condition is not None
         PyImGui.set_next_item_width(180)
         if PyImGui.begin_combo(f"##custom_rule_operator_{id(rule)}", self._humanize_name(rule.condition_operator.name), PyImGui.ImGuiComboFlags.NoFlag):
             for operator in ConditionOperator:
@@ -7058,16 +7199,112 @@ class UI:
         ImGui.separator()
         
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
+            io = PyImGui.get_io()
+            child_pos = PyImGui.get_window_pos()
+            child_size = PyImGui.get_window_size()
+            child_visible_top = child_pos[1]
+            child_visible_bottom = child_pos[1] + child_size[1]
+            condition_rects: dict[int, tuple[float, float, float, float]] = {}
+            condition_gap_values: list[float] = []
+            self._drag_condition_target_rect = None if active_drag else self._drag_condition_target_rect
             avail = PyImGui.get_content_region_avail()
             UI.CUSTOM_RULE_CONTENT_RECT = (avail[0], avail[1])
             
             if not rule.conditions:
                 ImGui.text_wrapped("Add one or more conditions to build a custom rule.")
             else:
-                for condition in rule.conditions:
+                for index, condition in enumerate(rule.conditions[:]):
                     if self._draw_condition_editor(rule, condition):
                         changed = True
+                        
+                    item_min, item_max, item_size = ImGui.get_item_rect()
+                    hovered = PyImGui.is_item_hovered()
+                    clicked = PyImGui.is_item_clicked(0)
+                    in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
+                    
+                    if self._drag_condition is None and clicked and hovered:
+                        self._begin_condition_drag(rule, condition, index)
+                        active_drag = True
+
+                    if self._drag_condition_source_rule is rule and self._drag_condition is not None:
+                        condition_rects[index] = (item_min[0], item_min[1], item_max[0], item_max[1])
+                        if index > 0 and (index - 1) in condition_rects:
+                            previous_rect = condition_rects[index - 1]
+                            gap = item_min[1] - previous_rect[3]
+                            if gap > 0.0:
+                                condition_gap_values.append(gap)
+
+                        if in_rect:
+                            self._drag_condition_target_index = index
+                            self._drag_condition_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
+
+                if rule.conditions:
+                    PyImGui.dummy(0, 10)
+                    if self._drag_condition_source_rule is rule and self._drag_condition is not None and PyImGui.is_item_hovered():
+                        self._drag_condition_target_index = len(rule.conditions) - 1
+                        self._drag_condition_target_after = True
+
+                if active_drag:
+                    edge_threshold = 18.0
+                    scroll_y = PyImGui.get_scroll_y()
+                    scroll_max_y = PyImGui.get_scroll_max_y()
+                    mouse_y = io.mouse_pos_y
+
+                    if mouse_y < child_visible_top and scroll_y > 0.0:
+                        overshoot = min(child_visible_top - mouse_y, 40.0)
+                        scroll_step = 6.0 + (overshoot / 40.0) * 18.0
+                        PyImGui.set_scroll_y(max(0.0, scroll_y - scroll_step))
+                    elif mouse_y > child_visible_bottom and scroll_y < scroll_max_y:
+                        overshoot = min(mouse_y - child_visible_bottom, 40.0)
+                        scroll_step = 6.0 + (overshoot / 40.0) * 18.0
+                        PyImGui.set_scroll_y(min(scroll_max_y, scroll_y + scroll_step))
+
+                    if condition_rects:
+                        if mouse_y <= child_visible_top + edge_threshold:
+                            self._drag_condition_target_index = min(condition_rects.keys())
+                            self._drag_condition_target_after = False
+                        elif mouse_y >= child_visible_bottom - edge_threshold:
+                            self._drag_condition_target_index = max(condition_rects.keys())
+                            self._drag_condition_target_after = True
+
+                    if self._drag_condition_target_index in condition_rects:
+                        current_rect = condition_rects[self._drag_condition_target_index]
+                        x1, _, x2, _ = current_rect
+                        line_y = current_rect[3] if self._drag_condition_target_after else current_rect[1]
+                        can_draw_target_rect = True
+                        if self._drag_condition_target_after:
+                            if self._drag_condition_target_index + 1 in condition_rects:
+                                next_rect = condition_rects[self._drag_condition_target_index + 1]
+                                gap = next_rect[1] - current_rect[3]
+                                if gap > 0.0:
+                                    line_y = current_rect[3] + (gap * 0.5)
+                                elif self._drag_condition_target_index == len(rule.conditions) - 1 and condition_gap_values:
+                                    line_y = current_rect[3] + (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
+                                else:
+                                    can_draw_target_rect = False
+                            elif self._drag_condition_target_index == len(rule.conditions) - 1 and condition_gap_values:
+                                line_y = current_rect[3] + (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
+                        else:
+                            if self._drag_condition_target_index - 1 in condition_rects:
+                                previous_rect = condition_rects[self._drag_condition_target_index - 1]
+                                gap = current_rect[1] - previous_rect[3]
+                                if gap > 0.0:
+                                    line_y = current_rect[1] - (gap * 0.5)
+                            elif self._drag_condition_target_index == 0 and condition_gap_values:
+                                line_y = current_rect[1] - (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
+
+                        rect_y1 = max(line_y - 1, child_visible_top) if can_draw_target_rect else 0.0
+                        rect_y2 = min(line_y + 1, child_visible_bottom) if can_draw_target_rect else 0.0
+                        if can_draw_target_rect and x1 < x2 and rect_y1 < rect_y2:
+                            self._drag_condition_target_rect = (x1, rect_y1, x2, rect_y2)
+                        else:
+                            self._drag_condition_target_rect = None
+                    else:
+                        self._drag_condition_target_rect = None
         ImGui.end_child()
+
+        if active_drag and not PyImGui.is_mouse_down(0):
+            changed = self._apply_condition_drag(rule) or changed
         
         return changed
 
