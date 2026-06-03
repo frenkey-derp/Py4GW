@@ -10,8 +10,9 @@ from typing import Optional
 from Py4GW import Console
 
 from Py4GWCoreLib.GlobalCache import GLOBAL_CACHE
+from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Player import Player
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, NICK_CYCLE_COUNT, NICK_CYCLE_START_DATE
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType, SharedCommandType
@@ -186,6 +187,11 @@ class ItemData:
     
     _names: GWStringEncoded = GWStringEncoded(b"", "Unknown Item")
     
+    _female_model_file_id: int = -1
+    _male_model_file_id: int = -1
+    _real_model_file_id: int = -1
+    _real_model_file_id_gender : Gender = Gender.Unknown
+    
     def __post_init__(self):
         self._update_names()
         self.nick_date = self.next_nick_week
@@ -249,6 +255,68 @@ class ItemData:
     
     def _update_names(self):
         self._names = GWStringEncoded(self.name_encoded or bytes(), self.english_name or "Unknown Item")
+    
+    @property
+    def female_model_file_id(self) -> Optional[int]:
+        if self._female_model_file_id > 0:
+            return self._female_model_file_id
+        
+        if self.model_file_id == -1:
+            return None
+        
+        self._female_model_file_id = Item.GetTrueModelFileID(self.model_file_id, Gender.Female) 
+        return self._female_model_file_id
+    
+    @property
+    def female_texture_path(self) -> Optional[str]:
+        female_model_file_id = self.female_model_file_id
+        if female_model_file_id is None:
+            return None
+        
+        return f"gwdat://{int(female_model_file_id)}"
+    
+    @property
+    def male_model_file_id(self) -> Optional[int]:
+        if self._male_model_file_id > 0:
+            return self._male_model_file_id
+        
+        if self.model_file_id == -1:
+            return None
+        
+        self._male_model_file_id = Item.GetTrueModelFileID(self.model_file_id, Gender.Male)
+        return self._male_model_file_id
+    
+    @property
+    def male_texture_path(self) -> Optional[str]:
+        male_model_file_id = self.male_model_file_id
+        if male_model_file_id is None:
+            return None
+        
+        return f"gwdat://{int(male_model_file_id)}"
+    
+    @property
+    def real_model_file_id(self) -> Optional[int]:
+        agent = Player.GetAgent()
+        living_agent = agent.GetAsAgentLiving() if agent else None
+        gender = (Gender.Female if living_agent.is_female else Gender.Male) if living_agent else Gender.Unknown
+        
+        if self._real_model_file_id > 0 and self._real_model_file_id_gender == gender:
+            return self._real_model_file_id
+        
+        if self.model_file_id == -1:
+            return None
+        
+        self._real_model_file_id = Item.GetTrueModelFileID(self.model_file_id, gender)
+        self._real_model_file_id_gender = gender
+        return self._real_model_file_id
+    
+    @property
+    def real_texture_path(self) -> Optional[str]:
+        real_model_file_id = self.real_model_file_id
+        if real_model_file_id is None:
+            return None
+        
+        return f"gwdat://{int(real_model_file_id)}"
     
     @property
     def names(self) -> GWStringEncoded:
