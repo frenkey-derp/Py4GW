@@ -518,7 +518,7 @@ class UI:
         self._drag_rule_target_after: bool = False
         self._drag_rule_preview_label: str = ""
         self._drag_rule_preview_subtitle: str = ""
-        self._drag_rule_window_pos: tuple[float, float] | None = None
+        self._drag_window_pos: tuple[float, float] | None = None
         self._drag_condition: Condition | None = None
         self._drag_condition_source_rule: CustomRule | None = None
         self._drag_condition_source_index: int = -1
@@ -527,7 +527,6 @@ class UI:
         self._drag_condition_target_after: bool = False
         self._drag_condition_preview_label: str = ""
         self._drag_condition_preview_subtitle: str = ""
-        self._drag_condition_window_pos: tuple[float, float] | None = None
         self._drag_sorting_group: SlotGroupConfig | None = None
         self._drag_sorting_group_source_config: ConfigInfo[SortingConfig] | None = None
         self._drag_sorting_group_source_index: int = -1
@@ -536,7 +535,6 @@ class UI:
         self._drag_sorting_group_target_after: bool = False
         self._drag_sorting_group_preview_label: str = ""
         self._drag_sorting_group_preview_subtitle: str = ""
-        self._drag_sorting_group_window_pos: tuple[float, float] | None = None
 
         self.profession : Profession = Profession._None
         self.mod_type : ItemUpgradeType = ItemUpgradeType.Prefix
@@ -1650,24 +1648,17 @@ class UI:
         
     def draw_main_window(self) -> None:
         active_rule_drag = self._drag_rule_source_config is self.config and self._drag_rule is not None
-        active_condition_drag = self._drag_condition is not None
+        active_condition_drag = self._drag_condition_source_rule is self.rule and self._drag_condition is not None
         active_sorting_drag = self._drag_sorting_group_source_config is self.config and self._drag_sorting_group is not None
+        active_drag = active_rule_drag or active_condition_drag or active_sorting_drag
         
-            
-        window_flags = PyImGui.WindowFlags.NoMove if self.rules_hovered else PyImGui.WindowFlags.NoFlag
-        if active_rule_drag and self._drag_rule_window_pos is not None:
-            PyImGui.set_next_window_pos(self._drag_rule_window_pos, PyImGui.ImGuiCond.Always)
-        elif active_condition_drag and self._drag_condition_window_pos is not None:
-            PyImGui.set_next_window_pos(self._drag_condition_window_pos, PyImGui.ImGuiCond.Always)
-        elif active_sorting_drag and self._drag_sorting_group_window_pos is not None:
-            PyImGui.set_next_window_pos(self._drag_sorting_group_window_pos, PyImGui.ImGuiCond.Always)
-
+        if active_drag and self._drag_window_pos is not None:
+            PyImGui.set_next_window_pos(self._drag_window_pos, PyImGui.ImGuiCond.Always)
             
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
             name="Item Manager",
             p_open=self.floating_button.visible,
-            flags=window_flags,
         )
         self.floating_button.sync_begin_with_close(open_)
 
@@ -2541,7 +2532,7 @@ class UI:
         self._drag_rule_target_after = False
         self._drag_rule_preview_label = ""
         self._drag_rule_preview_subtitle = ""
-        self._drag_rule_window_pos = None
+        self._drag_window_pos = None
 
     def _clear_condition_drag(self) -> None:
         self._drag_condition = None
@@ -2552,7 +2543,7 @@ class UI:
         self._drag_condition_target_after = False
         self._drag_condition_preview_label = ""
         self._drag_condition_preview_subtitle = ""
-        self._drag_condition_window_pos = None
+        self._drag_window_pos = None
 
     def _clear_sorting_group_drag(self) -> None:
         self._drag_sorting_group = None
@@ -2563,7 +2554,7 @@ class UI:
         self._drag_sorting_group_target_after = False
         self._drag_sorting_group_preview_label = ""
         self._drag_sorting_group_preview_subtitle = ""
-        self._drag_sorting_group_window_pos = None
+        self._drag_window_pos = None
 
     def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: Rule, index: int) -> None:
         self._drag_rule = rule
@@ -2574,7 +2565,7 @@ class UI:
         self._drag_rule_target_after = False
         self._drag_rule_preview_label = rule.name or f"{rule.__class__.__name__} #{index}"
         self._drag_rule_preview_subtitle = UI._humanize_name(rule.action.name)
-        self._drag_rule_window_pos = self.window_pos
+        self._drag_window_pos = self.window_pos
 
     def _begin_condition_drag(self, rule: CustomRule, condition: Condition, index: int) -> None:
         self._drag_condition = condition
@@ -2586,7 +2577,7 @@ class UI:
         self._drag_condition_preview_label = self._humanize_name(type(condition).__name__).replace("Condition", "")
         self._drag_condition_preview_subtitle = inspect.getdoc(type(condition)) or ""
         self._drag_condition_preview_subtitle = re.sub(r":class:`([^`]+)`", r"\1", self._drag_condition_preview_subtitle).replace("**", "").strip()
-        self._drag_condition_window_pos = self.window_pos
+        self._drag_window_pos = self.window_pos
 
     def _apply_rule_drag(self, config_info: ConfigInfo[RuleConfig]) -> None:
         if self._drag_rule_source_config is not config_info or self._drag_rule is None:
@@ -2662,7 +2653,7 @@ class UI:
         self._drag_sorting_group_target_after = False
         self._drag_sorting_group_preview_label = group.name or f"Slot Group #{index + 1}"
         self._drag_sorting_group_preview_subtitle = self._slot_group_selection_summary(group)
-        self._drag_sorting_group_window_pos = self.window_pos
+        self._drag_window_pos = self.window_pos
 
     def _apply_sorting_group_drag(self, config_info: ConfigInfo[SortingConfig]) -> None:
         if self._drag_sorting_group_source_config is not config_info or self._drag_sorting_group is None:
@@ -4190,10 +4181,15 @@ class UI:
                             
                         
                         item_min, item_max, item_size = ImGui.get_item_rect()
+                        hovered = PyImGui.is_item_hovered()
+                        clicked = PyImGui.is_item_clicked(0)
                         in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
                         
-                        if self._drag_rule is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
+                        if self._drag_condition is None and clicked and hovered:
                             self._begin_rule_drag(config_info, rule, i)
+                            
+                        # if self._drag_rule is None and active and dragging and in_rect and PyImGui.is_window_focused() and PyImGui.is_item_hovered():
+                        #     self._begin_rule_drag(config_info, rule, i)
 
                         if self._drag_rule_source_config is config_info and self._drag_rule is not None:
                             rule_rects[i] = (item_min[0], item_min[1], item_max[0], item_max[1])
