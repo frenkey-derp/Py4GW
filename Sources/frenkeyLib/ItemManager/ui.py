@@ -350,6 +350,8 @@ class UI:
         ItemType.Wand : Attribute.None_,
     }
     
+    ITEM_TYPE_NAMES = {item_type: item_type.name for item_type in ItemType}
+    
     ITEM_UPGRADE_MODEL_FILE_IDS = {
         ItemType.Bow : (91655, 91653),
     }
@@ -414,6 +416,8 @@ class UI:
     # -------------------------------------------------------------------------
     def __init__(self, module_config: Config):
         self.module_config = module_config
+        self.queue_data_refresh_on_main_window_open = False
+        
         self.floating_button = ImGui.FloatingIcon(
                 icon_path=self.module_config.icon_path,
                 window_id="##item_manager_floating_button",
@@ -694,6 +698,14 @@ class UI:
         self._sorting_slot_override_popup_id: str = '##sorting_slot_override_popup'
         self._sorting_slot_override_popup_requested: bool = False
         
+        UI.ITEM_TYPE_NAMES[ItemType.Offhand] = "Focus"
+        UI.ITEM_TYPE_NAMES[ItemType.Rune_Mod] = "Upgrades & Runes"
+        UI.ITEM_TYPE_NAMES[ItemType.OffhandOrShield] = "Focus Or Shield"
+        UI.ITEM_TYPE_NAMES[ItemType.CC_Shards] = "Stackable Salvage"
+        UI.ITEM_TYPE_NAMES[ItemType.Salvage] = "Armor Salvage"
+        
+        UI.ITEM_TYPE_NAMES = {item_type: self._humanize_name(name) for item_type, name in UI.ITEM_TYPE_NAMES.items()} 
+        
         self._rebuild_upgrade_ui_caches()
         self._rebuild_item_ui_caches()
 
@@ -840,6 +852,10 @@ class UI:
         return Utils.humanize_string(value.replace("NONE", "None").replace("None_", "None").replace("_None", "None")).replace("  ", " ").strip()
 
     @staticmethod
+    def _item_type_name(item_type: ItemType) -> str:
+        return UI.ITEM_TYPE_NAMES.get(item_type, UI._humanize_name(item_type.name))
+
+    @staticmethod
     def _get_relative_luminance(color: Color) -> float:
         return (0.2126 * color.r) + (0.7152 * color.g) + (0.0722 * color.b)
 
@@ -909,6 +925,11 @@ class UI:
 
         singular_query = UI._singularize_search_query(search_query)
         return singular_query != search_query and singular_query in search_blob
+
+    @staticmethod
+    def _focus_popup_search_field_on_appearing() -> None:
+        if PyImGui.is_window_appearing():
+            PyImGui.set_keyboard_focus_here(0)
 
     @staticmethod
     def _filter_cached_entries(cache: dict[str, list[Any]], search_query: str, entries: list[tuple[Any, str]]) -> list[Any]:
@@ -993,6 +1014,21 @@ class UI:
         return ""
 
     @staticmethod
+    def _prefer_lower_model_id(existing_item: ItemData | None, candidate_item: ItemData) -> ItemData:
+        if existing_item is None:
+            return candidate_item
+
+        existing_model_id = int(getattr(existing_item, "model_id", -1))
+        candidate_model_id = int(getattr(candidate_item, "model_id", -1))
+
+        if existing_model_id <= 0:
+            return candidate_item if candidate_model_id > 0 else existing_item
+        if candidate_model_id <= 0:
+            return existing_item
+
+        return candidate_item if candidate_model_id < existing_model_id else existing_item
+
+    @staticmethod
     def _draw_item_texture(item: Optional[ItemData], size: tuple[float, float] = (32, 32)) -> None:
         UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
         # texture = get_texture_for_model(item.model_id) if item and getattr(item, "model_id", -1) > 0 else None
@@ -1021,17 +1057,31 @@ class UI:
             model_file_id = int(getattr(item, "model_file_id", -1))
             encoded_name = self._get_item_encoded_name_string(item)
 
-            if model_file_id > 0 and model_file_id not in self._item_by_model_file_id:
-                self._item_by_model_file_id[model_file_id] = item
-
-            if model_id > 0 and model_id not in self._item_by_model_id:
-                self._item_by_model_id[model_id] = item
+            if model_file_id > 0:
+                self._item_by_model_file_id[model_file_id] = self._prefer_lower_model_id(
+                    self._item_by_model_file_id.get(model_file_id),
+                    item,
+                )
 
             if model_id > 0:
-                self._item_by_model_id_and_item_type.setdefault((model_id, item_type), item)
+                self._item_by_model_id[model_id] = self._prefer_lower_model_id(
+                    self._item_by_model_id.get(model_id),
+                    item,
+                )
+
+            if model_id > 0:
+                key = (model_id, item_type)
+                self._item_by_model_id_and_item_type[key] = self._prefer_lower_model_id(
+                    self._item_by_model_id_and_item_type.get(key),
+                    item,
+                )
 
             if model_file_id > 0:
-                self._item_by_model_file_id_and_item_type.setdefault((model_file_id, item_type), item)
+                key = (model_file_id, item_type)
+                self._item_by_model_file_id_and_item_type[key] = self._prefer_lower_model_id(
+                    self._item_by_model_file_id_and_item_type.get(key),
+                    item,
+                )
 
             if item.name_encoded and item.name_encoded not in self._item_by_encoded_name:
                 self._item_by_encoded_name[item.name_encoded] = item
@@ -1040,12 +1090,13 @@ class UI:
                 encoded_name_items.setdefault((item_type, encoded_name), item)
 
             if model_file_id > 0:
-                model_file_id_items.setdefault((item_type, model_file_id), item)
+                key = (item_type, model_file_id)
+                model_file_id_items[key] = self._prefer_lower_model_id(model_file_id_items.get(key), item)
 
             if item.category == "Material":
                 salvage_materials.append(item)
 
-        sort_key = lambda item: (self._get_item_display_name(item), self._humanize_name(item.item_type.name), int(getattr(item, "model_id", -1)))
+        sort_key = lambda item: (self._get_item_display_name(item), self._item_type_name(item.item_type), int(getattr(item, "model_id", -1)))
         self._unique_encoded_name_items = sorted(encoded_name_items.values(), key=sort_key)
         self._unique_model_file_id_items = sorted(model_file_id_items.values(), key=sort_key)
         self._nick_cycle_items = sorted(
@@ -1689,6 +1740,12 @@ class UI:
         self.floating_button.sync_begin_with_close(open_)
 
         if expanded:
+            if self.queue_data_refresh_on_main_window_open:
+                Py4GW.Console.Log("Item Manager", "Refreshing item and upgrade data caches after main window opened.", Py4GW.Console.MessageType.Info)
+                self._rebuild_item_ui_caches()
+                self._rebuild_upgrade_ui_caches()
+                self.queue_data_refresh_on_main_window_open = False
+                
             mouse_down = PyImGui.is_mouse_down(0)
             time_now = time.monotonic()
             
@@ -1714,7 +1771,7 @@ class UI:
             manage_config = self._get_config_info_by_type(self.manage_profile_window_config_type)
             if self.show_manage_profile_window and manage_config is not None:
                 self._draw_manage_profile_window(manage_config)
-                
+            
         ImGui.End(self.module_config.main_ini_key)
         
         if active_rule_drag:
@@ -1729,6 +1786,9 @@ class UI:
         
     def draw(self):
         self.floating_button.draw(self.module_config.floating_ini_key)
+        
+        if not self.floating_button.visible:
+            self.queue_data_refresh_on_main_window_open = True
 
     def _get_active_config_info(self, config_info: ConfigInfo | None = None) -> ConfigInfo | None:
         return config_info or self.config
@@ -3033,7 +3093,7 @@ class UI:
         if item_type is None:
             subtitle = f'Model ID: {model_id}'
         else:
-            subtitle = f'{self._humanize_name(item_type.name)} | Model ID: {model_id}'
+            subtitle = f'{self._item_type_name(item_type)} | Model ID: {model_id}'
         return label, subtitle
 
     @staticmethod
@@ -3062,13 +3122,13 @@ class UI:
         element_height = 48
 
         if ImGui.button(f'Add Item##{unique_id}', -1):
-            self._clear_search_field_value(search_state_key)
             PyImGui.open_popup(popup_id)
 
         PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
         if PyImGui.begin_popup(popup_id):
             ImGui.text('Add Prioritized Item')
             PyImGui.set_next_item_width(-1)
+            self._focus_popup_search_field_on_appearing()
             current_search = self._get_search_field_value(search_state_key)
             _, current_search = ImGui.search_field(
                 f'##sort_argument_model_id_search_{unique_id}',
@@ -3094,7 +3154,7 @@ class UI:
                                 x, y = PyImGui.get_cursor_pos()
                                 PyImGui.set_cursor_pos(x, y - 4)
                                 ImGui.text_colored(
-                                    f'{self._humanize_name(item.item_type.name)} | Model ID: {int(item.model_id)}',
+                                    f'{self._item_type_name(item.item_type)} | Model ID: {int(item.model_id)}',
                                     UI.SUBTLE_TEXT_COLOR.color_tuple,
                                     font_size=12,
                                 )
@@ -3356,7 +3416,6 @@ class UI:
         element_height = 48
 
         if ImGui.button(f'Add Model ID##{unique_id}', -1):
-            self._clear_search_field_value(search_state_key)
             PyImGui.open_popup(popup_id)
 
         PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -3364,6 +3423,7 @@ class UI:
             ImGui.text('Add Model ID')
 
             PyImGui.set_next_item_width(-1)
+            self._focus_popup_search_field_on_appearing()
             current_search = self._get_search_field_value(search_state_key)
             _, current_search = ImGui.search_field(
                 f'##sorting_model_id_search_{unique_id}',
@@ -3714,7 +3774,7 @@ class UI:
                     PyImGui.columns(columns, f'sorting_item_type_columns_{unique_id}', False)
                     for item_type in self._sorted_item_types:
                         is_selected = item_type in group.matcher.item_types
-                        selected = ImGui.checkbox(f'{self._humanize_name(item_type.name)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
+                        selected = ImGui.checkbox(f'{self._item_type_name(item_type)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
                         if selected != is_selected:
                             if selected:
                                 group.matcher.item_types.append(item_type)
@@ -5125,7 +5185,9 @@ class UI:
             ImGui.end_child()
             
         @staticmethod
-        def DrawCard(id : str, title: str, description: str, texture: Optional[str] = None, show_delete: bool = True, height: float = 0, on_delete: Optional[Callable] = None) -> None:
+        def DrawCard(id : str, title: str, description: str, texture: Optional[str] = None, show_delete: bool = True, height: float = 0, on_delete: Optional[Callable] = None) -> bool:
+            clicked = False
+            
             if ImGui.begin_child(f"##{id}", (0, height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                 avail = PyImGui.get_content_region_avail()
                 if height <= 0:
@@ -5150,10 +5212,13 @@ class UI:
                     if PyImGui.button(f"x##{id}", *delete_btn_size):
                         if on_delete:
                             on_delete()
+                            clicked = True
                             
                     PyImGui.pop_style_var(1)
                         
             ImGui.end_child()
+            
+            return clicked
         
         @staticmethod
         def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
@@ -5182,11 +5247,12 @@ class UI:
                         label = ui._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f"Manual ID {model_id_value}"
                         unique_id = f"model_ids_rule_{id(condition)}_{model_id_value}_{index}"
 
-                        UI.ConditionEditor.DrawCard(unique_id, 
+                        if UI.ConditionEditor.DrawCard(unique_id, 
                                                     label, 
                                                     f"Model ID: {model_id_value}", 
                                                     height=element_height, 
-                                                    on_delete=lambda index=index: condition.model_ids.pop(index))
+                                                    on_delete=lambda index=index: condition.model_ids.pop(index)):
+                            changed = True
                         
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5200,6 +5266,7 @@ class UI:
                     ImGui.text("Add Model ID")
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field("##model_id_enum_search", current_search, "Search model ids or enter an integer...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -5283,7 +5350,7 @@ class UI:
                         if ImGui.begin_selectable(f"##item_type_{item_type.name}", is_selected, (0, element_height), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                             ui._draw_texture_from_model_file_id(model_file_id, (element_height - spacing, element_height - spacing))
                             PyImGui.same_line(0, 5)
-                            ImGui.text_aligned(ui._humanize_name(item_type.name), alignment=Alignment.MidLeft, height=element_height - spacing)
+                            ImGui.text_aligned(ui._item_type_name(item_type), alignment=Alignment.MidLeft, height=element_height - spacing)
                         
                         if ImGui.end_selectable():
                             if item_type in condition.item_types:
@@ -5292,7 +5359,7 @@ class UI:
                                 condition.item_types.append(item_type)
                             changed = True
                             
-                        ImGui.show_tooltip(ui._humanize_name(item_type.name))
+                        ImGui.show_tooltip(ui._item_type_name(item_type))
 
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5318,7 +5385,6 @@ class UI:
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model File ID", -1):
-                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
                     
                 if ui._begin_no_header_table(condition_id, sizes.get("columns", 1), size=(0, sizes.get("content_height", 0))):
@@ -5328,12 +5394,13 @@ class UI:
                         item = ui._find_item_by_model_file_id(model_file_id)
                         unique_id = f"model_file_id_condition_{id(condition)}_{model_file_id}_{index}"
 
-                        UI.ConditionEditor.DrawCard(unique_id,
+                        if UI.ConditionEditor.DrawCard(unique_id,
                                                     ui._get_item_display_name(item) if item is not None else f"Unknown Item ({model_file_id})",
                                                     f"Model File ID: {model_file_id}",
                                                     height=element_height,
                                                     texture=UI._get_item_data_texture(item) if item is not None else None,
-                                                    on_delete=lambda index=index: condition.model_file_ids.pop(index))
+                                                    on_delete=lambda index=index: condition.model_file_ids.pop(index)):
+                            changed = True
                                             
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5347,6 +5414,7 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field(f"##model_file_id_search_{id(condition)}", current_search, "Search by item name or enter a model file id...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -5425,7 +5493,6 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Model File ID", -1):
-                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((450, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -5434,6 +5501,7 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field(f"##model_file_id_item_type_search_{id(condition)}", current_search, "Search by item name or model file id...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -5463,7 +5531,7 @@ class UI:
                                     x, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
                                     ImGui.text_colored(
-                                        f"{ui._humanize_name(item.item_type.name)} | Model File ID: {item.model_file_id}",
+                                        f"{ui._item_type_name(item.item_type)} | Model File ID: {item.model_file_id}",
                                         UI.SUBTLE_TEXT_COLOR.color_tuple,
                                         font_size=12,
                                     )
@@ -5480,7 +5548,7 @@ class UI:
                                     PyImGui.close_current_popup()
 
                                 if PyImGui.is_item_hovered():
-                                    tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel File ID: {item.model_file_id}"
+                                    tooltip = f"{item_name}\n{ui._item_type_name(item.item_type)}\nModel File ID: {item.model_file_id}"
                                     ImGui.show_tooltip(tooltip)
                             else:
                                 ImGui.dummy(0, 36)
@@ -5498,12 +5566,13 @@ class UI:
                         item = ui._find_item_by_model_file_id_and_item_type(entry.model_file_id, entry.item_type)
                         unique_id = f"model_file_id_item_type_condition_{id(condition)}_{entry.model_file_id}_{entry.item_type.name}_{index}"
 
-                        UI.ConditionEditor.DrawCard(unique_id,
+                        if UI.ConditionEditor.DrawCard(unique_id,
                                                     ui._get_item_display_name(item) if item is not None else f"Unknown Item ({entry.model_file_id})",
-                                                    f"{ui._humanize_name(entry.item_type.name)} | Model File ID: {entry.model_file_id}",
+                                f"{ui._item_type_name(entry.item_type)} | Model File ID: {entry.model_file_id}",
                                                     height=element_height,
                                                     texture=UI._get_item_data_texture(item),
-                                                    on_delete=lambda index=index: condition.model_file_ids_and_item_types.pop(index))
+                                                    on_delete=lambda index=index: condition.model_file_ids_and_item_types.pop(index)):
+                            changed = True
 
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5539,6 +5608,7 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     search_changed, current_search = ImGui.search_field(f"##model_id_search_{id(condition)}", current_search, "Search by name or model id...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -5578,7 +5648,7 @@ class UI:
                                     _, y = PyImGui.get_cursor_pos()
                                     PyImGui.set_cursor_pos(x, y - 4)
                                     ImGui.text_colored(
-                                        f"{ui._humanize_name(item_type.name)} | Model ID: {model_id_value}",
+                                        f"{ui._item_type_name(item_type)} | Model ID: {model_id_value}",
                                         UI.SUBTLE_TEXT_COLOR.color_tuple,
                                         font_size=12,
                                     )
@@ -5600,7 +5670,7 @@ class UI:
                                             ImGui.text_colored(f"[{ui._humanize_name(item.attributes[0].name)}]", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                         ImGui.separator()
                                         ImGui.text_colored(f"Model ID: {model_id_value}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                                        ImGui.text_colored(f"Item Type: {ui._humanize_name(item_type.name)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                        ImGui.text_colored(f"Item Type: {ui._item_type_name(item_type)}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                                     PyImGui.end_tooltip()
                             else:
                                 ImGui.dummy(0, 36)
@@ -5623,12 +5693,13 @@ class UI:
                         unique_id = f"model_id_condition_{id(condition)}_{modelid_item_type}_{index}"
                         item_name = item_data.name if item_data is not None else f"Unknown Item ({modelid_item_type})"
 
-                        UI.ConditionEditor.DrawCard(unique_id,
+                        if UI.ConditionEditor.DrawCard(unique_id,
                                                     item_name,
-                                                    f"{ui._humanize_name(modelid_item_type.item_type.name)} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""),
+                                f"{ui._item_type_name(modelid_item_type.item_type)} | Model ID: {modelid_item_type.model_id}" + (f" | {item_data.attributes[0].name}" if item_data is not None and len(item_data.attributes) == 1 else ""),
                                                     height=element_height,
                                                     texture=UI._get_item_data_texture(item_data),
-                                                    on_delete=lambda index=index: condition.modelids_and_itemtypes.pop(index))
+                                                    on_delete=lambda index=index: condition.modelids_and_itemtypes.pop(index)):
+                            changed = True
                         
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5650,7 +5721,6 @@ class UI:
                         
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Encoded Name", -1):
-                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((500, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -5659,6 +5729,7 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field(f"##encoded_name_search_{id(condition)}", current_search, "Search by item name or paste an encoded name...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -5711,7 +5782,7 @@ class UI:
                                     PyImGui.close_current_popup()
 
                                 if PyImGui.is_item_hovered():
-                                    tooltip = f"{item_name}\n{ui._humanize_name(item.item_type.name)}\nModel ID: {item.model_id}"
+                                    tooltip = f"{item_name}\n{ui._item_type_name(item.item_type)}\nModel ID: {item.model_id}"
                                     ImGui.show_tooltip(tooltip)
                             else:
                                 ImGui.dummy(0, 40)
@@ -5728,12 +5799,13 @@ class UI:
                         item = ui._find_item_by_encoded_name(encoded_name)
                         unique_id = f"encoded_name_condition_{id(condition)}_{index}"
 
-                        UI.ConditionEditor.DrawCard(unique_id,
+                        if UI.ConditionEditor.DrawCard(unique_id,
                                                     ui._get_item_display_name(item) if item is not None else "Custom Encoded Name",
                                                     string_table.decode(encoded_name),
                                                     height=element_height,
                                                     texture=UI._get_item_data_texture(item),
-                                                    on_delete=lambda index=index: condition.encoded_names.pop(index))
+                                                    on_delete=lambda index=index: condition.encoded_names.pop(index)):
+                            changed = True
                         
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -5748,11 +5820,11 @@ class UI:
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
-                selected_label = ui._humanize_name(condition.item_type.name) if condition.item_type is not None else "Select an item type"
+                selected_label = ui._item_type_name(condition.item_type) if condition.item_type is not None else "Select an item type"
                 PyImGui.set_next_item_width(-1)
                 if PyImGui.begin_combo(f"##exact_item_type_{id(condition)}", selected_label, PyImGui.ImGuiComboFlags.NoFlag):
                     for item_type in ui._sorted_item_types:
-                        if ImGui.selectable(ui._humanize_name(item_type.name), selected=condition.item_type == item_type):
+                        if ImGui.selectable(ui._item_type_name(item_type), selected=condition.item_type == item_type):
                             condition.item_type = item_type
                             changed = True
                     ImGui.end_combo()
@@ -6117,7 +6189,6 @@ class UI:
             
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Material", -1):
-                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((420, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -6126,6 +6197,7 @@ class UI:
                     ImGui.separator()
 
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field(f"##salvage_material_search_{id(condition)}", current_search, "Search material name or model id...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -6176,12 +6248,13 @@ class UI:
                         material = ui._find_item_by_model_id(int(mid))
                         unique_id = f"salvage_material_condition_{id(condition)}_{material.name}_{index}" if material is not None else f"salvage_material_condition_{id(condition)}_{mid}_{index}"
                         
-                        UI.ConditionEditor.DrawCard(unique_id,
+                        if UI.ConditionEditor.DrawCard(unique_id,
                                                     ui._get_item_display_name(material) if material is not None else f"Unknown Material ({mid})",
                                                     f"Model ID: {mid}",
                                                     height=element_height,
                                                     texture=UI._get_item_data_texture(material),
-                                                    on_delete=lambda index=index: condition.materials.pop(index))
+                                                    on_delete=lambda index=index: condition.materials.pop(index)):
+                            changed = True
                         
                         if index != last_index:
                             PyImGui.table_next_column()
@@ -6578,7 +6651,6 @@ class UI:
                         ImGui.end_child()
 
                         if open_config_popup:
-                            ui._clear_search_field_value(search_state_key)
                             PyImGui.open_popup(attribute_popup_id)
 
                         PyImGui.set_next_window_size((380, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -6586,6 +6658,7 @@ class UI:
                             ImGui.text(f"Requirement {requirement.attribute_level}")
                             ImGui.separator()
                             PyImGui.set_next_item_width(-1)
+                            ui._focus_popup_search_field_on_appearing()
                             current_search = ui._get_search_field_value(search_state_key)
                             _, current_search = ImGui.search_field(f"##weapon_requirements_condition_attribute_search_{unique_id}", current_search, "Search attributes...")
                             ui._set_search_field_value(search_state_key, current_search)
@@ -6898,7 +6971,7 @@ class UI:
                                                                 weapon_upgrades_by_type[upgrade_type] = existing_entry
                                                                 selected_item_types = {item_type}
                                                         changed = True
-                                                    ImGui.show_tooltip(encoded.plain if encoded else ui._humanize_name(item_type.name))
+                                                    ImGui.show_tooltip(encoded.plain if encoded else ui._item_type_name(item_type))
                                                     hovered = hovered or PyImGui.is_item_hovered()
                                                     PyImGui.same_line(0, 5)
                                         ImGui.end_child()
@@ -6954,7 +7027,6 @@ class UI:
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 if ImGui.button("Add Range Upgrade", -1):
-                    ui._clear_search_field_value(search_state_key)
                     PyImGui.open_popup(popup_id)
 
                 PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
@@ -6962,6 +7034,7 @@ class UI:
                     ImGui.text("Add Upgrade Range Rule")
                     ImGui.separator()
                     PyImGui.set_next_item_width(-1)
+                    ui._focus_popup_search_field_on_appearing()
                     current_search = ui._get_search_field_value(search_state_key)
                     _, current_search = ImGui.search_field(f"##upgrade_range_search_{id(condition)}", current_search, "Search Upgrades...")
                     ui._set_search_field_value(search_state_key, current_search)
@@ -7057,7 +7130,7 @@ class UI:
                                                         upgrade_ranges_by_type[type(upgrade_range.upgrade)] = existing_entry
                                                         selected_item_types = {item_type}
                                                 changed = True
-                                            ImGui.show_tooltip(encoded.plain if encoded else ui._humanize_name(item_type.name))
+                                            ImGui.show_tooltip(encoded.plain if encoded else ui._item_type_name(item_type))
                                             PyImGui.same_line(0, 5)
                                 ImGui.end_child()
                                 style.WindowPadding.pop_style_var()
@@ -7316,11 +7389,16 @@ class UI:
                         PyImGui.set_scroll_y(min(scroll_max_y, scroll_y + scroll_step))
 
                     if condition_rects:
-                        if mouse_y <= child_visible_top + edge_threshold:
-                            self._drag_condition_target_index = min(condition_rects.keys())
+                        first_condition_index = min(condition_rects.keys())
+                        last_condition_index = max(condition_rects.keys())
+                        first_condition_rect = condition_rects[first_condition_index]
+                        last_condition_rect = condition_rects[last_condition_index]
+
+                        if mouse_y <= first_condition_rect[1] + edge_threshold:
+                            self._drag_condition_target_index = first_condition_index
                             self._drag_condition_target_after = False
-                        elif mouse_y >= child_visible_bottom - edge_threshold:
-                            self._drag_condition_target_index = max(condition_rects.keys())
+                        elif mouse_y >= last_condition_rect[3] - edge_threshold:
+                            self._drag_condition_target_index = last_condition_index
                             self._drag_condition_target_after = True
 
                     if self._drag_condition_target_index in condition_rects:
@@ -7348,6 +7426,8 @@ class UI:
                                     line_y = current_rect[1] - (gap * 0.5)
                             elif self._drag_condition_target_index == 0 and condition_gap_values:
                                 line_y = current_rect[1] - (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
+                            elif self._drag_condition_target_index == 0:
+                                line_y = current_rect[1] - 4.0
 
                         rect_y1 = max(line_y - 1, child_visible_top) if can_draw_target_rect else 0.0
                         rect_y2 = min(line_y + 1, child_visible_bottom) if can_draw_target_rect else 0.0

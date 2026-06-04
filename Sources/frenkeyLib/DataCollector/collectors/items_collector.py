@@ -4,6 +4,7 @@ from typing import Callable, Optional
 
 import Py4GW
 
+from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Profession
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, NICK_CYCLE_COUNT, STORAGE_BAGS, Bags, ItemType
@@ -96,9 +97,11 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
             self._scan_bags(STORAGE_BAGS)
             self.storage_checked_for_context = True
 
+        
         self.force_inventory_scan = False
         self._scan_bags(INVENTORY_BAGS)        
         self._scan_trader_items()
+        self._scan_hovered_item()
         
     def _scan_bags(self, bags: list[Bags]):
         import PyInventory
@@ -137,6 +140,17 @@ class ItemCollector(BaseCollector, DataDict[ItemType, ModelIdDict]):
             if item is None:
                 continue
             self._collect_item(item)
+
+    def _scan_hovered_item(self):
+        hovered_item_id = Inventory.GetHoveredItemID()
+        if not hovered_item_id:
+            return
+
+        item = ItemSnapshot.from_item_id(hovered_item_id)
+        if item is None or not item.is_valid:
+            return
+
+        self._collect_item(item)
 
     def _collect_item(self, item: ItemSnapshot):
         if not item.is_valid or item.model_id <= 0 or item.item_type == ItemType.Unknown:
