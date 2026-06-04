@@ -757,11 +757,9 @@ class AttributeRequirement:
         if req_0 is None or max_range is None:
             return
 
-        min_value, max_value = self.min_values
-
         self.min_values = (
-            self._clamp(min_value, req_0[0], max_range[0]),
-            self._clamp(max_value, max_range[0], max_range[1]),
+            int(max_range[0]),
+            int(max_range[1]),
         )
     
     @property
@@ -808,8 +806,12 @@ class WeaponRequirementAndDamageCondition(Condition):
 
             if requirement.has_energy_range and (item_snapshot.energy is None or item_snapshot.energy < requirement.min_values[0]):
                 continue
+            if requirement.has_energy_range and (item_snapshot.energy is None or item_snapshot.energy > requirement.min_values[1]):
+                continue
 
             if requirement.has_armor_range and (item_snapshot.armor is None or item_snapshot.armor < requirement.min_values[0]):
+                continue
+            if requirement.has_armor_range and (item_snapshot.armor is None or item_snapshot.armor > requirement.min_values[1]):
                 continue
 
             if requirement.has_damage_ranges:

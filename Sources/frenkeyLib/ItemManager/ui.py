@@ -1604,6 +1604,21 @@ class UI:
         return [attribute for attribute in attributes if attribute in valid_attributes]
 
     @staticmethod
+    def _apply_weapon_requirement_row_defaults(requirement: AttributeRequirement, item_type: ItemType, requirement_level: int) -> None:
+        requirement.weapon_type = item_type
+        requirement.attribute_level = requirement_level
+
+        valid_attributes = UI._get_requirement_popup_attributes_for_requirement(item_type, requirement_level)
+        if requirement_level == 0:
+            requirement.attributes.clear()
+        elif len(valid_attributes) == 1:
+            requirement.attributes = [valid_attributes[0]]
+        else:
+            requirement.attributes = [attribute for attribute in requirement.attributes if attribute in valid_attributes]
+
+        requirement.apply_max_ranges(item_type)
+
+    @staticmethod
     def _get_default_weapon_value_range(item_type: Optional[ItemType], requirement: int) -> Optional[tuple[int, int]]:
         if item_type is None:
             return None
@@ -5075,7 +5090,6 @@ class UI:
                     sizes["element_height"] = 58
                     sizes["element_width"] = avail_width
                     items_amount = len(condition.requirements)
-                    # content_height = math.ceil(32 + (spacing_y + 12) + max(1, len(condition.requirements)) * 58)
 
                 case HalvesCastAndRechargeAttributeCondition():
                     content_height = 30
@@ -6615,11 +6629,19 @@ class UI:
                         requirement_title = f"{ui._item_type_name(requirement.weapon_type)} | Requirement {requirement.attribute_level}"
                         value_summary = ""
                         if requirement.has_energy_range:
-                            value_summary = f"Energy >= {requirement.min_values[0]}"
+                            value_summary = (
+                                f"Energy {requirement.min_values[0]}-{requirement.min_values[1]}"
+                                if requirement.min_values[0] != requirement.min_values[1]
+                                else f"Energy {requirement.min_values[0]}"
+                            )
                         elif requirement.has_armor_range:
-                            value_summary = f"Armor >= {requirement.min_values[0]}"
+                            value_summary = (
+                                f"Armor {requirement.min_values[0]}-{requirement.min_values[1]}"
+                                if requirement.min_values[0] != requirement.min_values[1]
+                                else f"Armor {requirement.min_values[0]}"
+                            )
                         elif requirement.has_damage_ranges:
-                            value_summary = f"Damage >= {requirement.min_values[0]}-{requirement.min_values[1]}"
+                            value_summary = f"Damage {requirement.min_values[0]}-{requirement.min_values[1]}"
 
                         open_config_popup = False
                         if ImGui.begin_child(f"##{unique_id}", (0, 58), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
@@ -6667,11 +6689,7 @@ class UI:
                             if PyImGui.begin_combo(f"##weapon_requirement_and_damage_condition_row_item_type_{unique_id}", requirement_weapon_type_label, PyImGui.ImGuiComboFlags.NoFlag):
                                 for weapon_type in weapon_types:
                                     if ImGui.selectable(ui._item_type_name(weapon_type), selected=requirement.weapon_type == weapon_type,):
-                                        requirement.weapon_type = weapon_type
-                                        requirement.attributes = ui._filter_requirement_attributes_for_item_type(requirement.attributes, weapon_type)
-                                        if requirement.attribute_level == 0:
-                                            requirement.attributes.clear()
-                                        requirement.apply_max_ranges(weapon_type)
+                                        ui._apply_weapon_requirement_row_defaults(requirement, weapon_type, requirement.attribute_level)
                                         changed = True
                                 ImGui.end_combo()
                             ImGui.show_tooltip("Choose which weapon item type this requirement row applies to.")
@@ -6684,10 +6702,7 @@ class UI:
                                 requirement_level_labels,
                             )
                             if next_requirement_level != requirement.attribute_level:
-                                requirement.attribute_level = next_requirement_level
-                                if next_requirement_level == 0:
-                                    requirement.attributes.clear()
-                                requirement.apply_max_ranges(requirement.weapon_type)
+                                ui._apply_weapon_requirement_row_defaults(requirement, requirement.weapon_type, next_requirement_level)
                                 changed = True
                             
                             ImGui.show_tooltip("Choose the required attribute level this row matches.")
@@ -6728,15 +6743,21 @@ class UI:
 
                             ImGui.separator()
                             if requirement.has_energy_range and popup_bounds is not None:
-                                min_energy = ImGui.slider_int("Minimum Energy", requirement.min_values[0], popup_bounds[0][0], popup_bounds[0][1])
-                                if min_energy != requirement.min_values[0]:
-                                    requirement.min_values = (min_energy, requirement.min_values[1])
+                                min_energy = ImGui.slider_int("Minimum Energy", requirement.min_values[0], popup_bounds[0][0], popup_bounds[1][0])
+                                max_energy = ImGui.slider_int("Maximum Energy", requirement.min_values[1], popup_bounds[0][0], popup_bounds[1][0])
+                                new_min_energy = min(min_energy, max_energy)
+                                new_max_energy = max(min_energy, max_energy)
+                                if new_min_energy != requirement.min_values[0] or new_max_energy != requirement.min_values[1]:
+                                    requirement.min_values = (new_min_energy, new_max_energy)
                                     changed = True
 
                             elif requirement.has_armor_range and popup_bounds is not None:
-                                min_armor = ImGui.slider_int("Minimum Armor", requirement.min_values[0], popup_bounds[0][0], popup_bounds[0][1])
-                                if min_armor != requirement.min_values[0]:
-                                    requirement.min_values = (min_armor, requirement.min_values[1])
+                                min_armor = ImGui.slider_int("Minimum Armor", requirement.min_values[0], popup_bounds[0][0], popup_bounds[1][0])
+                                max_armor = ImGui.slider_int("Maximum Armor", requirement.min_values[1], popup_bounds[0][0], popup_bounds[1][0])
+                                new_min_armor = min(min_armor, max_armor)
+                                new_max_armor = max(min_armor, max_armor)
+                                if new_min_armor != requirement.min_values[0] or new_max_armor != requirement.min_values[1]:
+                                    requirement.min_values = (new_min_armor, new_max_armor)
                                     changed = True
 
                             elif requirement.has_damage_ranges and popup_bounds is not None:
@@ -6744,7 +6765,6 @@ class UI:
                                 max_damage = ImGui.slider_int("Maximum Damage", requirement.min_values[1], popup_bounds[1][0], popup_bounds[1][1])
                                 if min_damage != requirement.min_values[0] or max_damage != requirement.min_values[1]:
                                     requirement.min_values = (min_damage, max_damage)
-                                    requirement.apply_max_ranges(requirement.weapon_type)
                                     changed = True
 
                             if ImGui.button("Close", -1):
@@ -7356,7 +7376,7 @@ class UI:
 
         ImGui.separator()
         
-        if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=False):
+        if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=True):
             self._condition_drag_handle_state.clear()
             io = PyImGui.get_io()
             child_pos = PyImGui.get_window_pos()
@@ -7397,12 +7417,6 @@ class UI:
                         if in_rect:
                             self._drag_condition_target_index = index
                             self._drag_condition_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
-
-                if rule.conditions:
-                    PyImGui.dummy(0, 10)
-                    if self._drag_condition_source_rule is rule and self._drag_condition is not None and PyImGui.is_item_hovered():
-                        self._drag_condition_target_index = len(rule.conditions) - 1
-                        self._drag_condition_target_after = True
 
                 if active_drag:
                     edge_threshold = 18.0
