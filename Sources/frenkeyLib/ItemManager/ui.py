@@ -98,12 +98,12 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
+    QuantityMatchCondition,
     RequirementFilter,
     WeaponRequirementsCondition,
     StackQuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
-    FullStacksQuantityCondition,
     HalvesCastAndRechargeAttributeCondition,
     UnidentifiedCondition,
     UpgradeRangesCondition,
@@ -4986,8 +4986,11 @@ class UI:
                     sizes["element_width"] = 250
                     items_amount = len(condition.materials)
 
-                case ArmorCondition() | EnergyCondition() | FullStacksQuantityCondition() | ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition() | IsCustomizedCondition():
+                case ArmorCondition() | EnergyCondition() | ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition() | IsCustomizedCondition():
                     content_height = 20
+
+                case QuantityMatchCondition():
+                    content_height = 102
 
                 case DamageCondition():
                     content_height = 86
@@ -5962,40 +5965,6 @@ class UI:
             return changed
         
         @staticmethod
-        def ForFullStacksQuantityCondition(ui: "UI", rule: Rule, condition: FullStacksQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
-            changed = False
-            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
-
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
-                available_width = PyImGui.get_content_region_avail()[0]
-                slider_width = max(80, (available_width - 8) / 2)
-
-                PyImGui.push_item_width(slider_width)
-                PyImGui.begin_group()
-                new_min = ImGui.slider_int(f"##total_quantity_min_{id(condition)}", condition.min_quantity, 0, 500)
-                ImGui.show_tooltip("Minimum stacks required for the rule to apply")
-                PyImGui.end_group()
-                
-                PyImGui.same_line(0, 8)
-                PyImGui.begin_group()
-                new_max = ImGui.slider_int(f"##total_quantity_max_{id(condition)}", condition.max_quantity, 0, 500)
-                ImGui.show_tooltip("Maximum stacks allowed for the rule to apply")
-
-                if new_min > new_max:
-                    new_min, new_max = new_max, new_min
-
-                if new_min != condition.min_quantity or new_max != condition.max_quantity:
-                    condition.min_quantity = new_min
-                    condition.max_quantity = new_max
-                    changed = True
-                
-                PyImGui.end_group()
-                PyImGui.pop_item_width()
-
-            UI.ConditionEditor.EndConditionContainer()
-            return changed
-
-        @staticmethod
         def ForNickItemCondition(ui: "UI", rule: Rule, condition: NickItemCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
@@ -6103,6 +6072,62 @@ class UI:
                     condition.common_materials = common_materials
                     changed = True
                 ImGui.show_tooltip("Enable this to match common materials.")
+
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForQuantityMatchCondition(ui: "UI", rule: Rule, condition: QuantityMatchCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                
+                ImGui.text_aligned("Threshold", alignment= Alignment.MidLeft, height = 25)
+                PyImGui.same_line(0, 5)
+                
+                avail = PyImGui.get_content_region_avail()
+                PyImGui.set_next_item_width(max(50, avail[0] - 150 - 5 - 250 - 5))
+                keep_quantity = ImGui.input_int(f"##quantity_match_condition_keep_quantity_{id(condition)}", condition.quantity_limit, step_fast=1)
+                if keep_quantity != condition.quantity_limit:
+                    condition.quantity_limit = max(0, min(5000, int(keep_quantity)))
+                    changed = True
+                ImGui.show_tooltip("Keep the same-kind stack combination that reaches at least this threshold using as few stacks as possible.")
+
+                PyImGui.same_line(0, 5)
+                PyImGui.set_next_item_width(150)
+                count_mode_index = QuantityMatchCondition.COUNT_MODES.index(condition.count_mode)
+                count_mode_labels = ["Total quantity", "Full stacks"]
+                next_count_mode_index = ImGui.combo(f"##quantity_match_condition_count_mode_{id(condition)}", count_mode_index, count_mode_labels)
+                if next_count_mode_index != count_mode_index:
+                    condition.count_mode = QuantityMatchCondition.COUNT_MODES[next_count_mode_index]
+                    changed = True
+                ImGui.show_tooltip("Choose whether the threshold counts raw item quantities or only complete 250-stacks.")
+
+                PyImGui.same_line(0, 5)
+                PyImGui.set_next_item_width(250)
+                count_scope_index = QuantityMatchCondition.COUNT_SCOPES.index(condition.count_scope)
+                count_scope_labels = ["In Inventory", "In Inventory + Xunlai storage"]
+                next_count_scope_index = ImGui.combo(f"##quantity_match_condition_count_scope_{id(condition)}", count_scope_index, count_scope_labels)
+                if next_count_scope_index != count_scope_index:
+                    condition.count_scope = QuantityMatchCondition.COUNT_SCOPES[next_count_scope_index]
+                    changed = True
+                ImGui.show_tooltip("Choose whether the quantity check only looks at the current character inventory or also includes Xunlai storage.")
+
+                PyImGui.begin_group()
+                selected_match = 1 if condition.match_excess else 0
+                match = selected_match
+                
+                threshold_label = "full stacks" if condition.count_mode == QuantityMatchCondition.COUNT_MODE_FULL_STACKS else "total quantity"
+                match = ImGui.radio_button(f"Match up to {condition.quantity_limit} {threshold_label} of the specified items", match, 0)
+                match = ImGui.radio_button(f"Match the excess items beyond {condition.quantity_limit} {threshold_label}", match, 1)
+                
+                if match != selected_match:
+                    condition.match_excess = (match == 1)
+                    changed = True            
+                
+                PyImGui.end_group()
+                ImGui.show_tooltip("Enable this to match the excess stacks beyond the kept quantity. Disable it to match the kept stacks instead.")
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
@@ -7211,9 +7236,6 @@ class UI:
             case EnergyCondition():
                 return UI.ConditionEditor.ForEnergyCondition(self, rule, condition, size)
             
-            case FullStacksQuantityCondition():
-                return UI.ConditionEditor.ForFullStacksQuantityCondition(self, rule, condition, size)
-
             case NickItemCondition():
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, size)
 
@@ -7222,6 +7244,9 @@ class UI:
 
             case IsMaterialCondition():
                 return UI.ConditionEditor.ForIsMaterialCondition(self, rule, condition, size)
+
+            case QuantityMatchCondition():
+                return UI.ConditionEditor.ForQuantityMatchCondition(self, rule, condition, size)
              
             case RaritiesCondition():
                 return UI.ConditionEditor.ForRaritiesCondition(self, rule, condition, size)
@@ -7276,10 +7301,10 @@ class UI:
             DamageCondition,
             ArmorCondition,
             EnergyCondition,
-            FullStacksQuantityCondition,
             NickItemCondition,
             WeaponRequirementsCondition,
             IsMaterialCondition,
+            QuantityMatchCondition,
             RaritiesCondition,
             DyeColorsCondition,
             SalvagesToMaterialsCondition,

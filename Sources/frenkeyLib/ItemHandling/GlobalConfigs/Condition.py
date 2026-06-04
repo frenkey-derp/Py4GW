@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
 
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import MAX_STACK_SIZE, NICK_CYCLE_COUNT, WEAPON_TYPES, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, WEAPON_TYPES, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, HalvesCastingTimeAttributeUpgrade, HalvesRechargeTimeAttributeUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
@@ -998,36 +998,141 @@ class EnergyCondition(Condition):
         )
 
 
-class FullStacksQuantityCondition(Condition):
-    """Matches items whose total quantity across all bags falls inside the configured inclusive range."""
-    def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
-        self.min_quantity = max(0, min(500, int(min_quantity)))
-        self.max_quantity = max(0, min(500, int(max_quantity)))
-        if self.min_quantity > self.max_quantity:
-            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+class QuantityMatchCondition(Condition):
+    """Partitions same-kind inventory stacks into kept and excess groups, then matches the configured group."""
+    COUNT_MODE_TOTAL_QUANTITY: ClassVar[str] = "total_quantity"
+    COUNT_MODE_FULL_STACKS: ClassVar[str] = "full_stacks"
+    COUNT_MODES: ClassVar[tuple[str, ...]] = (
+        COUNT_MODE_TOTAL_QUANTITY,
+        COUNT_MODE_FULL_STACKS,
+    )
+    COUNT_SCOPE_INVENTORY_ONLY: ClassVar[str] = "inventory_only"
+    COUNT_SCOPE_INVENTORY_AND_STORAGE: ClassVar[str] = "inventory_and_storage"
+    COUNT_SCOPES: ClassVar[tuple[str, ...]] = (
+        COUNT_SCOPE_INVENTORY_ONLY,
+        COUNT_SCOPE_INVENTORY_AND_STORAGE,
+    )
+
+    def __init__(
+        self,
+        keep_quantity: int = MAX_STACK_SIZE,
+        match_excess: bool = True,
+        count_mode: str = COUNT_MODE_TOTAL_QUANTITY,
+        count_scope: str = COUNT_SCOPE_INVENTORY_ONLY,
+    ):
+        self.quantity_limit = max(0, min(5000, int(keep_quantity)))
+        self.match_excess = bool(match_excess)
+        self.count_mode = count_mode if count_mode in self.COUNT_MODES else self.COUNT_MODE_TOTAL_QUANTITY
+        self.count_scope = count_scope if count_scope in self.COUNT_SCOPES else self.COUNT_SCOPE_INVENTORY_ONLY
+
+    def _threshold_quantity(self) -> int:
+        threshold = max(0, self.quantity_limit)
+        if self.count_mode == self.COUNT_MODE_FULL_STACKS:
+            return threshold * MAX_STACK_SIZE
+        return threshold
+
+    def _counted_bags(self) -> list[Any]:
+        return [*INVENTORY_BAGS, *STORAGE_BAGS] if self.count_scope == self.COUNT_SCOPE_INVENTORY_AND_STORAGE else list(INVENTORY_BAGS)
+
+    def _measured_quantity(self, item_snapshot: ItemSnapshot) -> int:
+        return max(0, int(item_snapshot.quantity))
+
+    def _select_kept_item_ids(self, matching_items: list[ItemSnapshot], keep_quantity: int) -> set[int]:
+        if keep_quantity <= 0:
+            return set()
+
+        reachable: dict[int, tuple[int, tuple[int, ...]]] = {0: (0, tuple())}
+        for inventory_item in matching_items:
+            quantity = self._measured_quantity(inventory_item)
+            if quantity <= 0:
+                continue
+
+            next_reachable = dict(reachable)
+            for total_quantity, (item_count, item_ids) in reachable.items():
+                new_total = total_quantity + quantity
+                new_entry = (item_count + 1, item_ids + (int(inventory_item.id),))
+                existing_entry = next_reachable.get(new_total)
+                if existing_entry is None or new_entry[0] < existing_entry[0]:
+                    next_reachable[new_total] = new_entry
+            reachable = next_reachable
+
+        best_total: int | None = None
+        best_item_count = 0
+        best_item_ids: tuple[int, ...] = tuple()
+        for total_quantity, (item_count, item_ids) in reachable.items():
+            if total_quantity < keep_quantity:
+                continue
+
+            if best_total is None:
+                best_total = total_quantity
+                best_item_count = item_count
+                best_item_ids = item_ids
+                continue
+
+            current_key = (
+                item_count,
+                total_quantity,
+                item_ids,
+            )
+            best_key = (
+                best_item_count,
+                best_total,
+                best_item_ids,
+            )
+            if current_key < best_key:
+                best_total = total_quantity
+                best_item_count = item_count
+                best_item_ids = item_ids
+
+        return set(best_item_ids)
 
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         item_snapshot = context.item_snapshot
-        total_quantity = ItemSnapshot.get_item_count(item_snapshot) if item_snapshot is not None else 0
+        if item_snapshot is None or not item_snapshot.is_valid or (not item_snapshot.is_inventory_item and not item_snapshot.is_storage_item) or not item_snapshot.is_stackable:
+            return False
+
+        counted_bags = self._counted_bags()
+        matching_items = [
+            counted_item
+            for counted_item in ItemSnapshot.get_bags_items(counted_bags)
+            if counted_item.is_valid and counted_item.same_kind_as(item_snapshot)
+        ]
+        if not matching_items or not any(int(matching_item.id) == int(item_snapshot.id) for matching_item in matching_items):
+            return False
+
+        ordered_items = sorted(
+            matching_items,
+            key=lambda inventory_item: (int(inventory_item.bag.value), int(inventory_item.slot), int(inventory_item.id)),
+        )
         
-        return self.min_quantity * MAX_STACK_SIZE <= total_quantity <= self.max_quantity * MAX_STACK_SIZE
+        threshold_quantity = self._threshold_quantity()
+        total_quantity = sum(self._measured_quantity(inventory_item) for inventory_item in ordered_items)
+        if total_quantity <= threshold_quantity:
+            return not self.match_excess
+
+        kept_item_ids = self._select_kept_item_ids(ordered_items, threshold_quantity)
+        matches_excess = int(item_snapshot.id) not in kept_item_ids
+        return matches_excess if self.match_excess else not matches_excess
 
     def _comparison_data(self) -> Any:
-        return (self.min_quantity, self.max_quantity)
+        return (self.quantity_limit, self.match_excess, self.count_mode, self.count_scope)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
-            "min_quantity": self.min_quantity,
-            "max_quantity": self.max_quantity,
+            "keep_quantity": self.quantity_limit,
+            "match_excess": self.match_excess,
+            "count_mode": self.count_mode,
+            "count_scope": self.count_scope,
         }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
-        min_quantity = data.get("min_quantity", 0)
-        max_quantity = data.get("max_quantity", 250)
-        self.min_quantity = max(0, min(500, int(min_quantity if isinstance(min_quantity, int) else 0)))
-        self.max_quantity = max(0, min(500, int(max_quantity if isinstance(max_quantity, int) else 250)))
-        if self.min_quantity > self.max_quantity:
-            self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
+        raw_value = data.get("keep_quantity", MAX_STACK_SIZE)
+        self.quantity_limit = int(raw_value if isinstance(raw_value, int) else MAX_STACK_SIZE)
+        self.match_excess = bool(data.get("match_excess", True))
+        raw_count_mode = data.get("count_mode", self.COUNT_MODE_TOTAL_QUANTITY)
+        self.count_mode = raw_count_mode if isinstance(raw_count_mode, str) and raw_count_mode in self.COUNT_MODES else self.COUNT_MODE_TOTAL_QUANTITY
+        raw_count_scope = data.get("count_scope", self.COUNT_SCOPE_INVENTORY_ONLY)
+        self.count_scope = raw_count_scope if isinstance(raw_count_scope, str) and raw_count_scope in self.COUNT_SCOPES else self.COUNT_SCOPE_INVENTORY_ONLY
 
 
 class NickItemCondition(Condition):
