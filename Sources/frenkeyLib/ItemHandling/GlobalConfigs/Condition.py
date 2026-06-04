@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias
+from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias, cast
+
+import Py4GW
 
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, WEAPON_TYPES, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
@@ -206,6 +208,46 @@ def requirement_comparison_data(requirements: WeaponRequirementRanges) -> tuple[
     )
 
 
+def requirement_ranges_to_attribute_requirements(
+    requirements: Optional[WeaponRequirementRanges],
+    item_type: Optional[ItemType] = None,
+    requirement_min: int = 0,
+    requirement_max: int = 13,
+) -> list["AttributeRequirement"]:
+    normalized = normalize_requirement_ranges(requirements, item_type, requirement_min, requirement_max)
+    converted: list[AttributeRequirement] = []
+    selected_weapon_type = cast(Optional[WeaponType], item_type) if item_type in WEAPON_TYPES else None
+
+    for attribute_level, requirement_filter in sorted(normalized.items()):
+        requirement = AttributeRequirement(
+            attribute=list(requirement_filter.allowed_attributes),
+            attribute_level=int(attribute_level),
+            weapon_type=selected_weapon_type,
+        )
+        if selected_weapon_type is not None:
+            requirement.apply_max_ranges(selected_weapon_type)
+
+        value_range = requirement_filter.value_range
+        if value_range.min_value != 0 or value_range.max_value != 0:
+            requirement.min_values = (int(value_range.min_value), int(value_range.max_value))
+
+        converted.append(requirement)
+
+    return converted
+
+
+def attribute_requirements_to_requirement_ranges(requirements: Sequence["AttributeRequirement"]) -> WeaponRequirementRanges:
+    converted: WeaponRequirementRanges = {}
+    for requirement in requirements:
+        converted[int(requirement.attribute_level)] = RequirementFilter(
+            value_range=DamageRange(int(requirement.min_values[0]), int(requirement.min_values[1])),
+            allowed_attributes=list(requirement.attributes),
+            disallowed_attributes=[],
+        )
+
+    return converted
+
+
 def _normalize_range_bounds(min_value: Any, max_value: Any, fallback: DamageRange) -> DamageRange:
     try:
         normalized_min = int(min_value)
@@ -401,9 +443,12 @@ class Condition:
         if condition_cls is None:
             return None
 
-        condition = condition_cls()
-        condition._deserialize_data(payload)
-        return condition
+        try:
+            condition = condition_cls()
+            condition._deserialize_data(payload)
+            return condition
+        except Exception:
+            return None
 
 
 class ModelIdsCondition(Condition):
@@ -689,6 +734,7 @@ class StackQuantityCondition(Condition):
         if self.min_quantity > self.max_quantity:
             self.min_quantity, self.max_quantity = self.max_quantity, self.min_quantity
 
+
 class AttributeRequirement:
     def __init__(self, attribute : list[Attribute] = [], attribute_level: int = 0, weapon_type: Optional[WeaponType] = None):
         self.attributes = attribute
@@ -774,6 +820,7 @@ class AttributeRequirement:
     def has_energy_range(self) -> bool:
         return self.weapon_type == ItemType.Offhand   
     
+    
 class WeaponRequirementAndDamageCondition(Condition):
     """Matches weapons with any specified requirement for a certain attribute."""
 
@@ -798,19 +845,18 @@ class WeaponRequirementAndDamageCondition(Condition):
             if item_snapshot.requirement != requirement.attribute_level:
                 continue
 
-            if requirement.attribute_level == 0:
-                if item_snapshot.attribute != Attribute.None_:
-                    continue
-            elif requirement.attributes and item_snapshot.attribute not in requirement.attributes:
+            if requirement.attribute_level > 0 and (not requirement.attributes or item_snapshot.attribute not in requirement.attributes):
                 continue
 
             if requirement.has_energy_range and (item_snapshot.energy is None or item_snapshot.energy < requirement.min_values[0]):
                 continue
+            
             if requirement.has_energy_range and (item_snapshot.energy is None or item_snapshot.energy > requirement.min_values[1]):
                 continue
 
             if requirement.has_armor_range and (item_snapshot.armor is None or item_snapshot.armor < requirement.min_values[0]):
                 continue
+            
             if requirement.has_armor_range and (item_snapshot.armor is None or item_snapshot.armor > requirement.min_values[1]):
                 continue
 
@@ -820,7 +866,7 @@ class WeaponRequirementAndDamageCondition(Condition):
 
                 if item_snapshot.min_damage < requirement.min_values[0] or item_snapshot.max_damage < requirement.min_values[1]:
                     continue
-
+            
             return True
 
         return False
@@ -1045,43 +1091,6 @@ class IsMaterialCondition(Condition):
         self.common_materials = bool(data.get("common_materials", False))
 
 
-class WeaponRequirementCondition(Condition):
-    """Matches weapons with selected requirement values and allowed damage ranges."""
-    def __init__(
-        self,
-        requirements: Optional[WeaponRequirementRanges] = None,
-        item_type: Optional[ItemType] = None,
-        requirement_min: int = 0,
-        requirement_max: int = 13,
-    ):
-        self.item_type = item_type
-        self.requirements = normalize_requirement_ranges(requirements, item_type, requirement_min, requirement_max)
-
-    def is_valid(self) -> bool:
-        return len(self.requirements) > 0
-
-    @property
-    def requirement_min(self) -> int:
-        return min(self.requirements.keys()) if self.requirements else 0
-
-    @property
-    def requirement_max(self) -> int:
-        return max(self.requirements.keys()) if self.requirements else 13
-
-    def evaluate(self, context: ConditionEvaluationContext) -> bool:
-        item_snapshot = context.item_snapshot
-        return item_snapshot is not None and requirement_range_matches(item_snapshot, self.requirements)
-
-    def _comparison_data(self) -> Any:
-        return requirement_comparison_data(self.requirements)
-
-    def _serialize_data(self) -> dict[str, Any]:
-        return {"requirements": serialize_requirement_ranges(self.requirements)}
-
-    def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.requirements = deserialize_requirement_ranges(data, self.item_type)
-
-
 class InherentFiltersCondition(Condition):
     """Matches weapon inherents, including optional numeric ranges on the inherent values."""
     def __init__(self, inherents: Optional[Sequence[InherentFilter | Inherent]] = None, inscribable: bool = False):
@@ -1089,7 +1098,7 @@ class InherentFiltersCondition(Condition):
         self.inherents = normalize_inherent_filters(inherents)
 
     def is_valid(self) -> bool:
-        return len(self.inherents) > 0
+        return len(self.inherents) > 0 or self.inscribable
 
     def evaluate(self, context: ConditionEvaluationContext) -> bool:
         item_snapshot = context.item_snapshot
@@ -1097,7 +1106,10 @@ class InherentFiltersCondition(Condition):
             return False
 
         item_inherents = item_snapshot.inherents if item_snapshot.inherents else []
-        return any(inherent_filter_matches(inherent, item_inherents) for inherent in self.inherents) or (self.inscribable and item_snapshot.is_inscribable)
+        if self.inscribable and item_snapshot.is_inscribable:
+            return True
+        
+        return any(inherent_filter_matches(inherent, item_inherents) for inherent in self.inherents)
 
     def _comparison_data(self) -> Any:
         return inherent_comparison_data(self.inherents), self.inscribable

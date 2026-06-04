@@ -38,10 +38,12 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     UpgradeMatchCondition,
     UpgradeRangesCondition,
     UpgradesCondition,
-    WeaponRequirementCondition,
+    WeaponRequirementAndDamageCondition,
     WeaponRequirementRanges,
+    attribute_requirements_to_requirement_ranges,
     normalize_inherent_filters,
     normalize_requirement_ranges,
+    requirement_ranges_to_attribute_requirements,
 )
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
@@ -213,20 +215,23 @@ class Rule:
         if rule_cls is None:
             return None
 
-        rule = rule_cls()
-        rule.name = payload.get("name", "")
-        action_name = payload.get("action", "NONE")
-        rule.action = ItemAction[action_name] if isinstance(action_name, str) and action_name in ItemAction.__members__ else ItemAction.NONE
-        rule.enabled = bool(payload.get("enabled", True))
-        
-        result_interpretation_name = payload.get("result_interpretation")
-        if isinstance(result_interpretation_name, str) and result_interpretation_name in ResultInterpretation.__members__:
-            rule.result_interpretation = ResultInterpretation[result_interpretation_name]
-        elif bool(payload.get("inverted", False)):
-            rule.result_interpretation = ResultInterpretation.NoMatch
+        try:
+            rule = rule_cls()
+            rule.name = payload.get("name", "")
+            action_name = payload.get("action", "NONE")
+            rule.action = ItemAction[action_name] if isinstance(action_name, str) and action_name in ItemAction.__members__ else ItemAction.NONE
+            rule.enabled = bool(payload.get("enabled", True))
+            
+            result_interpretation_name = payload.get("result_interpretation")
+            if isinstance(result_interpretation_name, str) and result_interpretation_name in ResultInterpretation.__members__:
+                rule.result_interpretation = ResultInterpretation[result_interpretation_name]
+            elif bool(payload.get("inverted", False)):
+                rule.result_interpretation = ResultInterpretation.NoMatch
 
-        rule._deserialize_data(payload)
-        return rule
+            rule._deserialize_data(payload)
+            return rule
+        except Exception:
+            return None
 
 
 class CustomRule(Rule):
@@ -421,7 +426,7 @@ class WeaponSkinRule(Rule):
     ):
         conditions: list[Condition] = [
             ModelFileIdsCondition(model_file_ids),
-            WeaponRequirementCondition(requirements, None, requirement_min, requirement_max),
+            WeaponRequirementAndDamageCondition(requirement_ranges_to_attribute_requirements(requirements, None, requirement_min, requirement_max)),
             InherentFiltersCondition(normalize_inherent_filters(inherents)),
         ]
 
@@ -438,11 +443,11 @@ class WeaponSkinRule(Rule):
 
     @property
     def requirements(self) -> WeaponRequirementRanges:
-        return self._requirement_condition().requirements
+        return attribute_requirements_to_requirement_ranges(self._requirement_condition().requirements)
 
     @requirements.setter
     def requirements(self, value: WeaponRequirementRanges) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(value)
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(value)
 
     @property
     def inherents(self) -> InherentFilters:
@@ -455,19 +460,19 @@ class WeaponSkinRule(Rule):
 
     @property
     def requirement_min(self) -> int:
-        return self._requirement_condition().requirement_min
+        return min((requirement.attribute_level for requirement in self._requirement_condition().requirements), default=0)
 
     @requirement_min.setter
     def requirement_min(self, value: int) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(None, None, int(value), self.requirement_max)
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, None, int(value), self.requirement_max)
 
     @property
     def requirement_max(self) -> int:
-        return self._requirement_condition().requirement_max
+        return max((requirement.attribute_level for requirement in self._requirement_condition().requirements), default=13)
 
     @requirement_max.setter
     def requirement_max(self, value: int) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(None, None, self.requirement_min, int(value))
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, None, self.requirement_min, int(value))
 
     @property
     def only_max_damage(self) -> bool:
@@ -500,7 +505,7 @@ class WeaponSkinRule(Rule):
     def _model_file_condition(self) -> ModelFileIdsCondition:
         return self.conditions[0]  # type: ignore[return-value]
 
-    def _requirement_condition(self) -> WeaponRequirementCondition:
+    def _requirement_condition(self) -> WeaponRequirementAndDamageCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
     def _inherent_condition(self) -> InherentFiltersCondition:
@@ -520,7 +525,7 @@ class WeaponTypeRule(Rule):
     ):
         conditions: list[Condition] = [
             ExactItemTypeCondition(item_type),
-            WeaponRequirementCondition(requirements, item_type, requirement_min, requirement_max),
+            WeaponRequirementAndDamageCondition(requirement_ranges_to_attribute_requirements(requirements, item_type, requirement_min, requirement_max)),
             InherentFiltersCondition(normalize_inherent_filters(inherents), inscribable),
         ]
 
@@ -534,15 +539,20 @@ class WeaponTypeRule(Rule):
     @item_type.setter
     def item_type(self, value: Optional[ItemType]) -> None:
         self._item_type_condition().item_type = value
-        self._requirement_condition().item_type = value
+        if value in WEAPON_TYPES:
+            for requirement in self._requirement_condition().requirements:
+                requirement.apply_max_ranges(cast(WeaponType, value))
+        else:
+            for requirement in self._requirement_condition().requirements:
+                requirement.weapon_type = ItemType.Unknown
 
     @property
     def requirements(self) -> WeaponRequirementRanges:
-        return self._requirement_condition().requirements
+        return attribute_requirements_to_requirement_ranges(self._requirement_condition().requirements)
 
     @requirements.setter
     def requirements(self, value: WeaponRequirementRanges) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(value, self.item_type)
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(value, self.item_type)
 
     @property
     def inherents(self) -> InherentFilters:
@@ -559,19 +569,19 @@ class WeaponTypeRule(Rule):
             
     @property
     def requirement_min(self) -> int:
-        return self._requirement_condition().requirement_min
+        return min((requirement.attribute_level for requirement in self._requirement_condition().requirements), default=0)
 
     @requirement_min.setter
     def requirement_min(self, value: int) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(None, self.item_type, int(value), self.requirement_max)
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, self.item_type, int(value), self.requirement_max)
 
     @property
     def requirement_max(self) -> int:
-        return self._requirement_condition().requirement_max
+        return max((requirement.attribute_level for requirement in self._requirement_condition().requirements), default=13)
 
     @requirement_max.setter
     def requirement_max(self, value: int) -> None:
-        self._requirement_condition().requirements = normalize_requirement_ranges(None, self.item_type, self.requirement_min, int(value))
+        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, self.item_type, self.requirement_min, int(value))
 
     @property
     def only_max_damage(self) -> bool:
@@ -605,7 +615,7 @@ class WeaponTypeRule(Rule):
     def _item_type_condition(self) -> ExactItemTypeCondition:
         return self.conditions[0]  # type: ignore[return-value]
 
-    def _requirement_condition(self) -> WeaponRequirementCondition:
+    def _requirement_condition(self) -> WeaponRequirementAndDamageCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
     def _inherent_condition(self) -> InherentFiltersCondition:

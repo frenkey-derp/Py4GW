@@ -23,6 +23,7 @@ import os
 import re
 import time
 from dataclasses import dataclass
+from enum import IntEnum
 from typing import Any, Callable, Generic, NamedTuple, Optional, TypeVar, cast
 
 import Py4GW
@@ -96,7 +97,6 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsCondition,
     NickItemCondition,
     QuantityMatchCondition,
-    RequirementFilter,
     WeaponRequirementAndDamageCondition,
     StackQuantityCondition,
     RaritiesCondition,
@@ -104,7 +104,6 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     HalvesCastAndRechargeAttributeCondition,
     UnidentifiedCondition,
     UpgradeRangesCondition,
-    WeaponRequirementCondition,
 )
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
@@ -1051,6 +1050,85 @@ class UI:
         return ""
 
     @staticmethod
+    def _format_snapshot_value(value: Any) -> str:
+        if isinstance(value, bool):
+            return "Yes" if value else "No"
+        if isinstance(value, IntEnum):
+            return value.name
+        if isinstance(value, tuple):
+            return ", ".join(UI._format_snapshot_value(entry) for entry in value)
+        if isinstance(value, list):
+            return ", ".join(UI._format_snapshot_value(entry) for entry in value)
+        return str(value)
+
+    def _draw_item_snapshot_tooltip(self, item: ItemSnapshot) -> None:
+        rows: list[tuple[str, Any]] = [
+            ("ID", item.id),
+            ("Name", item.name or "-"),
+            ("Singular", item.singular_name or "-"),
+            ("Complete", item.complete_name or "-"),
+            ("Bag", item.bag),
+            ("Slot", item.slot),
+            ("Model ID", item.model_id),
+            ("Model File ID", item.model_file_id),
+            ("Item Type", item.item_type),
+            ("Target Type", item.target_item_type),
+            ("Rarity", item.rarity),
+            ("Profession", item.profession),
+            ("Quantity", item.quantity),
+            ("Uses", item.uses),
+            ("Value", item.value),
+            ("Requirement", item.requirement),
+            ("Attribute", item.attribute),
+            ("Min Damage", item.min_damage),
+            ("Max Damage", item.max_damage),
+            ("Armor", item.armor),
+            ("Energy", item.energy),
+            ("Color", item.color),
+            ("Stackable", item.is_stackable),
+            ("Weapon", item.is_weapon),
+            ("Armor Item", item.is_armor),
+            ("Identified", item.is_identified),
+            ("Customized", item.is_customized),
+            ("Inscribable", item.is_inscribable),
+            ("Prefix Upgradable", item.is_prefix_upgradable),
+            ("Suffix Upgradable", item.is_suffix_upgradable),
+            ("Usable", item.is_usable),
+            ("Salvageable", item.is_salvageable),
+            ("Salvage Kit", item.is_salvage_kit),
+            ("Perfect Salvage Kit", item.is_perfect_salvage_kit),
+            ("Inventory Item", item.is_inventory_item),
+            ("Storage Item", item.is_storage_item),
+            ("Material", item.is_material),
+            ("Rare Material", item.is_rare_material),
+            ("Material Salvageable", item.is_material_salvageable),
+        ]
+
+        PyImGui.set_next_window_size((520, 0), cond=PyImGui.ImGuiCond.Appearing)
+        ImGui.begin_tooltip()
+        ImGui.text(item.complete_name or item.singular_name or item.name or f"Item {item.id}", font_size=16)
+        ImGui.separator()
+
+        if ImGui.begin_table(
+            f"##item_snapshot_tooltip_{item.id}",
+            2,
+            PyImGui.TableFlags.BordersInnerV | PyImGui.TableFlags.SizingStretchProp,
+        ):
+            PyImGui.table_setup_column("Field", PyImGui.TableColumnFlags.WidthFixed, 170)
+            PyImGui.table_setup_column("Value")
+
+            for label, value in rows:
+                PyImGui.table_next_row()
+                PyImGui.table_next_column()
+                ImGui.text_colored(label, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                PyImGui.table_next_column()
+                ImGui.text_wrapped(UI._format_snapshot_value(value))
+
+            ImGui.end_table()
+
+        ImGui.end_tooltip()
+
+    @staticmethod
     def _prefer_lower_model_id(existing_item: ItemData | None, candidate_item: ItemData) -> ItemData:
         if existing_item is None:
             return candidate_item
@@ -1573,27 +1651,6 @@ class UI:
             return []
 
         return UI._get_requirement_popup_attributes(item_type)
-
-    def _format_requirement_attribute_summary(self, requirement_filter: RequirementFilter) -> str:
-        allowed = requirement_filter.allowed_attributes
-        disallowed = requirement_filter.disallowed_attributes
-        if not allowed and not disallowed:
-            return "All attributes allowed"
-
-        parts: list[str] = []
-        if allowed:
-            allowed_label = ", ".join(self._humanize_name(attribute.name) for attribute in allowed[:2])
-            if len(allowed) > 2:
-                allowed_label += f" +{len(allowed) - 2}"
-            parts.append(f"Allow: {allowed_label}")
-
-        if disallowed:
-            disallowed_label = ", ".join(self._humanize_name(attribute.name) for attribute in disallowed[:2])
-            if len(disallowed) > 2:
-                disallowed_label += f" +{len(disallowed) - 2}"
-            parts.append(f"Block: {disallowed_label}")
-
-        return " | ".join(parts)
 
     @staticmethod
     def _filter_requirement_attributes_for_item_type(attributes: list[Attribute], item_type: Optional[ItemType]) -> list[Attribute]:
@@ -4693,6 +4750,8 @@ class UI:
                     ImGui.text(str(entry.item.slot))
                     PyImGui.table_next_column()
                     ImGui.text(item_name, render_markdown=True)
+                    if PyImGui.is_item_hovered():
+                        self._draw_item_snapshot_tooltip(entry.item)
                     PyImGui.table_next_column()
                     ImGui.text(action_name)
                     PyImGui.table_next_column()
@@ -4793,6 +4852,8 @@ class UI:
                 ImGui.text(str(distance))
                 PyImGui.table_next_column()
                 ImGui.text(item_name)
+                if PyImGui.is_item_hovered():
+                    self._draw_item_snapshot_tooltip(item)
                 PyImGui.table_next_column()
                 ImGui.text(action_name)
                 PyImGui.table_next_column()
@@ -5078,9 +5139,6 @@ class UI:
 
                 case IsMaterialCondition():
                     content_height = 40 + spacing_y
-
-                case WeaponRequirementCondition():
-                    content_height = math.ceil((4 * (40 + spacing_y)) + 12)
 
                 case InherentFiltersCondition():
                     content_height = math.ceil(140 + max(1, len(condition.inherents)) * 90)
@@ -6266,110 +6324,6 @@ class UI:
             return changed
 
         @staticmethod
-        def ForWeaponRequirementCondition(ui: "UI", rule: Rule, condition: WeaponRequirementCondition, size: Optional[tuple[float, float]] = None) -> bool:
-            changed = False
-            item_types = [item_type for item_type in ui._get_condition_requirement_item_types(rule) if item_type.is_weapon_type()]
-            item_types = sorted(set(item_types), key=lambda item_type: item_type.name)
-            detail_item_type = item_types[0] if len(item_types) == 1 else None
-            editor_id = str(id(condition))
-            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
-            
-            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
-                if ImGui.begin_child(f"##requirement_rows_{editor_id}", (0, 0), border=False):
-                    for requirement in range(0, 14):
-                        selected = requirement in condition.requirements
-                        default_range = ui._get_default_weapon_value_range(detail_item_type, requirement) or (0, 0)
-                        current_filter = condition.requirements.get(requirement)
-                        current_range = current_filter.value_range if current_filter is not None else None
-                        min_value = current_range.min_value if current_range is not None else default_range[0]
-                        max_value = current_range.max_value if current_range is not None else default_range[1]
-                        if current_range is not None and current_range.min_value == 0 and current_range.max_value == 0 and default_range != (0, 0):
-                            min_value, max_value = default_range
-                        value_text = ui._format_weapon_value_range(detail_item_type, requirement)
-                        attribute_popup_id = f"##requirement_attributes_popup_{editor_id}_{requirement}"
-                        row_height = 56 if selected else 40
-
-                        if ImGui.begin_selectable(f"##requirement_selectable_{editor_id}_{requirement}", selected=selected, size=(0, row_height), border_color=UI.SUBTLE_TEXT_COLOR.rgb_tuple, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                            ImGui.text(string_table.decode(GWEncoded._requires_attribute_level(attribute_level=requirement, attribute=UI.ITEM_TYPE_ATTRIBUTES.get(detail_item_type or ItemType.Unknown, Attribute.None_))))
-                            ImGui.text_colored(value_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                            if selected and current_filter is not None:
-                                ImGui.text_colored(
-                                    ui._format_requirement_attribute_summary(current_filter) + " (Right-click to edit attributes)",
-                                    UI.SUBTLE_TEXT_COLOR.color_tuple,
-                                    font_size=11,
-                                )
-
-                        if ImGui.end_selectable():
-                            if not selected:
-                                condition.requirements[requirement] = RequirementFilter(
-                                    value_range=DamageRange(min_value, max_value),
-                                )
-                            else:
-                                condition.requirements.pop(requirement, None)
-                            changed = True
-
-                        if selected and PyImGui.is_item_hovered() and PyImGui.is_mouse_clicked(1):
-                            PyImGui.open_popup(attribute_popup_id)
-
-                        PyImGui.set_next_window_size((420, 420), cond=PyImGui.ImGuiCond.Appearing)
-                        if selected and PyImGui.begin_popup(attribute_popup_id):
-                            current_filter = condition.requirements.get(requirement)
-                            if current_filter is not None:
-                                ImGui.text(f"Requirement {requirement} Attributes")
-                                ImGui.separator()
-                                if requirement == 0:
-                                    current_filter.allowed_attributes.clear()
-                                    current_filter.disallowed_attributes.clear()
-                                    ImGui.text_wrapped("Requirement 0 means the item must not have an attribute. No attribute filters are available.")
-                                else:
-                                    ImGui.text_wrapped("Left-click an attribute to cycle through Any, Allowed, and Blocked. If no attributes are explicitly allowed, any attribute may pass unless it is blocked.")
-                                ImGui.separator()
-
-                                if requirement != 0 and ImGui.button("Clear Attribute Filters", -1):
-                                    current_filter.allowed_attributes.clear()
-                                    current_filter.disallowed_attributes.clear()
-                                    changed = True
-
-                                if ImGui.begin_child(f"##requirement_attributes_list_{editor_id}_{requirement}", (0, 300), border=False):
-                                    for attribute in ui._get_requirement_popup_attributes_for_requirement(condition.item_type, requirement):
-                                        is_allowed = attribute in current_filter.allowed_attributes
-                                        is_disallowed = attribute in current_filter.disallowed_attributes
-                                        state_label = "Allowed" if is_allowed else "Blocked" if is_disallowed else "Any"
-                                        state_color = UI.GREEN_COLOR.color_tuple if is_allowed else UI.RED_COLOR.color_tuple if is_disallowed else UI.SUBTLE_TEXT_COLOR.color_tuple
-                                        selectable_id = f"##requirement_attribute_{editor_id}_{requirement}_{attribute.name}"
-
-                                        if ImGui.begin_selectable(selectable_id, False, (0, 36), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                                            ImGui.text(ui._humanize_name(attribute.name))
-                                            PyImGui.same_line(max(220, PyImGui.get_content_region_avail()[0] - 80), 0)
-                                            ImGui.text_colored(state_label, state_color, font_size=12)
-
-                                        if ImGui.end_selectable():
-                                            if is_allowed:
-                                                current_filter.allowed_attributes = [entry for entry in current_filter.allowed_attributes if entry != attribute]
-                                                if attribute not in current_filter.disallowed_attributes:
-                                                    current_filter.disallowed_attributes.append(attribute)
-                                            elif is_disallowed:
-                                                current_filter.disallowed_attributes = [entry for entry in current_filter.disallowed_attributes if entry != attribute]
-                                            else:
-                                                current_filter.disallowed_attributes = [entry for entry in current_filter.disallowed_attributes if entry != attribute]
-                                                if attribute not in current_filter.allowed_attributes:
-                                                    current_filter.allowed_attributes.append(attribute)
-                                            changed = True
-
-                                        if PyImGui.is_item_hovered():
-                                            ImGui.show_tooltip("Click to cycle: Any -> Allowed -> Blocked -> Any")
-                                ImGui.end_child()
-
-                                if ImGui.button("Close", -1):
-                                    PyImGui.close_current_popup()
-
-                            PyImGui.end_popup()
-                ImGui.end_child()
-
-            UI.ConditionEditor.EndConditionContainer()
-            return changed
-
-        @staticmethod
         def ForInherentFiltersCondition(ui: "UI", rule: Rule, condition: InherentFiltersCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             unique_id = str(id(condition))
@@ -6567,7 +6521,7 @@ class UI:
                 if ImGui.button("Add Requirement", -1):
                     PyImGui.open_popup(popup_id)
 
-                PyImGui.set_next_window_size((320, 0), cond=PyImGui.ImGuiCond.Appearing)
+                PyImGui.set_next_window_size((320, 160), cond=PyImGui.ImGuiCond.Always)
                 if PyImGui.begin_popup(popup_id):
                     ImGui.text("Add Requirement")
                     ImGui.separator()
@@ -7284,9 +7238,6 @@ class UI:
             case SalvagesToMaterialsCondition():
                 return UI.ConditionEditor.ForSalvagesToMaterialsCondition(self, rule, condition, size)
             
-            case WeaponRequirementCondition():
-                return UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, condition, size)
-            
             case InherentFiltersCondition():
                 return UI.ConditionEditor.ForInherentFiltersCondition(self, rule, condition, size)
             
@@ -7332,7 +7283,6 @@ class UI:
             RaritiesCondition,
             DyeColorsCondition,
             SalvagesToMaterialsCondition,
-            WeaponRequirementCondition,
             InherentFiltersCondition,
             InscribableCondition,
             UnidentifiedCondition,
@@ -7536,7 +7486,7 @@ class UI:
                 
                 changed = UI.ConditionEditor.ForModelFileIdsCondition(self, rule, rule._model_file_condition(), size=(width, height)) or changed
                 PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
+                changed = UI.ConditionEditor.ForWeaponRequirementAndDamageCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
                 
                 changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
                 
@@ -7551,7 +7501,7 @@ class UI:
                 
                 changed = UI.ConditionEditor.ForExactItemTypeCondition(self, rule, rule._item_type_condition(), size=(width, height)) or changed
                 PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForWeaponRequirementCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
+                changed = UI.ConditionEditor.ForWeaponRequirementAndDamageCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
 
                 changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
                 
