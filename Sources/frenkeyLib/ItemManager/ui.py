@@ -7357,6 +7357,8 @@ class UI:
             io = PyImGui.get_io()
             child_pos = PyImGui.get_window_pos()
             child_size = PyImGui.get_window_size()
+            child_visible_left = child_pos[0]
+            child_visible_right = child_pos[0] + child_size[0]
             child_visible_top = child_pos[1]
             child_visible_bottom = child_pos[1] + child_size[1]
             condition_rects: dict[int, tuple[float, float, float, float]] = {}
@@ -7414,45 +7416,45 @@ class UI:
                         PyImGui.set_scroll_y(min(scroll_max_y, scroll_y + scroll_step))
 
                     if condition_rects:
-                        first_condition_index = min(condition_rects.keys())
-                        last_condition_index = max(condition_rects.keys())
-                        first_condition_rect = condition_rects[first_condition_index]
-                        last_condition_rect = condition_rects[last_condition_index]
-
-                        if mouse_y <= first_condition_rect[1] + edge_threshold:
-                            self._drag_condition_target_index = first_condition_index
+                        if mouse_y <= child_visible_top + edge_threshold:
+                            self._drag_condition_target_index = min(condition_rects.keys())
                             self._drag_condition_target_after = False
-                        elif mouse_y >= last_condition_rect[3] - edge_threshold:
-                            self._drag_condition_target_index = last_condition_index
+                        elif mouse_y >= child_visible_bottom - edge_threshold:
+                            self._drag_condition_target_index = max(condition_rects.keys())
                             self._drag_condition_target_after = True
 
                     if self._drag_condition_target_index in condition_rects:
                         current_rect = condition_rects[self._drag_condition_target_index]
-                        x1, _, x2, _ = current_rect
-                        line_y = current_rect[3] if self._drag_condition_target_after else current_rect[1]
+                        usual_gap = condition_gap_values[0] if condition_gap_values else 10.0
+                        x1 = max(current_rect[0] + 4, child_visible_left + 4)
+                        x2 = min(current_rect[2] - 4, child_visible_right - 4)
                         can_draw_target_rect = True
+                        line_y = 0.0
                         if self._drag_condition_target_after:
                             if self._drag_condition_target_index + 1 in condition_rects:
                                 next_rect = condition_rects[self._drag_condition_target_index + 1]
-                                gap = next_rect[1] - current_rect[3]
-                                if gap > 0.0:
-                                    line_y = current_rect[3] + (gap * 0.5)
-                                elif self._drag_condition_target_index == len(rule.conditions) - 1 and condition_gap_values:
-                                    line_y = current_rect[3] + (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
+                                line_y = (current_rect[3] + next_rect[1]) / 2.0
+                            else:
+                                if current_rect[3] < child_visible_bottom:
+                                    bottom_gap = child_visible_bottom - current_rect[3]
+                                    effective_gap = min(bottom_gap, usual_gap)
+                                    line_y = current_rect[3] + (effective_gap / 2.0)
                                 else:
                                     can_draw_target_rect = False
-                            elif self._drag_condition_target_index == len(rule.conditions) - 1 and condition_gap_values:
-                                line_y = current_rect[3] + (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
                         else:
                             if self._drag_condition_target_index - 1 in condition_rects:
                                 previous_rect = condition_rects[self._drag_condition_target_index - 1]
-                                gap = current_rect[1] - previous_rect[3]
-                                if gap > 0.0:
-                                    line_y = current_rect[1] - (gap * 0.5)
-                            elif self._drag_condition_target_index == 0 and condition_gap_values:
-                                line_y = current_rect[1] - (sum(condition_gap_values) / len(condition_gap_values)) * 0.5
-                            elif self._drag_condition_target_index == 0:
-                                line_y = current_rect[1] - 4.0
+                                line_y = (previous_rect[3] + current_rect[1]) / 2.0
+                            else:
+                                scroll_y = PyImGui.get_scroll_y()
+                                if current_rect[1] > child_visible_top:
+                                    line_y = (child_visible_top + current_rect[1]) / 2.0
+                                elif scroll_y <= 0.0:
+                                    top_gap = max(current_rect[1] - child_visible_top, 0.0)
+                                    effective_gap = min(top_gap if top_gap > 0.0 else usual_gap, usual_gap)
+                                    line_y = child_visible_top + max(effective_gap / 2.0, 1.0)
+                                else:
+                                    can_draw_target_rect = False
 
                         rect_y1 = max(line_y - 1, child_visible_top) if can_draw_target_rect else 0.0
                         rect_y2 = min(line_y + 1, child_visible_bottom) if can_draw_target_rect else 0.0
