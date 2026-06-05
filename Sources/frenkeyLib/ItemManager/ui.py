@@ -43,7 +43,7 @@ from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession, Range
 from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, ItemAction, ItemType, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
-from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap, get_texture_for_model
+from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
 from Py4GWCoreLib.item_mods_src.upgrades import (
@@ -67,7 +67,6 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.routines_src.BehaviourTrees import BT
-from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
@@ -801,13 +800,6 @@ class UI:
             self.sorting_group_index = None
         
     @staticmethod
-    def format_stack_count(value: int) -> str:
-        full_stacks = value // MAX_STACK_SIZE
-        remaining = value % MAX_STACK_SIZE
-        
-        return f"{full_stacks} stacks + {remaining}" if full_stacks > 0 else str(remaining)
-
-    @staticmethod
     def format_currency(value: int) -> str:
         plat, gold = GWEncoded._formatted_currency_amount_bytes(value)
 
@@ -1411,9 +1403,6 @@ class UI:
     def _find_item_by_model_file_id_and_item_type(self, model_file_id: int, item_type: ItemType) -> ItemData | None:
         return self._find_item_by_model_file_id(model_file_id, item_type)
 
-    def _find_item_by_model_id_and_item_type(self, model_id: int, item_type: ItemType) -> ItemData | None:
-        return self._find_item_by_model_id(model_id, item_type)
-
     def _find_item_by_encoded_name(self, encoded_name: bytes) -> ItemData | None:
         return self._item_by_encoded_name.get(encoded_name)
 
@@ -1462,13 +1451,6 @@ class UI:
             return value
 
         return cast(TConfig, entry.value)
-
-    def _invalidate_recalculated_value(self, key: str) -> None:
-        self._recalculation_cache.pop(key, None)
-
-    def _invalidate_recalculation_scope(self, prefix: str) -> None:
-        for key in [entry_key for entry_key in self._recalculation_cache if entry_key.startswith(prefix)]:
-            self._recalculation_cache.pop(key, None)
 
     @staticmethod
     def _build_inherent_filter_condition_signature(condition: InherentFiltersCondition) -> tuple[Any, ...]:
@@ -1615,21 +1597,6 @@ class UI:
         self._nick_item_preview_cache[clamped_weeks] = result
         return result
 
-    def _format_weapon_value_range(self, item_type: Optional[ItemType], requirement: int) -> str:
-        value_range = self._get_default_weapon_value_range(item_type, requirement)
-        if value_range is None:
-            return ""
-
-        min_value, max_value = value_range
-        value = f"{min_value}-{max_value}" if min_value != max_value else f"{min_value}"
-        if item_type == ItemType.Shield:
-            return f"Armor: {value}"
-
-        if item_type == ItemType.Offhand:
-            return f"Energy: {value}"
-
-        return f"Damage: {value}"
-
     @staticmethod
     def _get_requirement_popup_attributes(item_type: Optional[ItemType]) -> list[Attribute]:
         if item_type is None:
@@ -1648,14 +1615,6 @@ class UI:
     @staticmethod
     def _get_requirement_popup_attributes_for_requirement(item_type: Optional[ItemType], requirement_level: int) -> list[Attribute]:
         return UI._get_requirement_popup_attributes(item_type)
-
-    @staticmethod
-    def _filter_requirement_attributes_for_item_type(attributes: list[Attribute], item_type: Optional[ItemType]) -> list[Attribute]:
-        valid_attributes = UI._get_requirement_popup_attributes(item_type)
-        if not valid_attributes:
-            return []
-
-        return [attribute for attribute in attributes if attribute in valid_attributes]
 
     @staticmethod
     def _apply_weapon_requirement_row_defaults(requirement: AttributeRequirement, item_type: ItemType, requirement_level: int) -> None:
@@ -1968,16 +1927,6 @@ class UI:
         self._sync_selected_sorting_group()
         self._refresh_sorting_assigned_slot_cache()
         self._invalidate_sorting_preview_cache()
-
-    def _load_active_config(self) -> None:
-        active_config = self._get_active_config_info()
-        if active_config is not None:
-            active_config.load()
-            self._sync_selected_rule()
-            self._sync_selected_sorting_group()
-            self._refresh_sorting_assigned_slot_cache()
-            if isinstance(active_config.config, SortingConfig):
-                self._invalidate_sorting_preview_cache()
 
     def _refresh_global_config_profile_context(self) -> None:
         if self.profile_manager.refresh():
@@ -2404,9 +2353,6 @@ class UI:
         self._set_active_rule(custom_rule)
 
         return custom_rule
-
-    def _clone_condition(self, condition: Condition) -> Condition | None:
-        return Condition.from_dict(condition.to_dict())
 
     def _get_condition_clipboard(self) -> Condition | None:
         if self._condition_clipboard_payload is None:
@@ -3155,13 +3101,6 @@ class UI:
 
         ImGui.text("No editor available for this config.")
 
-    @staticmethod
-    def _slot_group_slots_to_text(group: SlotGroupConfig) -> str:
-        return ', '.join(
-            f'{slot_ref.bag.name}:{slot_ref.slot}'
-            for slot_ref in group.normalized_slot_refs()
-        )
-
     def _slot_group_selection_summary(self, group: SlotGroupConfig) -> str:
         slot_refs = group.normalized_slot_refs()
         if group.is_default:
@@ -3178,18 +3117,6 @@ class UI:
                 slot_list = f'{slot_list}, ...'
             parts.append(f'{self._humanize_name(bag.name)}: {slot_list}')
         return '\n'.join(parts)
-
-    @staticmethod
-    def _parse_slot_group_slots(slots_text: str) -> list[int]:
-        slots: list[int] = []
-        for token in re.split(r'[\s,;]+', slots_text.strip()):
-            if token == '':
-                continue
-            try:
-                slots.append(max(0, int(token)))
-            except ValueError:
-                continue
-        return sorted(set(slots))
 
     def _format_sort_argument_custom_order_summary(self, argument: SortArgument) -> str:
         if not argument.has_custom_order:
@@ -4992,26 +4919,6 @@ class UI:
 
         ImGui.separator()
         PyImGui.spacing()
-
-    def _get_condition_requirement_item_types(self, rule: Rule) -> list[ItemType]:
-        exact_type_condition = next((condition for condition in rule.conditions if isinstance(condition, ExactItemTypeCondition)), None)
-        if exact_type_condition is not None and exact_type_condition.item_type is not None:
-            return [exact_type_condition.item_type]
-
-        item_types_condition = next((condition for condition in rule.conditions if isinstance(condition, ItemTypesCondition)), None)
-        if item_types_condition is not None:
-            return list(item_types_condition.item_types)
-
-        model_file_ids_condition = next((condition for condition in rule.conditions if isinstance(condition, ModelFileIdsCondition)), None)
-        if model_file_ids_condition is not None:
-            item_types: list[ItemType] = []
-            for model_file_id in model_file_ids_condition.model_file_ids:
-                item = self._find_item_by_model_file_id(model_file_id)
-                if item is not None and item.item_type.is_weapon_type() and item.item_type not in item_types:
-                    item_types.append(item.item_type)
-            return item_types
-
-        return []
 
     def _begin_no_header_table(self, id: str, column_count: int, flags : Optional[int] = None, size: tuple[float, float] = (0, 0)) -> bool:
         flags = flags if flags is not None else PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.NoSavedSettings | PyImGui.TableFlags.NoPadOuterX
@@ -7293,12 +7200,6 @@ class UI:
             UpgradeRangesCondition,
         )
         return issubclass(condition_type, supported_types)
-
-    def _clamp_condition_editor_height(self, estimated_height: float, max_height: float = 500) -> float:
-        minimum_height = 60
-        clamped_height = max(minimum_height, estimated_height)
-        
-        return min(clamped_height, max_height)
 
     def _draw_custom_rule(self, rule: CustomRule) -> bool:
         changed = False
