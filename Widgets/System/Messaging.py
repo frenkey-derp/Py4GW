@@ -3045,6 +3045,8 @@ def ProcessMessages():
             GLOBAL_CACHE.Coroutines.append(InventoryQuery(index, message))
         case SharedCommandType.EquipItem:
             GLOBAL_CACHE.Coroutines.append(EquipItem(index, message))
+        case SharedCommandType.Reload:
+            GLOBAL_CACHE.Coroutines.append(Reload(index, message))
         case SharedCommandType.LootEx:
             # privately Handled Command, by frenkey
             pass
