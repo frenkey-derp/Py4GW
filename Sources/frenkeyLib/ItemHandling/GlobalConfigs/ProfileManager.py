@@ -203,6 +203,10 @@ class GlobalConfigProfileManager:
         normalized_config_type = self.normalize_config_type(config_type)
         return self._active_profile_names[normalized_config_type]
 
+    def ensure_active_config_folder(self, config_type: str) -> None:
+        normalized_config_type = self.normalize_config_type(config_type)
+        os.makedirs(self.get_active_config_folder(normalized_config_type), exist_ok=True)
+
     def _read_selected_profile_name(self, character_name: str, config_type: str) -> str:
         normalized_config_type = self.normalize_config_type(config_type)
         ini_key = self._ensure_ini_key()
@@ -259,7 +263,6 @@ class GlobalConfigProfileManager:
                     self._write_selected_profile_name(self._current_character, config_type, selected_profile)
 
             self._active_profile_names[config_type] = selected_profile
-            os.makedirs(self.get_active_config_folder(config_type), exist_ok=True)
 
         return previous_character != self._current_character or previous_profiles != self._active_profile_names
 
@@ -274,7 +277,7 @@ class GlobalConfigProfileManager:
 
         self._write_selected_profile_name(self._current_character, normalized_config_type, normalized)
         self._active_profile_names[normalized_config_type] = normalized
-        os.makedirs(self.get_active_config_folder(normalized_config_type), exist_ok=True)
+        self.ensure_active_config_folder(normalized_config_type)
         return True
 
     def delete_profile(self, config_type: str, profile_name: str) -> bool:
@@ -294,7 +297,7 @@ class GlobalConfigProfileManager:
                 self.SHARED_PROFILE_NAME,
             )
             self._active_profile_names[normalized_config_type] = self.SHARED_PROFILE_NAME
-            os.makedirs(self.get_active_config_folder(normalized_config_type), exist_ok=True)
+            self.ensure_active_config_folder(normalized_config_type)
 
         self._remove_tree(profile_folder)
 

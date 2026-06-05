@@ -473,6 +473,7 @@ class UI:
         self.manage_profile_window_config_type: str = 'BuyConfig'
         self.profile_manager = GlobalConfigProfileManager()
         self.profile_manager.refresh()
+        self._profile_context_refresh_timer: ThrottledTimer = ThrottledTimer(1000)
         self.preview_entries : list[InventoryPreviewEntry] = []
         self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
         self.sorting_preview_throttle : ThrottledTimer = ThrottledTimer(1000)
@@ -1928,8 +1929,12 @@ class UI:
         self._refresh_sorting_assigned_slot_cache()
         self._invalidate_sorting_preview_cache()
 
-    def _refresh_global_config_profile_context(self) -> None:
-        if self.profile_manager.refresh():
+    def _refresh_global_config_profile_context(self, force: bool = False) -> None:
+        if not force and not self._profile_context_refresh_timer.IsExpired():
+            return
+
+        self._profile_context_refresh_timer.Reset()
+        if self.profile_manager.refresh(force=force):
             self._reload_all_configs()
 
     def _invalidate_sorting_preview_cache(self) -> None:
@@ -1956,6 +1961,8 @@ class UI:
 
         self._save_all_configs()
         if self.profile_manager.set_profile_for_current_character(target_config.config_type, profile_name):
+            self.profile_manager.ensure_active_config_folder(target_config.config_type)
+            self._profile_context_refresh_timer.Reset()
             self._reload_all_configs()
 
     def _create_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
@@ -1984,6 +1991,7 @@ class UI:
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
         self.profile_manager.refresh(force=True)
+        self._profile_context_refresh_timer.Reset()
         self._reload_all_configs()
 
     def _duplicate_global_config_profile(self, source_profile_name: str, target_profile_name: str, config_info: ConfigInfo | None = None) -> None:
@@ -2001,6 +2009,7 @@ class UI:
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
         self.profile_manager.refresh(force=True)
+        self._profile_context_refresh_timer.Reset()
 
     def _rename_global_config_profile(self, source_profile_name: str, target_profile_name: str, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_active_config_info(config_info)
@@ -2017,6 +2026,7 @@ class UI:
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
         self.profile_manager.refresh(force=True)
+        self._profile_context_refresh_timer.Reset()
         self._reload_all_configs()
 
     def _open_save_as_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
@@ -2555,10 +2565,6 @@ class UI:
 
                         ImGui.text(title, font_size=18)
                         PyImGui.table_next_column()
-                        
-                                                    
-                        self._refresh_global_config_profile_context()
-
                         active_config = self._get_active_config_info()
                         if active_config is not None:
                             active_config_type = active_config.config_type
