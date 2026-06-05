@@ -97,7 +97,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ModelIdsCondition,
     NickItemCondition,
     QuantityMatchCondition,
-    WeaponRequirementAndDamageCondition,
+    WeaponRequirementCondition,
     StackQuantityCondition,
     RaritiesCondition,
     SalvagesToMaterialsCondition,
@@ -1647,9 +1647,6 @@ class UI:
 
     @staticmethod
     def _get_requirement_popup_attributes_for_requirement(item_type: Optional[ItemType], requirement_level: int) -> list[Attribute]:
-        if int(requirement_level) == 0:
-            return []
-
         return UI._get_requirement_popup_attributes(item_type)
 
     @staticmethod
@@ -1666,9 +1663,8 @@ class UI:
         requirement.attribute_level = requirement_level
 
         valid_attributes = UI._get_requirement_popup_attributes_for_requirement(item_type, requirement_level)
-        if requirement_level == 0:
-            requirement.attributes.clear()
-        elif len(valid_attributes) == 1:
+        
+        if len(valid_attributes) == 1:
             requirement.attributes = [valid_attributes[0]]
         else:
             requirement.attributes = [attribute for attribute in requirement.attributes if attribute in valid_attributes]
@@ -5143,7 +5139,7 @@ class UI:
                 case InherentFiltersCondition():
                     content_height = math.ceil(140 + max(1, len(condition.inherents)) * 90)
 
-                case WeaponRequirementAndDamageCondition():
+                case WeaponRequirementCondition():
                     base_height = math.ceil(PyImGui.get_text_line_height() + (button_padding_y * 2))
                     sizes["element_height"] = 58
                     sizes["element_width"] = avail_width
@@ -6503,7 +6499,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForWeaponRequirementAndDamageCondition(ui: "UI", rule: Rule, condition: WeaponRequirementAndDamageCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForWeaponRequirementAndDamageCondition(ui: "UI", rule: Rule, condition: WeaponRequirementCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = id(condition)
             popup_id = f"##requirements_condition_add_popup_{condition_id}"
@@ -6575,12 +6571,10 @@ class UI:
                         requirement_id = id(requirement)
                         unique_id = f"weapon_requirement_and_damage_condition_{condition_id}_{requirement_id}"
                         attribute_popup_id = f"##weapon_requirement_and_damage_condition_attributes_popup_{unique_id}"
-                        bounds = requirement.get_ranges_for_weapon_type(requirement.weapon_type) if requirement.weapon_type in WEAPON_TYPES else None
-                        summary_text = "Any Attribute" if not requirement.attributes else ", ".join(ui._humanize_name(attribute.name) for attribute in requirement.attributes[:2])
-                        if len(requirement.attributes) > 2:
-                            summary_text += f" +{len(requirement.attributes) - 2}"
-
-                        requirement_title = f"{ui._item_type_name(requirement.weapon_type)} | Requirement {requirement.attribute_level}"
+                        summary_text = "Any Attribute" if not requirement.attributes else ", ".join(ui._humanize_name(attribute.name) for attribute in requirement.attributes)
+                        
+                        attribute_name = ui._humanize_name(requirement.attributes[0].name) if len(requirement.attributes) == 1 else "Item Attribute"
+                        requirement_title = f"{ui._item_type_name(requirement.weapon_type)} | Requires {requirement.attribute_level} {attribute_name}"
                         value_summary = ""
                         if requirement.has_energy_range:
                             value_summary = (
@@ -6605,14 +6599,19 @@ class UI:
                                 open_config_popup = True
 
                             PyImGui.same_line(0, 8)
+                            model_file_id = UI.ITEM_TYPE_REPRESENTATIVE_MODELFILE_IDS.get(requirement.weapon_type)
+                            ui._draw_texture_from_model_file_id(model_file_id, (avail[1], avail[1]))
+                            
+                            PyImGui.same_line(0, 8)
                             PyImGui.begin_group()
                             ImGui.text(requirement_title)
                             x, y = PyImGui.get_cursor_pos()
                             PyImGui.set_cursor_pos(x, y - 4)
-                            ImGui.text_colored(summary_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             if value_summary:
-                                PyImGui.same_line(0, 8)
-                                ImGui.text_colored(value_summary, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                ImGui.text_colored(value_summary + " | ", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                PyImGui.same_line(0, 3)
+                                
+                            ImGui.text_colored(summary_text, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                             PyImGui.end_group()
                                     
                                     
@@ -6632,7 +6631,7 @@ class UI:
                         if open_config_popup:
                             PyImGui.open_popup(attribute_popup_id)
 
-                        PyImGui.set_next_window_size((380, 0), cond=PyImGui.ImGuiCond.Appearing)
+                        PyImGui.set_next_window_size((360, 0), cond=PyImGui.ImGuiCond.Appearing)
                         if PyImGui.begin_popup(attribute_popup_id):
                             ImGui.text(requirement_title)
                             ImGui.separator()
@@ -6664,63 +6663,64 @@ class UI:
                             popup_bounds = requirement.get_ranges_for_weapon_type(requirement.weapon_type) if requirement.weapon_type in WEAPON_TYPES else None
 
                             ImGui.separator()
-                            PyImGui.set_next_item_width(-1)
-                            ui._focus_popup_search_field_on_appearing()
-                            current_search = ui._get_search_field_value(search_state_key)
-                            _, current_search = ImGui.search_field(f"##weapon_requirement_and_damage_condition_attribute_search_{unique_id}", current_search, "Search attributes...")
-                            ui._set_search_field_value(search_state_key, current_search)
-                            normalized_query = current_search.strip().lower()
-
-                            if ImGui.button("Clear Attributes", -1):
-                                requirement.attributes.clear()
-                                changed = True
-
-                            if ImGui.begin_child(f"##weapon_requirement_and_damage_condition_attribute_list_{unique_id}", (0, 180), border=True):
-                                for attribute in ui._get_requirement_popup_attributes_for_requirement(requirement.weapon_type, requirement.attribute_level):
-                                    attribute_label = ui._humanize_name(attribute.name)
-                                    if normalized_query and normalized_query not in attribute_label.lower() and normalized_query not in attribute.name.lower():
-                                        continue
-
-                                    selected = attribute in requirement.attributes
-                                    if ImGui.begin_selectable(f"##weapon_requirement_and_damage_condition_attribute_{unique_id}_{attribute.name}", selected, (0, 28), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                                        ImGui.text(attribute_label)
-                                    if ImGui.end_selectable():
-                                        if selected:
-                                            requirement.attributes = [entry for entry in requirement.attributes if entry != attribute]
-                                        else:
-                                            requirement.attributes.append(attribute)
-                                        changed = True
-                            elif requirement.attribute_level == 0:
-                                requirement.attributes.clear()
-                                ImGui.text_wrapped("Requirement 0 means the item must not have an attribute. No attribute filters are available.")
-                            ImGui.end_child()
-
-                            ImGui.separator()
                             if requirement.has_energy_range and popup_bounds is not None:
                                 min_energy = ImGui.slider_int("Minimum Energy", requirement.min_values[0], popup_bounds[0][0], popup_bounds[1][0])
-                                max_energy = ImGui.slider_int("Maximum Energy", requirement.min_values[1], popup_bounds[0][0], popup_bounds[1][0])
-                                new_min_energy = min(min_energy, max_energy)
-                                new_max_energy = max(min_energy, max_energy)
-                                if new_min_energy != requirement.min_values[0] or new_max_energy != requirement.min_values[1]:
-                                    requirement.min_values = (new_min_energy, new_max_energy)
+                                ImGui.show_tooltip(f"Require at least {min_energy} energy")
+                                if min_energy != requirement.min_values[0] or min_energy != requirement.min_values[1]:
+                                    requirement.min_values = (min_energy, min_energy)
                                     changed = True
 
                             elif requirement.has_armor_range and popup_bounds is not None:
                                 min_armor = ImGui.slider_int("Minimum Armor", requirement.min_values[0], popup_bounds[0][0], popup_bounds[1][0])
-                                max_armor = ImGui.slider_int("Maximum Armor", requirement.min_values[1], popup_bounds[0][0], popup_bounds[1][0])
-                                new_min_armor = min(min_armor, max_armor)
-                                new_max_armor = max(min_armor, max_armor)
-                                if new_min_armor != requirement.min_values[0] or new_max_armor != requirement.min_values[1]:
-                                    requirement.min_values = (new_min_armor, new_max_armor)
+                                ImGui.show_tooltip(f"Require at least {min_armor} armor")
+                                if min_armor != requirement.min_values[0] or min_armor != requirement.min_values[1]:
+                                    requirement.min_values = (min_armor, min_armor)
                                     changed = True
 
                             elif requirement.has_damage_ranges and popup_bounds is not None:
                                 min_damage = ImGui.slider_int("Minimum Damage", requirement.min_values[0], popup_bounds[0][0], popup_bounds[1][0])
+                                ImGui.show_tooltip(f"Require at least a lower damage of {min_damage}")
                                 max_damage = ImGui.slider_int("Maximum Damage", requirement.min_values[1], popup_bounds[1][0], popup_bounds[1][1])
+                                ImGui.show_tooltip(f"Require at least an upper damage of {max_damage}")
                                 if min_damage != requirement.min_values[0] or max_damage != requirement.min_values[1]:
                                     requirement.min_values = (min_damage, max_damage)
                                     changed = True
 
+                            available_attributes = ui._get_requirement_popup_attributes_for_requirement(requirement.weapon_type, requirement.attribute_level)
+                            if len(available_attributes) > 1:
+                                ImGui.separator()
+                                PyImGui.set_next_item_width(-1)
+                                ui._focus_popup_search_field_on_appearing()
+                                current_search = ui._get_search_field_value(search_state_key)
+                                _, current_search = ImGui.search_field(f"##weapon_requirement_and_damage_condition_attribute_search_{unique_id}", current_search, "Search attributes...")
+                                ui._set_search_field_value(search_state_key, current_search)
+                                normalized_query = current_search.strip().lower()
+
+                                if ImGui.button("Clear Attributes", -1):
+                                    requirement.attributes.clear()
+                                    changed = True
+                                    
+                                if ImGui.begin_child(f"##weapon_requirement_and_damage_condition_attribute_list_{unique_id}", (0, 180), border=True):
+                                    for attribute in available_attributes:
+                                        attribute_label = ui._humanize_name(attribute.name)
+                                        if normalized_query and normalized_query not in attribute_label.lower() and normalized_query not in attribute.name.lower():
+                                            continue
+
+                                        selected = attribute in requirement.attributes
+                                        if ImGui.begin_selectable(f"##weapon_requirement_and_damage_condition_attribute_{unique_id}_{attribute.name}", selected, (0, 28), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                                            ImGui.text(attribute_label)
+                                        if ImGui.end_selectable():
+                                            if len(available_attributes) > 1:
+                                                if selected:
+                                                    requirement.attributes = [entry for entry in requirement.attributes if entry != attribute]
+                                                else:
+                                                    requirement.attributes.append(attribute)
+                                                changed = True
+                                elif requirement.attribute_level == 0:
+                                    requirement.attributes.clear()
+                                    ImGui.text_wrapped("Requirement 0 means the item must not have an attribute. No attribute filters are available.")
+                                ImGui.end_child()
+                                
                             if ImGui.button("Close", -1):
                                 PyImGui.close_current_popup()
 
@@ -7220,7 +7220,7 @@ class UI:
             case NickItemCondition():
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, condition, size)
 
-            case WeaponRequirementAndDamageCondition():
+            case WeaponRequirementCondition():
                 return UI.ConditionEditor.ForWeaponRequirementAndDamageCondition(self, rule, condition, size)
 
             case IsMaterialCondition():
@@ -7277,7 +7277,7 @@ class UI:
             ExactItemTypeCondition,
             StackQuantityCondition,
             NickItemCondition,
-            WeaponRequirementAndDamageCondition,
+            WeaponRequirementCondition,
             IsMaterialCondition,
             QuantityMatchCondition,
             RaritiesCondition,

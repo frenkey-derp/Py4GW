@@ -821,7 +821,7 @@ class AttributeRequirement:
         return self.weapon_type == ItemType.Offhand   
     
     
-class WeaponRequirementAndDamageCondition(Condition):
+class WeaponRequirementCondition(Condition):
     """Matches weapons with any specified requirement for a certain attribute."""
 
     def __init__(self, requirements: Optional[list[AttributeRequirement]] = None):

@@ -5,7 +5,7 @@ from enum import IntEnum, auto
 from typing import Any, ClassVar, Optional, Sequence, cast
 
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import ItemAction, ItemType, Rarity, SalvageMode
+from Py4GWCoreLib.enums_src.Item_enums import WEAPON_TYPES, ItemAction, ItemType, Rarity, SalvageMode, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Upgrade
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
@@ -38,7 +38,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     UpgradeMatchCondition,
     UpgradeRangesCondition,
     UpgradesCondition,
-    WeaponRequirementAndDamageCondition,
+    WeaponRequirementCondition,
     WeaponRequirementRanges,
     attribute_requirements_to_requirement_ranges,
     normalize_inherent_filters,
@@ -426,7 +426,7 @@ class WeaponSkinRule(Rule):
     ):
         conditions: list[Condition] = [
             ModelFileIdsCondition(model_file_ids),
-            WeaponRequirementAndDamageCondition(requirement_ranges_to_attribute_requirements(requirements, None, requirement_min, requirement_max)),
+            WeaponRequirementCondition(requirement_ranges_to_attribute_requirements(requirements, None, requirement_min, requirement_max)),
             InherentFiltersCondition(normalize_inherent_filters(inherents)),
         ]
 
@@ -505,7 +505,7 @@ class WeaponSkinRule(Rule):
     def _model_file_condition(self) -> ModelFileIdsCondition:
         return self.conditions[0]  # type: ignore[return-value]
 
-    def _requirement_condition(self) -> WeaponRequirementAndDamageCondition:
+    def _requirement_condition(self) -> WeaponRequirementCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
     def _inherent_condition(self) -> InherentFiltersCondition:
@@ -525,7 +525,7 @@ class WeaponTypeRule(Rule):
     ):
         conditions: list[Condition] = [
             ExactItemTypeCondition(item_type),
-            WeaponRequirementAndDamageCondition(requirement_ranges_to_attribute_requirements(requirements, item_type, requirement_min, requirement_max)),
+            WeaponRequirementCondition(requirement_ranges_to_attribute_requirements(requirements, item_type, requirement_min, requirement_max)),
             InherentFiltersCondition(normalize_inherent_filters(inherents), inscribable),
         ]
 
@@ -615,7 +615,7 @@ class WeaponTypeRule(Rule):
     def _item_type_condition(self) -> ExactItemTypeCondition:
         return self.conditions[0]  # type: ignore[return-value]
 
-    def _requirement_condition(self) -> WeaponRequirementAndDamageCondition:
+    def _requirement_condition(self) -> WeaponRequirementCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
     def _inherent_condition(self) -> InherentFiltersCondition:
