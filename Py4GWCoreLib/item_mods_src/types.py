@@ -114,6 +114,7 @@ class ModifierIdentifier(IntEnum):
     ReduceConditionDuration = 0x285
     ReduceConditionTupleDuration = 0x277
     ReducesDiseaseDuration = 0x247
+    BowType = 0x261
     TargetItemType = 0x25b
     TooltipDescription = 0x253
     AttributeRune = 0x21e

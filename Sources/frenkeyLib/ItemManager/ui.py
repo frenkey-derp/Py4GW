@@ -41,7 +41,7 @@ from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar
 from Py4GWCoreLib.UIManager import MerchantWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession, Range
-from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, ItemAction, ItemType, WeaponType
+from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, BowType, ItemAction, ItemType, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
@@ -78,6 +78,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
 from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     ArmorUpgradesCondition,
     Condition,
+    BowTypeCondition,
     DamageRange,
     DyeColorsCondition,
     EncodedNamesCondition,
@@ -384,6 +385,13 @@ class UI:
     }
     
     ITEM_TYPE_NAMES = {item_type: item_type.name for item_type in ItemType}
+    BOW_TYPE_NAMES = {
+        BowType.Shortbow: "Shortbow",
+        BowType.Longbow: "Longbow",
+        BowType.Flatbow: "Flatbow",
+        BowType.Recurvebow: "Recurve Bow",
+        BowType.Hornbow: "Hornbow",
+    }
     
     ITEM_UPGRADE_MODEL_FILE_IDS = {
         ItemType.Bow : (91655, 91653),
@@ -884,6 +892,10 @@ class UI:
     @staticmethod
     def _item_type_name(item_type: ItemType) -> str:
         return UI.ITEM_TYPE_NAMES.get(item_type, UI._humanize_name(item_type.name))
+
+    @staticmethod
+    def _bow_type_name(bow_type: BowType) -> str:
+        return UI.BOW_TYPE_NAMES.get(bow_type, UI._humanize_name(bow_type.name))
 
     @staticmethod
     def _get_relative_luminance(color: Color) -> float:
@@ -5043,6 +5055,9 @@ class UI:
                 case ExactItemTypeCondition()| InscribableCondition()| StackQuantityCondition()| UnidentifiedCondition() | IsCustomizedCondition():
                     content_height = 20
 
+                case BowTypeCondition():
+                    content_height = (20 + spacing_y) * 6 + 10
+                    
                 case QuantityMatchCondition():
                     content_height = 102
 
@@ -5882,6 +5897,29 @@ class UI:
                             condition.item_type = item_type
                             changed = True
                     ImGui.end_combo()
+            UI.ConditionEditor.EndConditionContainer()
+            return changed
+
+        @staticmethod
+        def ForBowTypeCondition(ui: "UI", rule: Rule, condition: BowTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
+            changed = False
+            sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            bow_types = list(BowType)
+
+            if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
+                for index, bow_type in enumerate(bow_types):
+                    is_selected = bow_type in condition.bow_types
+                    selected = ImGui.checkbox(f"{ui._bow_type_name(bow_type)}##bow_type_{id(condition)}_{bow_type.name}", is_selected)
+                    if selected != is_selected:
+                        if selected:
+                            condition.bow_types.append(bow_type)
+                        else:
+                            condition.bow_types.remove(bow_type)
+                        changed = True
+
+                    # if index < len(bow_types) - 1:
+                    #     PyImGui.same_line(0, 12)
+
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
@@ -7132,6 +7170,9 @@ class UI:
             
             case ExactItemTypeCondition():
                 return UI.ConditionEditor.ForExactItemTypeCondition(self, rule, condition, size)
+            
+            case BowTypeCondition():
+                return UI.ConditionEditor.ForBowTypeCondition(self, rule, condition, size)
 
             case StackQuantityCondition():
                 return UI.ConditionEditor.ForStackQuantityCondition(self, rule, condition, size)
@@ -7194,6 +7235,7 @@ class UI:
             ModelIdsAndItemTypesCondition,
             ItemTypesCondition,
             ExactItemTypeCondition,
+            BowTypeCondition,
             StackQuantityCondition,
             NickItemCondition,
             WeaponRequirementCondition,

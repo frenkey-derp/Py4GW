@@ -2,9 +2,9 @@ from typing import Optional, Type, TypeVar
 
 from PyItem import ItemModifier
 
-from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
+from Py4GWCoreLib.enums_src.Item_enums import BowType, ItemType, Rarity
 from Py4GWCoreLib.item_mods_src.item_modifier_parser import ItemModifierParser
-from Py4GWCoreLib.item_mods_src.properties import InherentProperty, InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty, TargetItemTypeProperty
+from Py4GWCoreLib.item_mods_src.properties import BowTypeProperty, InherentProperty, InscriptionProperty, ItemProperty, PrefixProperty, SuffixProperty, TargetItemTypeProperty
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
 from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
@@ -129,3 +129,20 @@ class ItemMod:
         target_item_type_prop = next((p for p in properties if isinstance(p, TargetItemTypeProperty)), None)
         
         return target_item_type_prop.item_type if target_item_type_prop else None
+
+    @staticmethod
+    @frame_cache(category="ItemMod", source_lib="get_bow_type")
+    def get_bow_type(item_id: int) -> Optional[BowType]:
+        '''
+        Gets the parsed bow type for a bow item. This method returns the first BowType property found on the item, or None if the item does not expose one.
+        '''
+        from Py4GWCoreLib.Item import Item
+
+        rarity, _ = Item.Rarity.GetRarity(item_id)
+        runtime_modifiers = Item.Customization.Modifiers.GetModifiers(item_id)
+
+        parser = ItemModifierParser(runtime_modifiers, rarity)
+        properties = parser.get_properties()
+        bow_type_prop = next((p for p in properties if isinstance(p, BowTypeProperty)), None)
+
+        return bow_type_prop.bow_type if bow_type_prop else None

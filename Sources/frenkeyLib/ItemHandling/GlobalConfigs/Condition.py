@@ -6,7 +6,7 @@ from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias, cas
 import Py4GW
 
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor
-from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, WEAPON_TYPES, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
+from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, WEAPON_TYPES, BowType, ItemType, Rarity, SalvageMode, WeaponType, is_weapon_type_literal
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, HalvesCastingTimeAttributeUpgrade, HalvesRechargeTimeAttributeUpgrade, Inherent, Inscription, RangeInstruction, Upgrade, WeaponUpgrade
@@ -544,6 +544,40 @@ class ExactItemTypeCondition(Condition):
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         item_type_name = data.get("item_type")
         self.item_type = ItemType[item_type_name] if isinstance(item_type_name, str) and item_type_name in ItemType.__members__ else None
+
+
+class BowTypeCondition(Condition):
+    """Matches bows whose type is one of the selected bow types."""
+    def __init__(self, bow_types: Optional[list[BowType]] = None):
+        self.bow_types: list[BowType] = bow_types if bow_types is not None else []
+
+    def is_valid(self) -> bool:
+        return len(self.bow_types) > 0
+
+    def evaluate(self, context: ConditionEvaluationContext) -> bool:
+        item_snapshot = context.item_snapshot
+        return item_snapshot is not None and item_snapshot.bow_type in self.bow_types
+
+    def _comparison_data(self) -> Any:
+        return tuple(sorted(bow_type.name for bow_type in self.bow_types))
+
+    def _serialize_data(self) -> dict[str, Any]:
+        return {"bow_types": [bow_type.name for bow_type in self.bow_types]}
+
+    def _deserialize_data(self, data: dict[str, Any]) -> None:
+        bow_types: list[BowType] = []
+        raw_bow_types = data.get("bow_types", [])
+        if isinstance(raw_bow_types, list):
+            for bow_type_name in raw_bow_types:
+                if isinstance(bow_type_name, str) and bow_type_name in BowType.__members__:
+                    bow_types.append(BowType[bow_type_name])
+
+        if not bow_types:
+            bow_type_name = data.get("bow_type")
+            if isinstance(bow_type_name, str) and bow_type_name in BowType.__members__:
+                bow_types.append(BowType[bow_type_name])
+
+        self.bow_types = bow_types
 
 
 class ModelIdsAndItemTypesCondition(Condition):
