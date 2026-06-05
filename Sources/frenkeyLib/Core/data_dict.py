@@ -122,6 +122,8 @@ class _DataFileMixin:
     get_local_path: Callable[..., str]
     get_default_path: Callable[..., str]
     version: FileVersion
+    
+    last_change : float = time.monotonic()
     _requires_save: bool
     _known_active_path: Optional[str]
     _known_active_mtime_ns: Optional[int]
@@ -326,6 +328,7 @@ class _DataFileMixin:
             raise FileLockTimeoutError(target_path, 0.0)
 
         self._write_payload(target_path, self._to_file_payload(), indent=indent)
+        self.last_change = time.monotonic()
         
     def _write_payload(self, target_path: str, payload_data: dict, *, indent: Optional[int] = 4) -> None:
         directory = os.path.dirname(target_path)

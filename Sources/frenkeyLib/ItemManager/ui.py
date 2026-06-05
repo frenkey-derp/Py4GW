@@ -451,6 +451,7 @@ class UI:
         self.module_config = module_config
         self.queue_data_refresh_on_main_window_open = False
         
+        
         self.floating_button = ImGui.FloatingIcon(
                 icon_path=self.module_config.icon_path,
                 window_id="##item_manager_floating_button",
@@ -743,7 +744,7 @@ class UI:
         UI.ITEM_TYPE_NAMES = {item_type: self._humanize_name(name) for item_type, name in UI.ITEM_TYPE_NAMES.items()} 
         
         self._rebuild_upgrade_ui_caches()
-        self._rebuild_item_ui_caches()
+        self._rebuild_item_ui_caches()    
 
     def _get_all_crafting_recipe_entries(self) -> list[tuple[str, Recipe]]:
         return [(recipe_entry.name, recipe_entry.value) for recipe_entry in CraftingRecipe]
@@ -1273,6 +1274,8 @@ class UI:
         self._salvage_material_search_cache.clear()
         self._live_search_normalized_cache.clear()
         self._live_search_results_cache.clear()
+        
+        self.cache_timestamp = ITEMS.last_change
 
     def _rebuild_upgrade_ui_caches(self) -> None:
         self._armor_upgrade_types_by_profession = {
@@ -1832,10 +1835,13 @@ class UI:
 
         if expanded:
             if self.queue_data_refresh_on_main_window_open:
-                Py4GW.Console.Log("Item Manager", "Refreshing item and upgrade data caches after main window opened.", Py4GW.Console.MessageType.Info)
-                self._rebuild_item_ui_caches()
-                self._rebuild_upgrade_ui_caches()
-                self.queue_data_refresh_on_main_window_open = False
+                from Sources.frenkeyLib.DataCollector.collectors.items_collector import ITEMS
+                
+                if ITEMS.last_change != self.cache_timestamp:
+                    Py4GW.Console.Log("Item Manager", "Refreshing item and upgrade data caches after main window opened.", Py4GW.Console.MessageType.Info)
+                    self._rebuild_item_ui_caches()
+                    self._rebuild_upgrade_ui_caches()
+                    self.queue_data_refresh_on_main_window_open = False
                 
             mouse_down = PyImGui.is_mouse_down(0)
             time_now = time.monotonic()
