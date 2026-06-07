@@ -5,22 +5,23 @@ from typing import Optional, Sequence, cast
 
 import Py4GW
 
+from Py4GWCoreLib.Inventory import Inventory
 from Py4GWCoreLib.Map import Map
-from Py4GWCoreLib.UIManager import MerchantWindow, TraderWindow
+from Py4GWCoreLib.UIManager import AnySalvageWindow, MerchantWindow, TraderWindow
 from Py4GWCoreLib.enums_src.Item_enums import INVENTORY_BAGS, STORAGE_BAGS, Bags, ItemAction, ItemType, SalvageMode
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
 from Py4GWCoreLib.py4gwcorelib_src.FrameCache import frame_cache
 from Py4GWCoreLib.routines_src.BehaviourTrees import BT
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import ExtractUpgradeRule, Rule
+from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
+from Py4GWCoreLib.global_configs.Rule import ExtractUpgradeRule, BaseRule
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
 @dataclass(slots=True)
 class InventoryPreviewEntry:
     item: ItemSnapshot
     action: Optional[ItemAction]
-    rule: Optional[Rule]
+    rule: Optional[BaseRule]
     note: str = ""
     executable: bool = True
 
@@ -33,8 +34,10 @@ class InventoryBT:
     _ACTIVE_ITEM_IDS_KEY = "inventory_bt_active_item_ids"
     _EXTRACT_WARNING_CACHE_KEY = "inventory_bt_extract_warning_cache"
     _ITEM_COOLDOWNS_KEY = "inventory_bt_item_cooldowns"
+    _ITEM_FAILURES_KEY = "inventory_bt_item_failures"
     _SUCCESS_COOLDOWN_TICKS = 1
     _FAILURE_COOLDOWN_TICKS = 15
+    _MAX_CONSECUTIVE_FAILURES = 3
 
     ACTION_PRIORITY: tuple[ItemAction, ...] = (
         ItemAction.Sell_To_Merchant,
@@ -63,6 +66,7 @@ class InventoryBT:
         self.tree.blackboard.pop(self._ACTIVE_ITEM_IDS_KEY, None)
         self.tree.blackboard.pop(self._EXTRACT_WARNING_CACHE_KEY, None)
         self.tree.blackboard.pop(self._ITEM_COOLDOWNS_KEY, None)
+        self.tree.blackboard.pop(self._ITEM_FAILURES_KEY, None)
 
     @classmethod
     def Build(cls, config: Optional[InventoryConfig] = None) -> BehaviorTree:
@@ -115,6 +119,7 @@ class InventoryBT:
     def _build_root_node(cls, config: InventoryConfig) -> BehaviorTree.Node:
         def _tick(node: BehaviorTree.Node) -> BehaviorTree.NodeState:            
             cls._advance_item_cooldowns(node.blackboard)
+            cls._prune_item_failures(node.blackboard)
             active_node = cast(BehaviorTree.Node | None, node.blackboard.get(cls._ACTIVE_NODE_KEY))
             if active_node is not None:                
                 active_node.blackboard = node.blackboard
@@ -124,20 +129,27 @@ class InventoryBT:
                     return BehaviorTree.NodeState.RUNNING
 
                 active_item_ids = cast(list[int], node.blackboard.get(cls._ACTIVE_ITEM_IDS_KEY, []))
+                active_action = cast(str | None, node.blackboard.get(cls._ACTIVE_ACTION_KEY))
                 node.blackboard.pop(cls._ACTIVE_NODE_KEY, None)
-                node.blackboard.pop(cls._ACTIVE_ACTION_KEY, None)
                 node.blackboard.pop(cls._ACTIVE_ITEM_IDS_KEY, None)
 
                 if active_state == BehaviorTree.NodeState.FAILURE:
+                    cls._record_item_failure(node.blackboard, active_item_ids, active_action)
                     cls._set_item_cooldown(node.blackboard, active_item_ids, cls._FAILURE_COOLDOWN_TICKS)
+                    node.blackboard.pop(cls._ACTIVE_ACTION_KEY, None)
                     return BehaviorTree.NodeState.FAILURE
 
+                cls._clear_item_failure(node.blackboard, active_item_ids, active_action)
                 cls._set_item_cooldown(node.blackboard, active_item_ids, cls._SUCCESS_COOLDOWN_TICKS)
+                node.blackboard.pop(cls._ACTIVE_ACTION_KEY, None)
                 return active_state
 
             action_batches = cls._collect_action_batches(config, node.blackboard)
             if not action_batches:
                 if cls._needs_inventory_sorting():
+                    if cls._should_defer_sorting(node.blackboard):
+                        return BehaviorTree.NodeState.RUNNING
+
                     action_node = BT.Items.Bags.SortBags(INVENTORY_BAGS)
                     Py4GW.Console.Log(
                         "InventoryBT",
@@ -174,6 +186,9 @@ class InventoryBT:
                 return action_node.tick()
 
             if cls._needs_inventory_sorting():
+                if cls._should_defer_sorting(node.blackboard):
+                    return BehaviorTree.NodeState.RUNNING
+
                 action_node = BT.Items.Bags.SortBags(INVENTORY_BAGS)
                 Py4GW.Console.Log(
                     "InventoryBT",
@@ -208,6 +223,9 @@ class InventoryBT:
 
             action = cls._get_action_for_item(config, item_id)
             if action in (None, ItemAction.NONE, ItemAction.Ignore, ItemAction.Hold):
+                continue
+
+            if blackboard is not None and cls._is_item_blocked_after_failures(blackboard, item_id, action):
                 continue
 
             item = ItemSnapshot.from_item_id(item_id)
@@ -348,7 +366,7 @@ class InventoryBT:
         return cls._get_rule_action(rule, item_id)
 
     @staticmethod
-    def _get_rule_action(rule: Rule, item_id: int) -> ItemAction:
+    def _get_rule_action(rule: BaseRule, item_id: int) -> ItemAction:
         if isinstance(rule, ExtractUpgradeRule):
             return rule.get_effective_action(item_id)
 
@@ -382,7 +400,7 @@ class InventoryBT:
         return False
 
     @staticmethod
-    def _get_first_matching_rule(config: InventoryConfig, item_id: int) -> Optional[Rule]:
+    def _get_first_matching_rule(config: InventoryConfig, item_id: int) -> Optional[BaseRule]:
         if item_id in config.blacklisted_items:
             return None
 
@@ -660,6 +678,171 @@ class InventoryBT:
         item_cooldowns = cast(dict[int, int], blackboard.setdefault(cls._ITEM_COOLDOWNS_KEY, {}))
         for item_id in item_ids:
             item_cooldowns[item_id] = max(ticks, item_cooldowns.get(item_id, 0))
+
+    @staticmethod
+    def _is_salvage_action_name(action_name: Optional[str]) -> bool:
+        return action_name in {
+            ItemAction.Salvage_Common_Materials.name,
+            ItemAction.Salvage_Rare_Materials.name,
+            ItemAction.ExtractUpgrade.name,
+        }
+
+    @staticmethod
+    def _native_salvage_is_active() -> bool:
+        try:
+            inventory_instance = Inventory.inventory_instance()
+        except Exception:
+            return False
+
+        try:
+            is_salvaging = getattr(inventory_instance, "IsSalvaging", None)
+            if callable(is_salvaging) and bool(is_salvaging()):
+                return True
+        except Exception:
+            pass
+
+        try:
+            transaction_done = getattr(inventory_instance, "IsSalvageTransactionDone", None)
+            if callable(transaction_done) and bool(transaction_done()):
+                return True
+        except Exception:
+            pass
+
+        return False
+
+    @classmethod
+    def _should_defer_sorting(cls, blackboard: dict) -> bool:
+        active_action = cast(Optional[str], blackboard.get(cls._ACTIVE_ACTION_KEY))
+        if cls._is_salvage_action_name(active_action):
+            return True
+
+        if AnySalvageWindow.IsOpen():
+            return True
+
+        return cls._native_salvage_is_active()
+
+    @staticmethod
+    def _format_item_for_log(item_id: int) -> str:
+        item = ItemSnapshot.from_item_id(item_id)
+        if item is None:
+            return f"id={item_id} missing"
+
+        item_name = item.names.plain if item.names.plain and item.names.plain != item.names.fallback else item.complete_name or "Unknown Item"
+        return f"id={item.id} name='{item_name}' model={item.model_id}"
+
+    @staticmethod
+    def _get_item_failure_signature(item: ItemSnapshot, action: ItemAction) -> tuple[object, ...]:
+        return (
+            action.name,
+            item.model_id,
+            item.quantity,
+            item.slot,
+            item.bag.value if item.bag is not None else -1,
+            item.is_identified,
+            item.is_salvageable,
+            item.is_inventory_item,
+        )
+
+    @classmethod
+    def _prune_item_failures(cls, blackboard: dict) -> None:
+        item_failures = cast(dict[int, tuple[tuple[object, ...], int]], blackboard.setdefault(cls._ITEM_FAILURES_KEY, {}))
+        if not item_failures:
+            return
+
+        stale_item_ids: list[int] = []
+        for item_id, (stored_signature, _) in item_failures.items():
+            item = ItemSnapshot.from_item_id(item_id)
+            if item is None or not item.is_valid or not item.is_inventory_item:
+                stale_item_ids.append(item_id)
+                continue
+
+            action_name = stored_signature[0] if stored_signature else None
+            if not isinstance(action_name, str) or action_name not in ItemAction.__members__:
+                stale_item_ids.append(item_id)
+                continue
+
+            action = ItemAction[action_name]
+            current_signature = cls._get_item_failure_signature(item, action)
+            if current_signature != stored_signature:
+                stale_item_ids.append(item_id)
+
+        for item_id in stale_item_ids:
+            item_failures.pop(item_id, None)
+
+    @classmethod
+    def _record_item_failure(cls, blackboard: dict, item_ids: Sequence[int], action_name: Optional[str]) -> None:
+        if not action_name or action_name not in ItemAction.__members__:
+            return
+
+        action = ItemAction[action_name]
+        item_failures = cast(dict[int, tuple[tuple[object, ...], int]], blackboard.setdefault(cls._ITEM_FAILURES_KEY, {}))
+
+        for item_id in item_ids:
+            item = ItemSnapshot.from_item_id(item_id)
+            if item is None or not item.is_valid or not item.is_inventory_item:
+                item_failures.pop(item_id, None)
+                continue
+
+            signature = cls._get_item_failure_signature(item, action)
+            previous_signature, previous_count = item_failures.get(item_id, ((), 0))
+            next_count = previous_count + 1 if previous_signature == signature else 1
+            item_failures[item_id] = (signature, next_count)
+
+            Py4GW.Console.Log(
+                "InventoryBT",
+                f"{action.name} failed for {cls._format_item_for_log(item_id)}. consecutive_failures={next_count}/{cls._MAX_CONSECUTIVE_FAILURES}.",
+                Py4GW.Console.MessageType.Warning,
+            )
+
+            if next_count == cls._MAX_CONSECUTIVE_FAILURES:
+                Py4GW.Console.Log(
+                    "InventoryBT",
+                    f"Suppressing {action.name} retries for {cls._format_item_for_log(item_id)} after {next_count} identical failures. Retries resume when the item changes.",
+                    Py4GW.Console.MessageType.Warning,
+                )
+
+    @classmethod
+    def _clear_item_failure(cls, blackboard: dict, item_ids: Sequence[int], action_name: Optional[str]) -> None:
+        item_failures = cast(dict[int, tuple[tuple[object, ...], int]], blackboard.setdefault(cls._ITEM_FAILURES_KEY, {}))
+        if not item_failures:
+            return
+
+        for item_id in item_ids:
+            if action_name is None:
+                item_failures.pop(item_id, None)
+                continue
+
+            stored = item_failures.get(item_id)
+            if stored is None:
+                continue
+
+            stored_signature, _ = stored
+            stored_action_name = stored_signature[0] if stored_signature else None
+            if stored_action_name == action_name:
+                item_failures.pop(item_id, None)
+
+    @classmethod
+    def _is_item_blocked_after_failures(cls, blackboard: dict, item_id: int, action: ItemAction) -> bool:
+        item_failures = cast(dict[int, tuple[tuple[object, ...], int]], blackboard.setdefault(cls._ITEM_FAILURES_KEY, {}))
+        stored = item_failures.get(item_id)
+        if stored is None:
+            return False
+
+        stored_signature, failure_count = stored
+        if failure_count < cls._MAX_CONSECUTIVE_FAILURES:
+            return False
+
+        item = ItemSnapshot.from_item_id(item_id)
+        if item is None or not item.is_valid or not item.is_inventory_item:
+            item_failures.pop(item_id, None)
+            return False
+
+        current_signature = cls._get_item_failure_signature(item, action)
+        if current_signature != stored_signature:
+            item_failures.pop(item_id, None)
+            return False
+
+        return True
 
 
 __all__ = ["InventoryBT", "InventoryPreviewEntry"]

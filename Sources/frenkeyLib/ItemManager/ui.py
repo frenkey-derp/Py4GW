@@ -78,7 +78,7 @@ from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Py4GWCoreLib.global_configs.Rule import *
 from Py4GWCoreLib.global_configs.Condition import (
     ArmorUpgradesCondition,
-    Condition,
+    BaseCondition,
     BowTypeCondition,
     DamageRange,
     DyeColorsCondition,
@@ -97,6 +97,9 @@ from Py4GWCoreLib.global_configs.Condition import (
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
+    QuantityMatchCountMode,
+    QuantityMatchCountScope,
+    QuantityMatchTarget,
     QuantityMatchCondition,
     WeaponRequirementCondition,
     StackQuantityCondition,
@@ -311,8 +314,8 @@ class UI:
     CUSTOM_RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
     
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
-    _RULE_TYPES_CACHE: list[type[Rule]] | None = None
-    _CONDITION_TYPES_CACHE: list[type[Condition]] | None = None
+    _RULE_TYPES_CACHE: list[type[BaseRule]] | None = None
+    _CONDITION_TYPES_CACHE: list[type[BaseCondition]] | None = None
     INVENTORY_PREVIEW_BAGS: list[Bags] = [
         Bags.Backpack,
         Bags.BeltPouch,
@@ -485,8 +488,12 @@ class UI:
         self.profile_manager = GlobalConfigProfileManager()
         self.profile_manager.refresh()
         self._profile_context_refresh_timer: ThrottledTimer = ThrottledTimer(1000)
-        self.preview_entries : list[InventoryPreviewEntry] = []
+        self.preview_entries : Optional[list[InventoryPreviewEntry]] = None
         self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
+        self._manual_inventory_bt: InventoryBT | None = None
+        self._manual_inventory_bt_config_id: int | None = None
+        self._manual_inventory_tick_repeat_timer: ThrottledTimer = ThrottledTimer(125)
+        self._manual_inventory_tick_status: str = ''
         self.sorting_preview_throttle : ThrottledTimer = ThrottledTimer(1000)
         self.sorting_preview_plan: Optional[BagSortPlan] = None
         self._sorting_preview_cache_key: tuple[tuple[int, ...], str] | None = None
@@ -536,7 +543,7 @@ class UI:
             config_info.load()
 
         self.config : Optional[ConfigInfo] = None
-        self.rule : Optional[Rule] = None
+        self.rule : Optional[BaseRule] = None
         self.rule_index : Optional[int] = None
 
         self.switch_to_config(self.configs[0] if len(self.configs) > 0 else None)
@@ -558,7 +565,7 @@ class UI:
         self.selected_upgrade_type_index = 0
 
         self.context_menu_id : str | None = None
-        self.context_menu_rule : Rule | None = None
+        self.context_menu_rule : BaseRule | None = None
         self.context_menu_config : ConfigInfo | None = None
         self.context_menu_sorting_group : SlotGroupConfig | None = None
         self._condition_clipboard_payload: dict[str, Any] | None = None
@@ -572,7 +579,7 @@ class UI:
         self._drag_clicked_item: Any | None = None
         self._drag_window_pos: tuple[float, float] | None = None
         
-        self._drag_rule: Rule | None = None
+        self._drag_rule: BaseRule | None = None
         self._drag_rule_source_config: ConfigInfo[RuleConfig] | None = None
         self._drag_rule_source_index: int = -1
         self._drag_rule_target_index: int = -1
@@ -580,7 +587,7 @@ class UI:
         self._drag_rule_target_after: bool = False
         self._drag_rule_preview_label: str = ""
         self._drag_rule_preview_subtitle: str = ""
-        self._drag_condition: Condition | None = None
+        self._drag_condition: BaseCondition | None = None
         self._drag_condition_source_rule: CustomRule | None = None
         self._drag_condition_source_index: int = -1
         self._drag_condition_target_index: int = -1
@@ -731,7 +738,7 @@ class UI:
         self._rule_delete_popup_id: str = '##rule_delete_popup'
         self._rule_delete_popup_requested: bool = False
         self._rule_delete_target_config: ConfigInfo[RuleConfig] | None = None
-        self._rule_delete_target_rule: Rule | None = None
+        self._rule_delete_target_rule: BaseRule | None = None
         self.buy_preview_show_satisfied: bool = True
         
         self.selected_bag_slots : list[tuple[Bags, int]] = []
@@ -801,7 +808,7 @@ class UI:
     # -------------------------------------------------------------------------
     # General formatting / discovery helpers
     # -------------------------------------------------------------------------
-    def _set_active_rule(self, rule: Optional[Rule]) -> None:
+    def _set_active_rule(self, rule: Optional[BaseRule]) -> None:
         if self.config and isinstance(self.config.config, RuleConfig):
             self.rule = rule if rule in self.config.config else None
             self.rule_index = self.config.config.index(self.rule) if self.rule is not None else None
@@ -845,19 +852,19 @@ class UI:
         return f"{' '.join(parts) if parts else '0 seconds'} ago"
 
     @staticmethod
-    def _get_rule_types() -> list[type[Rule]]:
+    def _get_rule_types() -> list[type[BaseRule]]:
         if UI._RULE_TYPES_CACHE is not None:
             return UI._RULE_TYPES_CACHE
 
-        discovered_rule_types: list[type[Rule]] = []
+        discovered_rule_types: list[type[BaseRule]] = []
 
-        def visit(rule_type: type[Rule]) -> None:
+        def visit(rule_type: type[BaseRule]) -> None:
             for child_rule_type in rule_type.__subclasses__():
                 if child_rule_type not in discovered_rule_types:
                     discovered_rule_types.append(child_rule_type)
                 visit(child_rule_type)
 
-        visit(Rule)
+        visit(BaseRule)
         types = [
             rule_type
             for rule_type in discovered_rule_types
@@ -867,24 +874,24 @@ class UI:
         return UI._RULE_TYPES_CACHE
 
     @staticmethod
-    def _get_condition_types() -> list[type[Condition]]:
+    def _get_condition_types() -> list[type[BaseCondition]]:
         if UI._CONDITION_TYPES_CACHE is not None:
             return UI._CONDITION_TYPES_CACHE
 
-        discovered_condition_types: list[type[Condition]] = []
+        discovered_condition_types: list[type[BaseCondition]] = []
 
-        def visit(condition_type: type[Condition]) -> None:
+        def visit(condition_type: type[BaseCondition]) -> None:
             for child_condition_type in condition_type.__subclasses__():
                 if child_condition_type not in discovered_condition_types:
                     discovered_condition_types.append(child_condition_type)
                 visit(child_condition_type)
 
-        visit(Condition)
+        visit(BaseCondition)
         types = [
             condition_type
             for condition_type in discovered_condition_types
             if getattr(condition_type, "ui_selectable", True)
-            and condition_type is not Condition
+            and condition_type is not BaseCondition
             and not inspect.isabstract(condition_type)
         ]
         UI._CONDITION_TYPES_CACHE = sorted(types, key=lambda t: t.__name__)
@@ -1966,6 +1973,8 @@ class UI:
         self._sync_selected_rule()
         self._sync_selected_sorting_group()
         self._refresh_sorting_assigned_slot_cache()
+        self._reset_manual_inventory_bt()
+        self._invalidate_inventory_preview_cache()
         self._invalidate_sorting_preview_cache()
 
     def _refresh_global_config_profile_context(self, force: bool = False) -> None:
@@ -1983,6 +1992,31 @@ class UI:
         self._sorting_preview_plan_status = ''
         self._sorting_preview_plan_error = ''
         self.sorting_preview_throttle.Reset()
+
+    def _invalidate_inventory_preview_cache(self) -> None:
+        self.preview_entries = None
+
+    def _reset_manual_inventory_bt(self) -> None:
+        self._manual_inventory_bt = None
+        self._manual_inventory_bt_config_id = None
+        self._manual_inventory_tick_status = ''
+        self._manual_inventory_tick_repeat_timer.Stop()
+
+    def _get_manual_inventory_bt(self, config: InventoryConfig) -> InventoryBT:
+        config_id = id(config)
+        if self._manual_inventory_bt is None or self._manual_inventory_bt_config_id != config_id:
+            self._manual_inventory_bt = InventoryBT(config)
+            self._manual_inventory_bt_config_id = config_id
+            self._manual_inventory_tick_status = 'Ready'
+            self._manual_inventory_tick_repeat_timer.Stop()
+        return self._manual_inventory_bt
+
+    def _tick_inventory_bt_once(self, config: InventoryConfig) -> None:
+        inventory_bt = self._get_manual_inventory_bt(config)
+        state = inventory_bt.tick()
+        self._manual_inventory_tick_status = f'Last tick: {state.name}'
+        self._manual_inventory_tick_repeat_timer.Reset()
+        self._invalidate_inventory_preview_cache()
 
     @staticmethod
     def _build_sorting_preview_cache_key(config: SortingConfig, bags: list[Bags]) -> tuple[tuple[int, ...], str]:
@@ -2239,7 +2273,7 @@ class UI:
 
         PyImGui.end_popup_modal()
 
-    def _open_rule_delete_popup(self, config_info: ConfigInfo[RuleConfig], rule: Rule) -> None:
+    def _open_rule_delete_popup(self, config_info: ConfigInfo[RuleConfig], rule: BaseRule) -> None:
         self._rule_delete_target_config = config_info
         self._rule_delete_target_rule = rule
         self._rule_delete_popup_requested = True
@@ -2379,7 +2413,7 @@ class UI:
         self._sync_selected_sorting_group()
         self._refresh_sorting_assigned_slot_cache()
 
-    def _can_convert_rule_to_custom(self, rule: Rule) -> bool:
+    def _can_convert_rule_to_custom(self, rule: BaseRule) -> bool:
         if isinstance(rule, CustomRule):
             return False
 
@@ -2389,7 +2423,7 @@ class UI:
 
         return all(self._supports_custom_condition_editor(type(condition)) for condition in rule.conditions)
 
-    def _convert_rule_to_custom(self, config_info: ConfigInfo[RuleConfig], rule: Rule) -> CustomRule | None:
+    def _convert_rule_to_custom(self, config_info: ConfigInfo[RuleConfig], rule: BaseRule) -> CustomRule | None:
         if not self._can_convert_rule_to_custom(rule):
             return None
 
@@ -2398,9 +2432,9 @@ class UI:
         except ValueError:
             return None
 
-        custom_conditions: list[Condition] = []
+        custom_conditions: list[BaseCondition] = []
         for condition in rule.conditions:
-            cloned_condition = Condition.from_dict(condition.to_dict())
+            cloned_condition = BaseCondition.from_dict(condition.to_dict())
             if cloned_condition is None:
                 return None
             custom_conditions.append(cloned_condition)
@@ -2416,13 +2450,13 @@ class UI:
 
         return custom_rule
 
-    def _get_condition_clipboard(self) -> Condition | None:
+    def _get_condition_clipboard(self) -> BaseCondition | None:
         if self._condition_clipboard_payload is None:
             return None
 
-        return Condition.from_dict(self._condition_clipboard_payload)
+        return BaseCondition.from_dict(self._condition_clipboard_payload)
 
-    def _copy_condition_to_clipboard(self, condition: Condition) -> None:
+    def _copy_condition_to_clipboard(self, condition: BaseCondition) -> None:
         self._condition_clipboard_payload = condition.to_dict()
         self._condition_clipboard_label = self._humanize_name(type(condition).__name__).replace('Condition', '')
 
@@ -2433,7 +2467,7 @@ class UI:
     def _can_start_drag_from_item(self, item_key: Any, hovered: bool) -> bool:
         return hovered and self._dragging and self._drag_clicked_item == item_key
 
-    def _can_paste_condition_into_rule(self, rule: Rule) -> bool:
+    def _can_paste_condition_into_rule(self, rule: BaseRule) -> bool:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
             return False
@@ -2444,7 +2478,7 @@ class UI:
 
         return any(type(existing_condition) is clipboard_type for existing_condition in rule.conditions)
 
-    def _paste_condition_into_rule(self, rule: Rule) -> bool:
+    def _paste_condition_into_rule(self, rule: BaseRule) -> bool:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
             return False
@@ -2462,7 +2496,7 @@ class UI:
 
         return False
 
-    def _can_paste_condition_over(self, rule: Rule, condition: Condition) -> bool:
+    def _can_paste_condition_over(self, rule: BaseRule, condition: BaseCondition) -> bool:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
             return False
@@ -2472,7 +2506,7 @@ class UI:
 
         return type(clipboard_condition) is type(condition)
 
-    def _paste_condition_over(self, rule: Rule, condition: Condition) -> bool:
+    def _paste_condition_over(self, rule: BaseRule, condition: BaseCondition) -> bool:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
             return False
@@ -2661,7 +2695,7 @@ class UI:
         # style.TableBorderLight.pop_color_direct()
         # style.TableBorderStrong.pop_color_direct()
 
-    def draw_context_menu(self, popup_id: str, config_info: ConfigInfo, rule: Rule) -> bool:
+    def draw_context_menu(self, popup_id: str, config_info: ConfigInfo, rule: BaseRule) -> bool:
         if PyImGui.begin_popup(popup_id):
             ImGui.text_colored(rule.name or popup_id, color=UI.CREME_COLOR.color_tuple, font_size=16)
             ImGui.separator()
@@ -2686,7 +2720,7 @@ class UI:
 
             if ImGui.menu_item("Duplicate"):
                 index = config_info.config.index(rule)
-                duplicated_rule = Rule.from_dict(rule.to_dict())
+                duplicated_rule = BaseRule.from_dict(rule.to_dict())
                 if duplicated_rule is not None:
                     config_info.config.insert(index + 1, duplicated_rule)
                     config_info.save()
@@ -2711,7 +2745,7 @@ class UI:
 
             copy_target = self._get_rule_copy_target_config(config_info)
             if copy_target is not None and ImGui.menu_item(f"Copy To {copy_target.name}"):
-                duplicated_rule = Rule.from_dict(rule.to_dict())
+                duplicated_rule = BaseRule.from_dict(rule.to_dict())
                 if duplicated_rule is not None:
                     copy_target.config.append(duplicated_rule)
                     copy_target.save()
@@ -2808,7 +2842,7 @@ class UI:
         self._drag_sorting_group_preview_subtitle = ""
         self._drag_window_pos = None
 
-    def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: Rule, index: int) -> None:
+    def _begin_rule_drag(self, config_info: ConfigInfo[RuleConfig], rule: BaseRule, index: int) -> None:
         self._drag_clicked_item = None
         self._drag_rule = rule
         self._drag_rule_source_config = config_info
@@ -2820,7 +2854,7 @@ class UI:
         self._drag_rule_preview_subtitle = UI._humanize_name(rule.action.name)
         self._drag_window_pos = self.window_pos
 
-    def _begin_condition_drag(self, rule: CustomRule, condition: Condition, index: int) -> None:
+    def _begin_condition_drag(self, rule: CustomRule, condition: BaseCondition, index: int) -> None:
         self._drag_clicked_item = None
         self._drag_condition = condition
         self._drag_condition_source_rule = rule
@@ -3511,6 +3545,7 @@ class UI:
     def _execute_bag_sort(self, bags: list[Bags]) -> None:
         action_node = BT.Items.Bags.SortBags(bags)
         action_node.tick()
+        self._invalidate_inventory_preview_cache()
         self.preview_throttle.Reset()
 
     def _refresh_sorting_bag_size_cache(self) -> None:
@@ -4618,9 +4653,10 @@ class UI:
 
     def _set_inventory_preview_bags(self, bags: list[Bags]) -> None:
         self.inventory_preview_selected_bags = list(bags)
+        self._invalidate_inventory_preview_cache()
 
     @staticmethod
-    def _get_first_matching_rule(config: RuleConfig, item_id: int) -> Rule | None:
+    def _get_first_matching_rule(config: RuleConfig, item_id: int) -> BaseRule | None:
         if item_id in config.blacklisted_items:
             return None
 
@@ -4671,6 +4707,8 @@ class UI:
             if self.preview_entries is None or self.preview_throttle.IsExpired():
                 self.preview_entries = InventoryBT.Preview(config, bags=self.inventory_preview_selected_bags)
                 self.preview_throttle.Reset()
+
+            preview_entries = self.preview_entries or []
                 
             action_counts: dict[ItemAction, int] = {}
             visible_entries : list[InventoryPreviewEntry] = []
@@ -4690,6 +4728,26 @@ class UI:
             PyImGui.same_line(0, 5)
             if ImGui.button("Sort Bags", button_width) and self.inventory_preview_selected_bags:
                 self._execute_bag_sort(self.inventory_preview_selected_bags)
+            PyImGui.same_line(0, 5)
+            manual_tick_clicked = ImGui.button("Manual Tick", button_width)
+            manual_tick_active = PyImGui.is_item_active()
+            if manual_tick_clicked:
+                self._tick_inventory_bt_once(config)
+            elif manual_tick_active and PyImGui.is_mouse_down(0):
+                if self._manual_inventory_tick_repeat_timer.IsStopped():
+                    self._manual_inventory_tick_repeat_timer.Reset()
+                elif self._manual_inventory_tick_repeat_timer.IsExpired():
+                    self._tick_inventory_bt_once(config)
+            elif not PyImGui.is_mouse_down(0):
+                self._manual_inventory_tick_repeat_timer.Stop()
+            ImGui.show_tooltip("Click to advance InventoryBT by one tick. Hold to keep ticking about every 125 ms.")
+            PyImGui.same_line(0, 5)
+            if ImGui.button("Reset BT", button_width):
+                self._reset_manual_inventory_bt()
+                self._invalidate_inventory_preview_cache()
+            manual_tick_status = self._manual_inventory_tick_status
+            if manual_tick_status:
+                ImGui.text_colored(manual_tick_status, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
             self.inventory_preview_search = ImGui.input_text("Search##inventory_preview_search", self.inventory_preview_search)
             self.inventory_preview_show_no_action = ImGui.checkbox("Show No Action", self.inventory_preview_show_no_action)
@@ -4709,12 +4767,13 @@ class UI:
                             self.inventory_preview_selected_bags.append(bag)
                         else:
                             self.inventory_preview_selected_bags = [selected_bag for selected_bag in self.inventory_preview_selected_bags if selected_bag != bag]
+                        self._invalidate_inventory_preview_cache()
                     PyImGui.next_column()
 
                 PyImGui.end_columns()
             ImGui.end_child()
 
-            for entry in self.preview_entries:
+            for entry in preview_entries:
                 action = entry.action
                 if action is None and not self.inventory_preview_show_no_action:
                     continue
@@ -4807,7 +4866,7 @@ class UI:
         item_array = AgentArray.Filter.ByDistance(item_array, Player.GetXY(), self.loot_preview_distance)
         item_array = AgentArray.Sort.ByDistance(item_array, Player.GetXY())
 
-        visible_entries: list[tuple[ItemSnapshot, Rule | None, ItemAction | None, str, float]] = []
+        visible_entries: list[tuple[ItemSnapshot, BaseRule | None, ItemAction | None, str, float]] = []
         action_counts: dict[str, int] = {}
         player_pos = Player.GetXY()
 
@@ -4949,7 +5008,7 @@ class UI:
     # -------------------------------------------------------------------------
     # Rule rendering / dispatch
     # -------------------------------------------------------------------------
-    def _draw_rule_header(self, rule: Rule) -> None:
+    def _draw_rule_header(self, rule: BaseRule) -> None:
             
         ImGui.text_aligned("Name", alignment=Alignment.MidLeft, height=25)
         PyImGui.same_line(60, 5)
@@ -5044,7 +5103,7 @@ class UI:
         NO_HEADER_TABLE_CELL_PADDING_X = 4
                 
         @staticmethod
-        def GetSizes(rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> dict[str, int]:
+        def GetSizes(rule : BaseRule, condition : BaseCondition, size: Optional[tuple[float, float]] = None) -> dict[str, int]:
             sizes = {}
             style = ImGui.get_style()
             
@@ -5196,7 +5255,7 @@ class UI:
             return sizes
         
         @staticmethod
-        def BeginConditionContainer(ui : "UI", rule : Rule, condition : Condition, size: Optional[tuple[float, float]] = None) -> bool:
+        def BeginConditionContainer(ui : "UI", rule : BaseRule, condition : BaseCondition, size: Optional[tuple[float, float]] = None) -> bool:
             is_custom_rule = isinstance(rule, CustomRule)
             active_condition_drag = ui._drag_condition_source_rule is rule and ui._drag_condition is not None
             single_condition = len(rule.conditions) == 1
@@ -5365,7 +5424,7 @@ class UI:
             return clicked
         
         @staticmethod
-        def ForModelIdsCondition(ui : "UI", rule : Rule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForModelIdsCondition(ui : "UI", rule : BaseRule, condition: ModelIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = "##model_ids_rule_add_popup"
             search_state_key = f"model_ids_condition_{id(condition)}"
@@ -5476,7 +5535,7 @@ class UI:
             return changed
         
         @staticmethod
-        def ForItemTypesCondition(ui : "UI", rule : Rule, condition: ItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForItemTypesCondition(ui : "UI", rule : BaseRule, condition: ItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             condition_id = f"item_types_condition_{id(condition)}"
@@ -5514,7 +5573,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForModelFileIdsCondition(ui: "UI", rule: Rule, condition: ModelFileIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForModelFileIdsCondition(ui: "UI", rule: BaseRule, condition: ModelFileIdsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             
             condition_id = f"model_file_ids_condition_{id(condition)}"
@@ -5625,7 +5684,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForModelFileIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelFileIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForModelFileIdsAndItemTypesCondition(ui: "UI", rule: BaseRule, condition: ModelFileIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"model_file_id_item_type_condition_{id(condition)}"
             popup_id = f"##model_file_id_item_type_condition_add_popup_{id(condition)}"
@@ -5726,7 +5785,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForModelIdsAndItemTypesCondition(ui: "UI", rule: Rule, condition: ModelIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForModelIdsAndItemTypesCondition(ui: "UI", rule: BaseRule, condition: ModelIdsAndItemTypesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"model_id_item_type_condition_{id(condition)}"
             popup_id = f"##model_id_item_type_condition_add_popup_{id(condition)}"
@@ -5853,7 +5912,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForEncodedNamesCondition(ui: "UI", rule: Rule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForEncodedNamesCondition(ui: "UI", rule: BaseRule, condition: EncodedNamesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"encoded_names_condition_{id(condition)}"
             popup_id = f"##encoded_name_condition_add_popup_{id(condition)}"
@@ -5959,7 +6018,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForExactItemTypeCondition(ui: "UI", rule: Rule, condition: ExactItemTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForExactItemTypeCondition(ui: "UI", rule: BaseRule, condition: ExactItemTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
@@ -5976,7 +6035,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForBowTypeCondition(ui: "UI", rule: Rule, condition: BowTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForBowTypeCondition(ui: "UI", rule: BaseRule, condition: BowTypeCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             bow_types = list(BowType)
@@ -5999,7 +6058,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForStackQuantityCondition(ui: "UI", rule: Rule, condition: StackQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForStackQuantityCondition(ui: "UI", rule: BaseRule, condition: StackQuantityCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
@@ -6028,7 +6087,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForNickItemCondition(ui: "UI", rule: Rule, condition: NickItemCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForNickItemCondition(ui: "UI", rule: BaseRule, condition: NickItemCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             preview_items = ui._get_nick_item_preview_items(condition.weeks_before_next_cycle)
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
@@ -6118,7 +6177,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForIsMaterialCondition(ui: "UI", rule: Rule, condition: IsMaterialCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForIsMaterialCondition(ui: "UI", rule: BaseRule, condition: IsMaterialCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
@@ -6140,9 +6199,24 @@ class UI:
             return changed
 
         @staticmethod
-        def ForQuantityMatchCondition(ui: "UI", rule: Rule, condition: QuantityMatchCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForQuantityMatchCondition(ui: "UI", rule: BaseRule, condition: QuantityMatchCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
+            count_modes = list(QuantityMatchCountMode)
+            count_scopes = list(QuantityMatchCountScope)
+            match_targets = list(QuantityMatchTarget)
+            count_mode_labels = {
+                QuantityMatchCountMode.TotalQuantity: "Total quantity",
+                QuantityMatchCountMode.FullStacks: "Full stacks",
+            }
+            count_scope_labels = {
+                QuantityMatchCountScope.InventoryOnly: "In Inventory",
+                QuantityMatchCountScope.InventoryAndStorage: "In Inventory + Xunlai storage",
+            }
+            match_target_labels = {
+                QuantityMatchTarget.Kept: "Match up to {quantity} {unit} of the specified items",
+                QuantityMatchTarget.Excess: "Match the excess items beyond {quantity} {unit}",
+            }
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
                 
@@ -6159,44 +6233,51 @@ class UI:
 
                 PyImGui.same_line(0, 5)
                 PyImGui.set_next_item_width(150)
-                count_mode_index = QuantityMatchCondition.COUNT_MODES.index(condition.count_mode)
-                count_mode_labels = ["Total quantity", "Full stacks"]
-                next_count_mode_index = ImGui.combo(f"##quantity_match_condition_count_mode_{id(condition)}", count_mode_index, count_mode_labels)
+                count_mode_index = count_modes.index(condition.count_mode)
+                next_count_mode_index = ImGui.combo(
+                    f"##quantity_match_condition_count_mode_{id(condition)}",
+                    count_mode_index,
+                    [count_mode_labels[mode] for mode in count_modes],
+                )
                 if next_count_mode_index != count_mode_index:
-                    condition.count_mode = QuantityMatchCondition.COUNT_MODES[next_count_mode_index]
+                    condition.count_mode = count_modes[next_count_mode_index]
                     changed = True
                 ImGui.show_tooltip("Choose whether the threshold counts raw item quantities or only complete 250-stacks.")
 
                 PyImGui.same_line(0, 5)
                 PyImGui.set_next_item_width(250)
-                count_scope_index = QuantityMatchCondition.COUNT_SCOPES.index(condition.count_scope)
-                count_scope_labels = ["In Inventory", "In Inventory + Xunlai storage"]
-                next_count_scope_index = ImGui.combo(f"##quantity_match_condition_count_scope_{id(condition)}", count_scope_index, count_scope_labels)
+                count_scope_index = count_scopes.index(condition.count_scope)
+                next_count_scope_index = ImGui.combo(
+                    f"##quantity_match_condition_count_scope_{id(condition)}",
+                    count_scope_index,
+                    [count_scope_labels[scope] for scope in count_scopes],
+                )
                 if next_count_scope_index != count_scope_index:
-                    condition.count_scope = QuantityMatchCondition.COUNT_SCOPES[next_count_scope_index]
+                    condition.count_scope = count_scopes[next_count_scope_index]
                     changed = True
                 ImGui.show_tooltip("Choose whether the quantity check only looks at the current character inventory or also includes Xunlai storage.")
 
                 PyImGui.begin_group()
-                selected_match = 1 if condition.match_excess else 0
-                match = selected_match
-                
-                threshold_label = "full stacks" if condition.count_mode == QuantityMatchCondition.COUNT_MODE_FULL_STACKS else "total quantity"
-                match = ImGui.radio_button(f"Match up to {condition.quantity_limit} {threshold_label} of the specified items", match, 0)
-                match = ImGui.radio_button(f"Match the excess items beyond {condition.quantity_limit} {threshold_label}", match, 1)
-                
-                if match != selected_match:
-                    condition.match_excess = (match == 1)
-                    changed = True            
-                
+                selected_match_target = match_targets.index(condition.match_target)
+                next_match_target = selected_match_target
+
+                threshold_label = "full stacks" if condition.count_mode == QuantityMatchCountMode.FullStacks else "total quantity"
+                for index, match_target in enumerate(match_targets):
+                    label = match_target_labels[match_target].format(quantity=condition.quantity_limit, unit=threshold_label)
+                    next_match_target = ImGui.radio_button(label, next_match_target, index)
+
+                if next_match_target != selected_match_target:
+                    condition.match_target = match_targets[next_match_target]
+                    changed = True
+
                 PyImGui.end_group()
-                ImGui.show_tooltip("Enable this to match the excess stacks beyond the kept quantity. Disable it to match the kept stacks instead.")
+                ImGui.show_tooltip("Choose whether this rule should match the retained stacks or the excess stacks beyond the configured threshold.")
 
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
         @staticmethod
-        def ForRaritiesCondition(ui: "UI", rule: Rule, condition: RaritiesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForRaritiesCondition(ui: "UI", rule: BaseRule, condition: RaritiesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"rarities_condition_{id(condition)}"
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
@@ -6226,7 +6307,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForDyeColorsCondition(ui: "UI", rule: Rule, condition: DyeColorsCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForDyeColorsCondition(ui: "UI", rule: BaseRule, condition: DyeColorsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"dye_colors_condition_{id(condition)}"
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
@@ -6265,7 +6346,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForSalvagesToMaterialsCondition(ui: "UI", rule: Rule, condition: SalvagesToMaterialsCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForSalvagesToMaterialsCondition(ui: "UI", rule: BaseRule, condition: SalvagesToMaterialsCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = f"salvage_materials_condition_{id(condition)}"
             popup_id = f"##salvage_material_condition_add_popup_{id(condition)}"
@@ -6352,7 +6433,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForInherentFiltersCondition(ui: "UI", rule: Rule, condition: InherentFiltersCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForInherentFiltersCondition(ui: "UI", rule: BaseRule, condition: InherentFiltersCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             unique_id = str(id(condition))
             search_state_key = f"inherent_filters_condition_{unique_id}"
@@ -6494,7 +6575,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForInscribableCondition(ui: "UI", rule: Rule, condition: InscribableCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForInscribableCondition(ui: "UI", rule: BaseRule, condition: InscribableCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
@@ -6507,7 +6588,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForUnidentifiedCondition(ui: "UI", rule: Rule, condition: UnidentifiedCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForUnidentifiedCondition(ui: "UI", rule: BaseRule, condition: UnidentifiedCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
@@ -6519,7 +6600,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForIsCustomizedCondition(ui: "UI", rule: Rule, condition: IsCustomizedCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForIsCustomizedCondition(ui: "UI", rule: BaseRule, condition: IsCustomizedCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
@@ -6531,7 +6612,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForWeaponRequirementAndDamageCondition(ui: "UI", rule: Rule, condition: WeaponRequirementCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForWeaponRequirementAndDamageCondition(ui: "UI", rule: BaseRule, condition: WeaponRequirementCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             condition_id = id(condition)
             popup_id = f"##requirements_condition_add_popup_{condition_id}"
@@ -6763,7 +6844,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForHalvesCastAndRechargeAttributeCondition(ui: "UI", rule: Rule, condition: HalvesCastAndRechargeAttributeCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForHalvesCastAndRechargeAttributeCondition(ui: "UI", rule: BaseRule, condition: HalvesCastAndRechargeAttributeCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
@@ -6773,7 +6854,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForArmorUpgradesCondition(ui: "UI", rule: Rule, condition: ArmorUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForArmorUpgradesCondition(ui: "UI", rule: BaseRule, condition: ArmorUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##armor_upgrade_price_popup_{id(condition)}"
             trader_open = MerchantWindow.IsOpen()
@@ -6910,7 +6991,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForMaxWeaponUpgradesCondition(ui: "UI", rule: Rule, condition: MaxWeaponUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForMaxWeaponUpgradesCondition(ui: "UI", rule: BaseRule, condition: MaxWeaponUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             search_state_key = f"max_weapon_upgrades_condition_{id(condition)}"
             weapon_upgrades_by_type: dict[type[Upgrade], UpgradeAndItemType] = {}
@@ -7060,7 +7141,7 @@ class UI:
             return changed
 
         @staticmethod
-        def ForUpgradeRangesCondition(ui: "UI", rule: Rule, condition: UpgradeRangesCondition, size: Optional[tuple[float, float]] = None) -> bool:
+        def ForUpgradeRangesCondition(ui: "UI", rule: BaseRule, condition: UpgradeRangesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##upgrade_range_add_popup_{id(condition)}"
             search_state_key = f"upgrade_ranges_condition_{id(condition)}"
@@ -7223,7 +7304,7 @@ class UI:
             UI.ConditionEditor.EndConditionContainer()
             return changed
 
-    def _draw_condition_editor(self, rule: Rule, condition: Condition, size: Optional[tuple[float, float]] = None) -> bool:
+    def _draw_condition_editor(self, rule: BaseRule, condition: BaseCondition, size: Optional[tuple[float, float]] = None) -> bool:
         match condition:
             case ModelIdsCondition():
                 return UI.ConditionEditor.ForModelIdsCondition(self, rule, condition, size)
@@ -7301,7 +7382,7 @@ class UI:
                 ImGui.text("No editor available for this condition.")
                 return False
 
-    def _supports_custom_condition_editor(self, condition_type: type[Condition]) -> bool:
+    def _supports_custom_condition_editor(self, condition_type: type[BaseCondition]) -> bool:
         supported_types = (
             ModelIdsCondition,
             EncodedNamesCondition,
@@ -7469,7 +7550,7 @@ class UI:
         
         return changed
 
-    def _draw_rule_body(self, rule: Rule) -> bool:
+    def _draw_rule_body(self, rule: BaseRule) -> bool:
         PyImGui.spacing()
         
         match rule:
@@ -7628,7 +7709,7 @@ class UI:
         
         return changed
 
-    def draw_rule(self, rule: Rule):
+    def draw_rule(self, rule: BaseRule):
         self._draw_rule_header(rule)
         if self._draw_rule_body(rule):
             self._save_active_config()

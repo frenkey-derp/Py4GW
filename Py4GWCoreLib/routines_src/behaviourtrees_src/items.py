@@ -48,7 +48,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import time
 from collections.abc import Sequence
-from typing import Callable, Optional, cast
+from typing import Any, Callable, Optional, cast
 from unittest import case
 
 from Py4GWCoreLib.Inventory import Inventory
@@ -56,7 +56,7 @@ from Py4GWCoreLib.Item import Item
 from Py4GWCoreLib.Merchant import Trading
 from Py4GWCoreLib.item_data.ItemData import MATERIAL_STORAGE_SLOTS
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SlotGroupConfig, SortingConfig
+from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SlotGroupConfig, SortingConfig
 
 from ...Agent import Agent
 from ...GlobalCache import GLOBAL_CACHE
@@ -1226,7 +1226,7 @@ class BTItems:
             }
 
             def _loot_items() -> BehaviorTree.NodeState:                                
-                from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
+                from Py4GWCoreLib.global_configs.LootConfig import LootConfig
 
                 if state["started_at"] == 0.0:
                     state["started_at"] = time.monotonic()
@@ -1319,7 +1319,7 @@ class BTItems:
             UserDescription: Use this when a routine should mark an item model as lootable before item collection starts.
             Notes: Returns success immediately after mutating the local loot configuration.
             """
-            from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
+            from Py4GWCoreLib.global_configs.LootConfig import LootConfig
             
             def _add_model_to_loot_whitelist() -> BehaviorTree.NodeState:
                 LootConfig().AddModelIDToWhitelist(model_id)
@@ -2695,6 +2695,7 @@ class BTItems:
                 self.confirm_clicked_at = 0.0
                 self.window_detected_at = 0.0
                 self.salvaged_any = False
+                self.finish_attempted = False
                 
         @staticmethod
         def SalvageItem(
@@ -2724,6 +2725,48 @@ class BTItems:
             """
             def _reset_state(node: BehaviorTree.Node):
                 node.blackboard.pop(state_key, None)
+
+            def _item_debug_summary(item: Optional[ItemSnapshot]) -> str:
+                if item is None:
+                    return f"id={item_id} missing"
+
+                item_name = item.names.plain if item.names.plain and item.names.plain != item.names.fallback else item.complete_name or "Unknown Item"
+                return (
+                    f"id={item.id} name='{item_name}' model={item.model_id} qty={item.quantity} "
+                    f"bag={item.bag.name} slot={item.slot} rarity={item.rarity.name} "
+                    f"identified={item.is_identified} salvageable={item.is_salvageable}"
+                )
+
+            def _get_inventory_tracking_instance():
+                try:
+                    return Inventory.inventory_instance()
+                except Exception:
+                    return None
+
+            def _read_native_salvage_state():
+                inventory_instance = _get_inventory_tracking_instance()
+                if inventory_instance is None:
+                    return None, False, False, False
+
+                is_salvaging = False
+                transaction_done = False
+                supports_finish = callable(getattr(inventory_instance, "FinishSalvage", None))
+
+                is_salvaging_method = getattr(inventory_instance, "IsSalvaging", None)
+                if callable(is_salvaging_method):
+                    try:
+                        is_salvaging = bool(is_salvaging_method())
+                    except Exception:
+                        is_salvaging = False
+
+                transaction_done_method = getattr(inventory_instance, "IsSalvageTransactionDone", None)
+                if callable(transaction_done_method):
+                    try:
+                        transaction_done = bool(transaction_done_method())
+                    except Exception:
+                        transaction_done = False
+
+                return inventory_instance, is_salvaging, transaction_done, supports_finish
 
             pop_up_delays = 0
             
@@ -2830,7 +2873,8 @@ class BTItems:
             
             def _salvage(node: BehaviorTree.Node):        
                 if item_id is None or item_id <= 0:
-                    _log(node.name, f"Invalid item_id={item_id}.")
+                    _log(node.name, f"Invalid item_id={item_id}.", message_type=Console.MessageType.Warning)
+                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
                 
                 try:
@@ -2839,36 +2883,44 @@ class BTItems:
                     mode = SalvageMode.NONE
                 
                 if mode == SalvageMode.NONE:
-                    _log(node.name, f"Invalid salvage mode for item id {item_id}: raw={salvage_mode!r}.")
+                    _log(node.name, f"Invalid salvage mode for item id {item_id}: raw={salvage_mode!r}.", message_type=Console.MessageType.Warning)
+                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
                                  
                 state = node.blackboard.get(state_key)
                 state = cast(BTItems.Items.SavalvageProgress, state) if state else None
-                item = ItemSnapshot.from_item_id(item_id)
-                item_name = {item.complete_name if item else 'Unknown Item'}
+                item = ItemSnapshot.create(item_id)
+                item_name = item.complete_name if item and item.complete_name else "Unknown Item"
+                item_summary = _item_debug_summary(item)
                 
                 if state and item_id != state.item_id:
-                    _log(node.name, f"State item mismatch: requested={item_id}, state_item={state.item_id}.")
+                    _log(node.name, f"State item mismatch: requested={item_id}, state_item={state.item_id}.", message_type=Console.MessageType.Warning)
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
 
                 if item is None:
                     _log(node.name, f"Item {item_name} [{item_id}] no longer exists.")
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
 
                 if not item.is_valid:
                     _log(node.name, f"Item {item_name} [{item_id}] is not valid.")
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
 
                 if not item.is_salvageable:
-                    _log(node.name, f"Item {item_name} [{item_id}] is no longer salvageable.")
+                    _log(node.name, f"Item {item_name} [{item_id}] is no longer salvageable. {item_summary}")
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
 
                 if not item.is_inventory_item:
                     _log(node.name, f"Item {item_name} [{item_id}] is no longer in inventory.")
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
 
                 if _is_mod_salvaged(item, mode):
-                    _log(node.name, f"Requested salvage mode {mode.name} already resolved for item {item_name} [{item_id}].")
+                    _log(node.name, f"Requested salvage mode {mode.name} already resolved for item {item_name} [{item_id}]. {item_summary}")
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
                 
                 if state is None:
@@ -2877,14 +2929,16 @@ class BTItems:
                     _log(
                         node.name,
                         f"Initialized salvage state for item={item_name} [{item_id}] mode={mode.name} "
-                        f"qty={item.quantity} desired_qty={state.desired_qty} timeout_ms={timeout_ms_per_item}."
+                        f"qty={item.quantity} desired_qty={state.desired_qty} timeout_ms={timeout_ms_per_item}. "
+                        f"{item_summary}"
                     )
                     
                 now = time.monotonic()
                 salvage_window_open = AnySalvageWindow.IsOpen()
 
                 if Inventory.GetFreeSlotCount() <= 0:
-                    _log(node.name, f"Cannot salvage item {item_name} [{item_id}]: no free inventory slots.", message_type=Console.MessageType.Warning)
+                    _log(node.name, f"Cannot salvage item {item_name} [{item_id}]: no free inventory slots. {item_summary}", message_type=Console.MessageType.Warning)
+                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
 
                 # Start salvage once per item.
@@ -2918,19 +2972,22 @@ class BTItems:
                             node.name,
                             f"Failed to resolve valid salvage kit for item={item_name} [{item_id}] mode={mode.name}. "
                             f"kit_id={kit_id} kit_model={(kit.model_id if kit else 'None')} "
-                            f"item_rarity={item.rarity.name} item_identified={item.is_identified}.",
+                            f"item_rarity={item.rarity.name} item_identified={item.is_identified}. "
+                            f"{item_summary}",
                             message_type=Console.MessageType.Warning,
                         )
+                        _reset_state(node)
                         return BehaviorTree.NodeState.FAILURE
 
                     _log(
                         node.name,
                         f"Starting salvage item={item_name} [{item_id}] mode={mode.name} kit_id={kit_id} "
                         f"kit_model={kit.model_id if kit else 'None'} item_qty={item.quantity} "
-                        f"preferred_kit_id={preferred_kit_id or 0}."
+                        f"preferred_kit_id={preferred_kit_id or 0}. {item_summary}"
                     )
                     Inventory.SalvageItem(item_id, kit_id)
                     state.salvage_started_at = now
+                    state.finish_attempted = False
                     return BehaviorTree.NodeState.RUNNING
 
                 # Handle salvage windows/frames while waiting for completion.
@@ -3003,15 +3060,46 @@ class BTItems:
                         _log(node.name, f"Selected salvage option {mode.name} for item={item_name} [{item_id}].")
                         return BehaviorTree.NodeState.RUNNING
                     else:
-                        _log(node.name, f"Failed to select salvage option {mode.name} for item={item_name} [{item_id}]; cancelling.", message_type=Console.MessageType.Warning)
+                        _log(node.name, f"Failed to select salvage option {mode.name} for item={item_name} [{item_id}]; cancelling. {item_summary}", message_type=Console.MessageType.Warning)
                         state.window_detected_at = 0.0
                         SalvageOptionsWindow.Cancel()
+                        _reset_state(node)
                         return BehaviorTree.NodeState.FAILURE
 
                 if state.window_detected_at:
                     state.window_detected_at = 0.0
 
                 # Completion checks.
+                inventory_instance, is_salvaging, transaction_done, supports_finish = _read_native_salvage_state()
+                if transaction_done and not state.finish_attempted:
+                    finish_salvage = getattr(inventory_instance, "FinishSalvage", None) if inventory_instance is not None else None
+                    if callable(finish_salvage):
+                        try:
+                            finish_salvage()
+                            state.finish_attempted = True
+                            _log(node.name, f"FinishSalvage executed for item={item_name} [{item_id}] mode={mode.name}.")
+                            return BehaviorTree.NodeState.RUNNING
+                        except Exception as exc:
+                            _log(
+                                node.name,
+                                f"FinishSalvage failed for item={item_name} [{item_id}] mode={mode.name}: {exc}. {item_summary}",
+                                message_type=Console.MessageType.Warning,
+                            )
+                            _reset_state(node)
+                            return BehaviorTree.NodeState.FAILURE
+                    elif supports_finish:
+                        _log(
+                            node.name,
+                            f"Native salvage transaction completed for item={item_name} [{item_id}] but FinishSalvage was unavailable. {item_summary}",
+                            message_type=Console.MessageType.Warning,
+                        )
+
+                refreshed_item = ItemSnapshot.create(item_id)
+                if refreshed_item is not None:
+                    item = refreshed_item
+                    item_summary = _item_debug_summary(item)
+                    item_name = item.complete_name if item.complete_name else item_name
+
                 current_qty = item.quantity
                 initial_qty = state.initial_qty
                 desired_qty = state.desired_qty
@@ -3043,6 +3131,14 @@ class BTItems:
                     )
                     return BehaviorTree.NodeState.RUNNING
 
+                if is_salvaging:
+                    _log(
+                        node.name,
+                        f"Native salvage transaction still active for item={item_name} [{item_id}] "
+                        f"after windows closed. current_qty={current_qty} desired_qty={desired_qty}."
+                    )
+                    return BehaviorTree.NodeState.RUNNING
+
                 if not item_gone and item.is_stackable and qty_changed and current_qty > desired_qty:
                     _log(
                         node.name,
@@ -3051,18 +3147,41 @@ class BTItems:
                     )
                     state.salvage_started_at = 0.0
                     state.initial_qty = item.quantity
+                    state.finish_attempted = False
                     
                     return BehaviorTree.NodeState.RUNNING
 
-                if qty_changed or item_gone or windows_closed_after_confirm or mod_salvaged:
+                if qty_changed or item_gone or mod_salvaged:
                     _log(
                         node.name,
                         f"Salvage complete item={item_name} [{item_id}] mode={mode.name} "
                         f"qty_changed={qty_changed} item_gone={item_gone} "
                         f"windows_closed_after_confirm={windows_closed_after_confirm} mod_salvaged={mod_salvaged} "
-                        f"initial_qty={initial_qty} current_qty={current_qty} desired_qty={desired_qty}."
+                        f"initial_qty={initial_qty} current_qty={current_qty} desired_qty={desired_qty}. "
+                        f"{item_summary}"
                     )
+                    _reset_state(node)
                     return BehaviorTree.NodeState.SUCCESS
+
+                if windows_closed_after_confirm and confirm_clicked_at > 0.0 and (now - confirm_clicked_at) < 1.0:
+                    _log(
+                        node.name,
+                        f"Salvage UI closed for item={item_name} [{item_id}] but waiting for inventory/native state to settle."
+                        f" current_qty={current_qty} desired_qty={desired_qty} "
+                        f"is_salvaging={is_salvaging} transaction_done={transaction_done} finish_attempted={state.finish_attempted}.",
+                    )
+                    return BehaviorTree.NodeState.RUNNING
+
+                if windows_closed_after_confirm:
+                    _log(
+                        node.name,
+                        f"Salvage UI closed for item={item_name} [{item_id}] after confirm but no salvage progress is visible yet; "
+                        f"continuing to wait for native/inventory state until timeout."
+                        f" initial_qty={initial_qty} current_qty={current_qty} desired_qty={desired_qty}. "
+                        f"{item_summary}",
+                        message_type=Console.MessageType.Info,
+                    )
+                    return BehaviorTree.NodeState.RUNNING
 
                 if (now - float(state.salvage_started_at)) * 1000 >= timeout_ms_per_item:
                     cancelled_window = False
@@ -3078,10 +3197,10 @@ class BTItems:
                         f"material_confirm:{SalvageConfirmationPopup.IsOpen()}, "
                         f"unidentified:{ExpertSalvageUnidentifiedWindow.IsOpen()}}} "
                         f"cancelled_window={cancelled_window} "
-                        f"free_slots={Inventory.GetFreeSlotCount()}.",
+                        f"free_slots={Inventory.GetFreeSlotCount()}. {item_summary}",
                         message_type=Console.MessageType.Warning,
                     )
-                    node.blackboard.pop(state_key, None)
+                    _reset_state(node)
                     return BehaviorTree.NodeState.FAILURE
 
                 _log(
@@ -3863,6 +3982,257 @@ class BTItems:
 
             plan.entries.sort(key=lambda entry: (entry.bag.value, entry.slot))
             return plan
+
+        @staticmethod
+        def CreateBagSortPlanTree(
+            bags: list[Bags] = INVENTORY_BAGS,
+            item_checks_per_tick: int = 40,
+        ) -> BehaviorTree:
+            runtime: dict[str, Any] = {
+                'phase': 'init',
+                'plan': None,
+                'snapshot': None,
+                'sorting_config': None,
+                'remaining_items': [],
+                'occupied_slots': set(),
+                'explicit_groups': [],
+                'group_index': 0,
+                'scan_items': [],
+                'scan_index': 0,
+                'matching_items': [],
+                'status': 'Starting sorting preview...',
+                'error': '',
+                'progress': 0.0,
+            }
+            tree_holder: dict[str, BehaviorTree] = {}
+
+            def _set_tree_state() -> None:
+                tree = tree_holder.get('tree')
+                if tree is None:
+                    return
+                setattr(tree, 'plan_result', runtime.get('plan'))
+                setattr(tree, 'progress_text', runtime.get('status', ''))
+                setattr(tree, 'progress_ratio', runtime.get('progress', 0.0))
+                setattr(tree, 'error_text', runtime.get('error', ''))
+
+            def _build_step(_node: BehaviorTree.Node) -> BehaviorTree.NodeState:
+                try:
+                    if runtime['phase'] == 'init':
+                        snapshot = ItemSnapshot.get_bags_snapshot(bags)
+                        sorting_config = SortingConfig()
+                        plan = BagSortPlan()
+                        remaining_items: list[ItemSnapshot] = [
+                            item
+                            for bag in bags
+                            for _, item in sorted(snapshot.get(bag, {}).items())
+                            if item is not None and item.is_valid
+                        ]
+                        occupied_slots: set[tuple[Bags, int]] = set()
+
+                        for bag in bags:
+                            plan.layout[bag] = {
+                                slot: None
+                                for slot in sorted(snapshot.get(bag, {}).keys())
+                            }
+
+                        explicit_groups: list[tuple[Bags, SlotGroupConfig, list[int]]] = []
+                        for bag in bags:
+                            bag_groups = sorted(
+                                sorting_config.get_groups_for_bag(bag),
+                                key=lambda group: min(group.normalized_slots_for_bag(bag)) if group.normalized_slots_for_bag(bag) else 9999,
+                            )
+                            for group in bag_groups:
+                                slots = [
+                                    slot
+                                    for slot in group.normalized_slots_for_bag(bag)
+                                    if slot in plan.layout.get(bag, {}) and (bag, slot) not in occupied_slots
+                                ]
+                                if not slots:
+                                    continue
+
+                                explicit_groups.append((bag, group, slots))
+                                occupied_slots.update((bag, slot) for slot in slots)
+
+                        runtime['snapshot'] = snapshot
+                        runtime['sorting_config'] = sorting_config
+                        runtime['plan'] = plan
+                        runtime['remaining_items'] = remaining_items
+                        runtime['occupied_slots'] = occupied_slots
+                        runtime['explicit_groups'] = explicit_groups
+                        runtime['phase'] = 'explicit_groups'
+                        runtime['status'] = 'Preparing sorting groups...'
+                        runtime['progress'] = 0.0
+                        _set_tree_state()
+                        return BehaviorTree.NodeState.RUNNING
+
+                    if runtime['phase'] == 'explicit_groups':
+                        explicit_groups = cast(list[tuple[Bags, SlotGroupConfig, list[int]]], runtime['explicit_groups'])
+                        group_index = int(runtime['group_index'])
+                        if group_index >= len(explicit_groups):
+                            runtime['phase'] = 'default_slots'
+                            runtime['status'] = 'Sorting default slots...'
+                            runtime['progress'] = 0.8
+                            _set_tree_state()
+                            return BehaviorTree.NodeState.RUNNING
+
+                        bag, group, slots = explicit_groups[group_index]
+                        if not runtime['scan_items']:
+                            runtime['scan_items'] = list(runtime['remaining_items'])
+                            runtime['scan_index'] = 0
+                            runtime['matching_items'] = []
+
+                        scan_items = cast(list[ItemSnapshot], runtime['scan_items'])
+                        scan_index = int(runtime['scan_index'])
+                        matching_items = cast(list[ItemSnapshot], runtime['matching_items'])
+                        checks = 0
+                        while scan_index < len(scan_items) and checks < item_checks_per_tick:
+                            item = scan_items[scan_index]
+                            if group.matches(item):
+                                matching_items.append(item)
+                            scan_index += 1
+                            checks += 1
+
+                        runtime['scan_index'] = scan_index
+                        runtime['status'] = f'Planning {group.display_name()} ({group_index + 1}/{max(1, len(explicit_groups))})'
+                        if explicit_groups:
+                            runtime['progress'] = min(0.79, (group_index + (scan_index / max(1, len(scan_items)))) / len(explicit_groups) * 0.8)
+                        _set_tree_state()
+
+                        if scan_index < len(scan_items):
+                            return BehaviorTree.NodeState.RUNNING
+
+                        matching_items.sort(key=lambda item: group.sorter.get_sort_key(item))
+                        plan = cast(BagSortPlan, runtime['plan'])
+                        remaining_items = cast(list[ItemSnapshot], runtime['remaining_items'])
+
+                        for slot_index, slot in enumerate(slots):
+                            planned_item = matching_items[slot_index] if slot_index < len(matching_items) else None
+                            if planned_item is not None:
+                                remaining_items.remove(planned_item)
+
+                            plan.layout[bag][slot] = planned_item
+                            plan.entries.append(
+                                BagSortPreviewEntry(
+                                    bag=bag,
+                                    slot=slot,
+                                    item=planned_item,
+                                    source_bag=planned_item.bag if planned_item is not None else None,
+                                    source_slot=planned_item.slot if planned_item is not None else None,
+                                    group_name=group.display_name(),
+                                    group_summary=group.matcher.summary(),
+                                    sorter=group.sorter,
+                                    used_fallback=False,
+                                )
+                            )
+
+                        runtime['group_index'] = group_index + 1
+                        runtime['scan_items'] = []
+                        runtime['scan_index'] = 0
+                        runtime['matching_items'] = []
+                        _set_tree_state()
+                        return BehaviorTree.NodeState.RUNNING
+
+                    if runtime['phase'] == 'default_slots':
+                        plan = cast(BagSortPlan, runtime['plan'])
+                        sorting_config = cast(SortingConfig, runtime['sorting_config'])
+                        occupied_slots = cast(set[tuple[Bags, int]], runtime['occupied_slots'])
+                        remaining_items = cast(list[ItemSnapshot], runtime['remaining_items'])
+                        default_slots = [
+                            (bag, slot)
+                            for bag in bags
+                            for slot in sorted(plan.layout.get(bag, {}).keys())
+                            if (bag, slot) not in occupied_slots
+                        ]
+                        default_sorted_items = sorted(
+                            remaining_items,
+                            key=lambda item: sorting_config.default_sorter.get_sort_key(item),
+                        )
+
+                        assigned_default_count = 0
+                        for bag, slot in default_slots:
+                            planned_item = default_sorted_items[assigned_default_count] if assigned_default_count < len(default_sorted_items) else None
+                            if planned_item is not None:
+                                assigned_default_count += 1
+
+                            plan.layout[bag][slot] = planned_item
+                            plan.entries.append(
+                                BagSortPreviewEntry(
+                                    bag=bag,
+                                    slot=slot,
+                                    item=planned_item,
+                                    source_bag=planned_item.bag if planned_item is not None else None,
+                                    source_slot=planned_item.slot if planned_item is not None else None,
+                                    group_name='Default',
+                                    group_summary='Any item',
+                                    sorter=sorting_config.default_sorter,
+                                    used_fallback=False,
+                                )
+                            )
+
+                        runtime['remaining_items'] = default_sorted_items[assigned_default_count:]
+                        runtime['phase'] = 'fallback'
+                        runtime['status'] = 'Applying fallback placements...'
+                        runtime['progress'] = 0.92
+                        _set_tree_state()
+                        return BehaviorTree.NodeState.RUNNING
+
+                    if runtime['phase'] == 'fallback':
+                        plan = cast(BagSortPlan, runtime['plan'])
+                        remaining_items = cast(list[ItemSnapshot], runtime['remaining_items'])
+                        fallback_slots = [
+                            entry
+                            for entry in plan.entries
+                            if entry.item is None and entry.group_name != 'Default'
+                        ]
+
+                        if remaining_items and fallback_slots:
+                            plan.warnings.append(
+                                'Some items did not match any open/default slot and were placed into reserved slots as fallback.'
+                            )
+                            for fallback_entry in fallback_slots:
+                                if not remaining_items:
+                                    break
+
+                                planned_item = remaining_items.pop(0)
+                                fallback_entry.item = planned_item
+                                fallback_entry.source_bag = planned_item.bag
+                                fallback_entry.source_slot = planned_item.slot
+                                fallback_entry.used_fallback = True
+                                plan.layout[fallback_entry.bag][fallback_entry.slot] = planned_item
+
+                        if remaining_items:
+                            plan.warnings.append(
+                                f'{len(remaining_items)} item(s) could not be assigned by the planner and will remain unsorted until more slots are available.'
+                            )
+
+                        plan.entries.sort(key=lambda entry: (entry.bag.value, entry.slot))
+                        runtime['phase'] = 'done'
+                        runtime['status'] = 'Sorting preview ready.'
+                        runtime['progress'] = 1.0
+                        _set_tree_state()
+                        return BehaviorTree.NodeState.SUCCESS
+
+                    _set_tree_state()
+                    return BehaviorTree.NodeState.SUCCESS
+                except Exception as exc:
+                    runtime['error'] = f'{type(exc).__name__}: {exc!r}'
+                    runtime['status'] = 'Failed to build sorting preview.'
+                    _set_tree_state()
+                    return BehaviorTree.NodeState.FAILURE
+
+            tree = BehaviorTree(
+                BehaviorTree.ActionNode(
+                    name='Inventory.BuildBagSortPlan',
+                    action_fn=_build_step,
+                    aftercast_ms=0,
+                )
+            )
+            setattr(tree, 'plan_result', None)
+            setattr(tree, 'progress_text', runtime['status'])
+            setattr(tree, 'progress_ratio', runtime['progress'])
+            setattr(tree, 'error_text', runtime['error'])
+            tree_holder['tree'] = tree
+            return tree
 
         @staticmethod
         def GetPlannedBagLayout(

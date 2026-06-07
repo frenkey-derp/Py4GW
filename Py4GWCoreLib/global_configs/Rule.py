@@ -10,7 +10,8 @@ from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Upgrade
 from Py4GWCoreLib.global_configs.Condition import (
     ArmorUpgradesCondition,
-    Condition,
+    AttributeRequirement,
+    BaseCondition,
     ConditionEvaluationContext,
     DyeColorsCondition,
     EncodedNamesCondition,
@@ -40,10 +41,6 @@ from Py4GWCoreLib.global_configs.Condition import (
     UpgradesCondition,
     WeaponRequirementCondition,
     WeaponRequirementRanges,
-    attribute_requirements_to_requirement_ranges,
-    normalize_inherent_filters,
-    normalize_requirement_ranges,
-    requirement_ranges_to_attribute_requirements,
 )
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 
@@ -51,24 +48,22 @@ class ResultInterpretation(IntEnum):
     Match = auto()
     NoMatch = auto()
 
-
 class ConditionOperator(IntEnum):
     All = auto()
     Any = auto()
 
-
-class Rule:
+class BaseRule:
     """Base rule that evaluates one or more reusable conditions against an item."""
-    _registry: ClassVar[dict[str, type["Rule"]]] = {}
+    _registry: ClassVar[dict[str, type["BaseRule"]]] = {}
     ui_selectable: ClassVar[bool] = True
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        Rule._registry[cls.__name__] = cls
+        BaseRule._registry[cls.__name__] = cls
 
     def __init__(
         self,
-        conditions: Optional[list[Condition]] = None,
+        conditions: Optional[list[BaseCondition]] = None,
         *,
         action: ItemAction = ItemAction.NONE,
         condition_operator: ConditionOperator = ConditionOperator.All,
@@ -78,7 +73,7 @@ class Rule:
         self.enabled = True
         self.result_interpretation: ResultInterpretation = ResultInterpretation.Match
         self.condition_operator = condition_operator
-        self.conditions: list[Condition] = conditions if conditions is not None else []
+        self.conditions: list[BaseCondition] = conditions if conditions is not None else []
 
     def get_item(self, item_id: int) -> Optional[ItemSnapshot]:
         try:
@@ -86,10 +81,10 @@ class Rule:
         except Exception:
             return None
 
-    def add_condition(self, condition: Condition) -> None:
+    def add_condition(self, condition: BaseCondition) -> None:
         self.conditions.append(condition)
 
-    def remove_condition(self, condition: Condition) -> None:
+    def remove_condition(self, condition: BaseCondition) -> None:
         self.conditions = [entry for entry in self.conditions if entry != condition]
 
     def clear_conditions(self) -> None:
@@ -136,7 +131,7 @@ class Rule:
 
     def equals(self, other: object) -> bool:
         return (
-            isinstance(other, Rule)
+            isinstance(other, BaseRule)
             and type(self) is type(other)
             and self.result_interpretation == other.result_interpretation
             and self._comparison_data() == other._comparison_data()
@@ -152,12 +147,12 @@ class Rule:
         }
 
     def _deserialize_conditions(self, serialized_conditions: Any) -> None:
-        parsed_conditions: list[Condition] = []
+        parsed_conditions: list[BaseCondition] = []
         for entry in serialized_conditions if isinstance(serialized_conditions, list) else []:
             if not isinstance(entry, dict):
                 continue
 
-            condition = Condition.from_dict(entry)
+            condition = BaseCondition.from_dict(entry)
             if condition is not None:
                 parsed_conditions.append(condition)
 
@@ -167,7 +162,7 @@ class Rule:
 
         merged_conditions = list(self.conditions)
         consumed_indices: set[int] = set()
-        extra_conditions: list[Condition] = []
+        extra_conditions: list[BaseCondition] = []
 
         for parsed_condition in parsed_conditions:
             replacement_index = next(
@@ -209,7 +204,7 @@ class Rule:
         return payload
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "Rule | None":
+    def from_dict(cls, payload: dict[str, Any]) -> "BaseRule | None":
         rule_type_name = str(payload.get("rule_type", ""))
         rule_cls = cls._registry.get(rule_type_name)
         if rule_cls is None:
@@ -234,12 +229,11 @@ class Rule:
             return None
 
 
-class CustomRule(Rule):
+class CustomRule(BaseRule):
     """User-defined rule that can combine any supported condition sections."""
     pass
 
-
-class ModelIdsRule(Rule):
+class ModelIdsRule(BaseRule):
     """Matches items whose model ID is in the configured list."""
     def __init__(self, model_ids: Optional[list[ModelID | int]] = None):
         super().__init__([ModelIdsCondition(model_ids)])
@@ -256,7 +250,7 @@ class ModelIdsRule(Rule):
     def model_ids(self, value: list[ModelID | int]) -> None:
         self.condition.model_ids = value
 
-class ItemTypesRule(Rule):
+class ItemTypesRule(BaseRule):
     """Matches items whose item type is one of the selected types."""
     def __init__(self, item_types: Optional[list[ItemType]] = None):
         super().__init__([ItemTypesCondition(item_types)])
@@ -273,8 +267,7 @@ class ItemTypesRule(Rule):
     def item_types(self, value: list[ItemType]) -> None:
         self.condition.item_types = value
 
-
-class QuantityRule(Rule):
+class QuantityRule(BaseRule):
     """Matches items whose quantity falls inside the configured inclusive range."""
     def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
         super().__init__([StackQuantityCondition(min_quantity, max_quantity)])
@@ -303,8 +296,7 @@ class QuantityRule(Rule):
         if self.condition.max_quantity < self.condition.min_quantity:
             self.condition.min_quantity = self.condition.max_quantity
 
-
-class NickItemRule(Rule):
+class NickItemRule(BaseRule):
     """Matches Nicholas the Traveler items that come up within the configured number of weeks."""
     def __init__(self, weeks_before_next_cycle: int = 0):
         super().__init__([NickItemCondition(weeks_before_next_cycle)])
@@ -321,8 +313,7 @@ class NickItemRule(Rule):
     def weeks_before_next_cycle(self, value: int) -> None:
         self.condition.weeks_before_next_cycle = max(0, min(137, int(value)))
 
-
-class IsMaterialRule(Rule):
+class IsMaterialRule(BaseRule):
     """Matches material items, optionally restricted to rare materials only."""
     def __init__(self, rare_only: bool = False):
         super().__init__([IsMaterialCondition(rare_only)])
@@ -339,8 +330,7 @@ class IsMaterialRule(Rule):
     def rare_only(self, value: bool) -> None:
         self.condition.rare_materials = bool(value)
 
-
-class ModelIdsAndItemTypesRule(Rule):
+class ModelIdsAndItemTypesRule(BaseRule):
     """Matches specific combinations of model ID and item type."""
     def __init__(self, model_ids: Optional[list[ModelIdAndItemType]] = None):
         super().__init__([ModelIdsAndItemTypesCondition(model_ids)])
@@ -357,8 +347,7 @@ class ModelIdsAndItemTypesRule(Rule):
     def items(self, value: list[ModelIdAndItemType]) -> None:
         self.condition.modelids_and_itemtypes = value
 
-
-class EncodedNameRule(Rule):
+class EncodedNameRule(BaseRule):
     """Matches items by their encoded name bytes."""
     def __init__(self, encoded_names: Optional[list[bytes]] = None):
         super().__init__([EncodedNamesCondition(encoded_names)])
@@ -375,8 +364,7 @@ class EncodedNameRule(Rule):
     def encoded_names(self, value: list[bytes]) -> None:
         self.condition.encoded_names = value
 
-
-class ModelFileIdRule(Rule):
+class ModelFileIdRule(BaseRule):
     """Matches items whose model file ID is in the configured list."""
     def __init__(self, model_file_ids: Optional[list[int]] = None):
         super().__init__([ModelFileIdsCondition(model_file_ids)])
@@ -393,8 +381,7 @@ class ModelFileIdRule(Rule):
     def model_file_ids(self, value: list[int]) -> None:
         self.condition.model_file_ids = value
 
-
-class ModelFileIdAndItemTypeRule(Rule):
+class ModelFileIdAndItemTypeRule(BaseRule):
     """Matches specific combinations of model file ID and item type."""
     def __init__(self, model_file_ids_and_item_types: Optional[list[ModelFileIdAndItemType]] = None):
         super().__init__([ModelFileIdsAndItemTypesCondition(model_file_ids_and_item_types)])
@@ -411,8 +398,7 @@ class ModelFileIdAndItemTypeRule(Rule):
     def model_file_ids_and_item_types(self, value: list[ModelFileIdAndItemType]) -> None:
         self.condition.model_file_ids_and_item_types = value
 
-
-class WeaponSkinRule(Rule):
+class WeaponSkinRule(BaseRule):
     """Matches weapon skins by model file ID with optional requirement and inherent filters."""
     def __init__(
         self,
@@ -424,10 +410,10 @@ class WeaponSkinRule(Rule):
         inherents: Optional[Sequence[InherentFilter | Inherent]] = None,
         inscribable: bool = False,
     ):
-        conditions: list[Condition] = [
+        conditions: list[BaseCondition] = [
             ModelFileIdsCondition(model_file_ids),
-            WeaponRequirementCondition(requirement_ranges_to_attribute_requirements(requirements, None, requirement_min, requirement_max)),
-            InherentFiltersCondition(normalize_inherent_filters(inherents)),
+            WeaponRequirementCondition(AttributeRequirement.from_requirement_ranges(requirements, None, requirement_min, requirement_max)),
+            InherentFiltersCondition(InherentFilter.normalize_collection(inherents)),
         ]
 
         super().__init__(conditions)
@@ -443,11 +429,11 @@ class WeaponSkinRule(Rule):
 
     @property
     def requirements(self) -> WeaponRequirementRanges:
-        return attribute_requirements_to_requirement_ranges(self._requirement_condition().requirements)
+        return AttributeRequirement.to_requirement_ranges(self._requirement_condition().requirements)
 
     @requirements.setter
     def requirements(self, value: WeaponRequirementRanges) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(value)
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(value)
 
     @property
     def inherents(self) -> InherentFilters:
@@ -455,7 +441,7 @@ class WeaponSkinRule(Rule):
 
     @inherents.setter
     def inherents(self, value: Sequence[InherentFilter | Inherent]) -> None:
-        normalized = normalize_inherent_filters(value)
+        normalized = InherentFilter.normalize_collection(value)
         self._inherent_condition().inherents = normalized if normalized else []
 
     @property
@@ -464,7 +450,7 @@ class WeaponSkinRule(Rule):
 
     @requirement_min.setter
     def requirement_min(self, value: int) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, None, int(value), self.requirement_max)
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(None, None, int(value), self.requirement_max)
 
     @property
     def requirement_max(self) -> int:
@@ -472,7 +458,7 @@ class WeaponSkinRule(Rule):
 
     @requirement_max.setter
     def requirement_max(self, value: int) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, None, self.requirement_min, int(value))
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(None, None, self.requirement_min, int(value))
 
     @property
     def only_max_damage(self) -> bool:
@@ -511,7 +497,7 @@ class WeaponSkinRule(Rule):
     def _inherent_condition(self) -> InherentFiltersCondition:
         return self.conditions[2]  # type: ignore[return-value]
     
-class WeaponTypeRule(Rule):
+class WeaponTypeRule(BaseRule):
     """Matches one weapon type with optional requirement and inherent filters."""
     def __init__(
         self,
@@ -523,10 +509,10 @@ class WeaponTypeRule(Rule):
         inherents: Optional[Sequence[InherentFilter | Inherent]] = None,
         inscribable: bool = False,
     ):
-        conditions: list[Condition] = [
+        conditions: list[BaseCondition] = [
             ExactItemTypeCondition(item_type),
-            WeaponRequirementCondition(requirement_ranges_to_attribute_requirements(requirements, item_type, requirement_min, requirement_max)),
-            InherentFiltersCondition(normalize_inherent_filters(inherents), inscribable),
+            WeaponRequirementCondition(AttributeRequirement.from_requirement_ranges(requirements, item_type, requirement_min, requirement_max)),
+            InherentFiltersCondition(InherentFilter.normalize_collection(inherents), inscribable),
         ]
 
         super().__init__(conditions)
@@ -548,11 +534,11 @@ class WeaponTypeRule(Rule):
 
     @property
     def requirements(self) -> WeaponRequirementRanges:
-        return attribute_requirements_to_requirement_ranges(self._requirement_condition().requirements)
+        return AttributeRequirement.to_requirement_ranges(self._requirement_condition().requirements)
 
     @requirements.setter
     def requirements(self, value: WeaponRequirementRanges) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(value, self.item_type)
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(value, self.item_type)
 
     @property
     def inherents(self) -> InherentFilters:
@@ -561,7 +547,7 @@ class WeaponTypeRule(Rule):
 
     @inherents.setter
     def inherents(self, value: Sequence[InherentFilter | Inherent]) -> None:
-        normalized = normalize_inherent_filters(value)
+        normalized = InherentFilter.normalize_collection(value)
         inherent_condition = self._inherent_condition()
         
         if inherent_condition is not None:
@@ -573,7 +559,7 @@ class WeaponTypeRule(Rule):
 
     @requirement_min.setter
     def requirement_min(self, value: int) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, self.item_type, int(value), self.requirement_max)
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(None, self.item_type, int(value), self.requirement_max)
 
     @property
     def requirement_max(self) -> int:
@@ -581,7 +567,7 @@ class WeaponTypeRule(Rule):
 
     @requirement_max.setter
     def requirement_max(self, value: int) -> None:
-        self._requirement_condition().requirements = requirement_ranges_to_attribute_requirements(None, self.item_type, self.requirement_min, int(value))
+        self._requirement_condition().requirements = AttributeRequirement.from_requirement_ranges(None, self.item_type, self.requirement_min, int(value))
 
     @property
     def only_max_damage(self) -> bool:
@@ -621,13 +607,12 @@ class WeaponTypeRule(Rule):
     def _inherent_condition(self) -> InherentFiltersCondition:
         return self.conditions[2]  # type: ignore[return-value]
 
-    def _replace_optional_condition(self, condition_type: type[Condition], replacement: Optional[Condition]) -> None:
+    def _replace_optional_condition(self, condition_type: type[BaseCondition], replacement: Optional[BaseCondition]) -> None:
         self.conditions = [condition for condition in self.conditions if not isinstance(condition, condition_type)]
         if replacement is not None:
             self.conditions.append(replacement)
 
-
-class SalvagesToMaterialRule(Rule):
+class SalvagesToMaterialRule(BaseRule):
     """Matches items that can salvage into one of the selected materials."""
     def __init__(self, materials: Optional[list[ModelID | int]] = None):
         super().__init__([SalvagesToMaterialsCondition(materials)])
@@ -644,7 +629,7 @@ class SalvagesToMaterialRule(Rule):
     def materials(self, value: list[ModelID | int]) -> None:
         self.condition.materials = value
 
-class RaritiesRule(Rule):
+class RaritiesRule(BaseRule):
     """Matches items whose rarity is one of the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         super().__init__([RaritiesCondition(rarities)])
@@ -661,8 +646,7 @@ class RaritiesRule(Rule):
     def rarities(self, value: list[Rarity]) -> None:
         self.condition.rarities = value
 
-
-class RaritiesAndItemTypesRule(Rule):
+class RaritiesAndItemTypesRule(BaseRule):
     """Matches items by combining rarity and item type filters."""
     def __init__(self, rarities: Optional[list[Rarity]] = None, item_types: Optional[list[ItemType]] = None):
         super().__init__([RaritiesCondition(rarities), ItemTypesCondition(item_types)])
@@ -689,8 +673,7 @@ class RaritiesAndItemTypesRule(Rule):
     def _item_type_condition(self) -> ItemTypesCondition:
         return self.conditions[1]  # type: ignore[return-value]
 
-
-class UnidentifiedRule(Rule):
+class UnidentifiedRule(BaseRule):
     """Matches items that are still unidentified."""
     def __init__(self):
         super().__init__([UnidentifiedCondition()], action=ItemAction.Identify)
@@ -699,7 +682,7 @@ class UnidentifiedRule(Rule):
     def condition(self) -> UnidentifiedCondition:
         return cast(UnidentifiedCondition, self.conditions[0])
 
-class UnidentifiedAndRarityRule(Rule):
+class UnidentifiedAndRarityRule(BaseRule):
     """Matches unidentified items limited to the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         super().__init__([UnidentifiedCondition(), RaritiesCondition(rarities)], action=ItemAction.Identify)
@@ -715,7 +698,7 @@ class UnidentifiedAndRarityRule(Rule):
     def _rarities_condition(self) -> RaritiesCondition:
         return cast(RaritiesCondition, self.conditions[1])
 
-class DyesRule(Rule):
+class DyesRule(BaseRule):
     """Matches dye items whose color is one of the selected dye colors."""
     def __init__(self, dye_colors: Optional[list[DyeColor]] = None):
         super().__init__([DyeColorsCondition(dye_colors)])
@@ -732,54 +715,11 @@ class DyesRule(Rule):
     def dye_colors(self, value: list[DyeColor]) -> None:
         self.condition.dye_colors = value
 
-
-@dataclass
-class StockInstruction:
-    """Defines a desired stock target for a model ID and item type combination."""
-    model_id: ModelID
-    item_type: ItemType
-    quantity: int
-    include_storage: bool = True
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "model_id": int(self.model_id.value),
-            "item_type": self.item_type.name,
-            "quantity": self.quantity,
-            "include_storage": self.include_storage,
-        }
-
-    def comparison_data(self) -> tuple[int, str, int, bool]:
-        return (
-            int(self.model_id.value),
-            self.item_type.name,
-            self.quantity,
-            self.include_storage,
-        )
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "StockInstruction | None":
-        try:
-            model_id = ModelID(int(data["model_id"]))
-            item_type = ItemType[str(data["item_type"])]
-            quantity = int(data["quantity"])
-            include_storage = bool(data.get("include_storage", True))
-        except (KeyError, ValueError, TypeError):
-            return None
-
-        return cls(
-            model_id=model_id,
-            item_type=item_type,
-            quantity=quantity,
-            include_storage=include_storage,
-        )
-
-
-class ExtractUpgradeRule(Rule):
+class ExtractUpgradeRule(BaseRule):
     """Base rule for matching extractable upgrades on items."""
     ui_selectable: ClassVar[bool] = False
 
-    def __init__(self, conditions: Optional[list[Condition]] = None):
+    def __init__(self, conditions: Optional[list[BaseCondition]] = None):
         super().__init__(conditions)
         self.extracted_action : ItemAction = ItemAction.Stash
 
@@ -834,7 +774,6 @@ class ExtractUpgradeRule(Rule):
         else:
             self.extracted_action = ItemAction.Stash
 
-
 class MaxWeaponUpgradeRule(ExtractUpgradeRule):
     """Matches weapons containing selected max-value weapon upgrades or inscriptions."""
     ui_selectable: ClassVar[bool] = True
@@ -853,7 +792,6 @@ class MaxWeaponUpgradeRule(ExtractUpgradeRule):
     @weapon_upgrades.setter
     def weapon_upgrades(self, value: list[UpgradeAndItemType]) -> None:
         self.condition.weapon_upgrades = value
-
 
 class ArmorUpgradeRule(ExtractUpgradeRule):
     """Matches armor containing selected runes or insignias."""
@@ -875,7 +813,6 @@ class ArmorUpgradeRule(ExtractUpgradeRule):
     def armor_upgrades(self, value: list[ArmorUpgrade]) -> None:
         self.condition.armor_upgrades = value
 
-
 class UpgradeRangeRule(ExtractUpgradeRule):
     """Matches upgrades whose numeric values fall inside configured ranges."""
     ui_selectable: ClassVar[bool] = True
@@ -894,7 +831,6 @@ class UpgradeRangeRule(ExtractUpgradeRule):
     @upgrade_ranges.setter
     def upgrade_ranges(self, value: list[RangedUpgrade]) -> None:
         self.condition.upgrade_ranges = value
-
 
 class UpgradesRule(ExtractUpgradeRule):
     """Matches selected upgrades without requiring them to be maxed or ranged."""

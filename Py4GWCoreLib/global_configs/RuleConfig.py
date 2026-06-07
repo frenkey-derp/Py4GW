@@ -8,11 +8,11 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
-from Py4GWCoreLib.global_configs import Rule as RuleModule
+from Py4GWCoreLib.global_configs import Rule
 
 
-class RuleConfig(list[RuleModule.Rule]):
-    allowed_rule_types: ClassVar[tuple[type[RuleModule.Rule], ...] | None] = None
+class RuleConfig(list[Rule.BaseRule]):
+    allowed_rule_types: ClassVar[tuple[type[Rule.BaseRule], ...] | None] = None
     
     def __init__(self):        
         self.blacklisted_items : list[int] = []
@@ -28,24 +28,24 @@ class RuleConfig(list[RuleModule.Rule]):
         self.whitelisted_items.clear()
 
     @classmethod
-    def GetAllowedRuleTypes(cls) -> tuple[type[RuleModule.Rule], ...] | None:
+    def GetAllowedRuleTypes(cls) -> tuple[type[Rule.BaseRule], ...] | None:
         return cls.allowed_rule_types
 
     @classmethod
-    def _is_allowed_rule_type(cls, rule: RuleModule.Rule) -> bool:
+    def _is_allowed_rule_type(cls, rule: Rule.BaseRule) -> bool:
         allowed_rule_types = cls.GetAllowedRuleTypes()
         return allowed_rule_types is None or isinstance(rule, allowed_rule_types)
 
     @classmethod
-    def _cast_rule(cls, rule: RuleModule.Rule) -> RuleModule.Rule:
+    def _cast_rule(cls, rule: Rule.BaseRule) -> Rule.BaseRule:
         if not cls._is_allowed_rule_type(rule):
             raise TypeError(
                 f"{type(rule).__name__} is not allowed in {cls.__name__}."
             )
 
-        return cast(RuleModule.Rule, rule)
+        return cast(Rule.BaseRule, rule)
 
-    def GetMatchedRule(self, item_id: int) -> RuleModule.Rule | None:
+    def GetMatchedRule(self, item_id: int) -> Rule.BaseRule | None:
         '''
         Returns the first rule that matches the item id, or None if no rule matches.
         '''
@@ -84,7 +84,7 @@ class RuleConfig(list[RuleModule.Rule]):
                 
         return filtered_items
 
-    def AddRule(self, rule: RuleModule.Rule):
+    def AddRule(self, rule: Rule.BaseRule):
         '''
         Adds a rule to the config if an equivalent rule is not already contained in the config. This is to prevent duplicate rules from being added, which would be redundant and adds unnecessary overhead when evaluating items against the rules.
         '''
@@ -93,7 +93,7 @@ class RuleConfig(list[RuleModule.Rule]):
         if not self.HasMatchingRule(rule):
             self.append(typed_rule)
         
-    def RemoveRule(self, rule: RuleModule.Rule):
+    def RemoveRule(self, rule: Rule.BaseRule):
         '''
         Removes a rule from the config if an equivalent rule is contained in the config.
         '''
@@ -102,7 +102,7 @@ class RuleConfig(list[RuleModule.Rule]):
                 self.remove(existing_rule)
                 break
 
-    def HasMatchingRule(self, rule: RuleModule.Rule) -> bool:
+    def HasMatchingRule(self, rule: Rule.BaseRule) -> bool:
         '''
         Checks whether an equivalent rule is already contained in the config.
         '''
@@ -133,70 +133,70 @@ class RuleConfig(list[RuleModule.Rule]):
         '''
         Helper method to add a ModelIdRule to the config.
         '''
-        rule = RuleModule.ModelIdsRule([model_id])
+        rule = Rule.ModelIdsRule([model_id])
         self.AddRule(rule)
     
     def AddModelIds(self, model_ids: list[int|ModelID]):
         '''
         Helper method to add a ModelIdsRule to the config.
         '''
-        rule = RuleModule.ModelIdsRule(model_ids)
+        rule = Rule.ModelIdsRule(model_ids)
         self.AddRule(rule)
         
     def AddRarity(self, rarity: Rarity):
         '''
         Helper method to add a RarityRule to the config.
         '''
-        rule = RuleModule.RaritiesRule([rarity])
+        rule = Rule.RaritiesRule([rarity])
         self.AddRule(rule)
     
     def AddRarities(self, rarities: list[Rarity]):
         '''
         Helper method to add a RaritiesRule to the config.
         '''
-        rule = RuleModule.RaritiesRule(rarities)
+        rule = Rule.RaritiesRule(rarities)
         self.AddRule(rule)
     
     def AddItemType(self, item_type: ItemType):
         '''
         Helper method to add an ItemTypesRule to the config.
         '''
-        rule = RuleModule.ItemTypesRule([item_type])
+        rule = Rule.ItemTypesRule([item_type])
         self.AddRule(rule)      
         
     def AddItemTypes(self, item_types: list[ItemType]):
         '''
         Helper method to add an ItemTypesRule to the config.
         '''
-        rule = RuleModule.ItemTypesRule(item_types)
+        rule = Rule.ItemTypesRule(item_types)
         self.AddRule(rule)      
         
     def AddDyeColor(self, dye_color: DyeColor):
         '''
         Helper method to add a DyeRule to the config.
         '''
-        rule = RuleModule.DyesRule([dye_color])
+        rule = Rule.DyesRule([dye_color])
         self.AddRule(rule)
     
     def AddDyeColors(self, dye_colors: list[DyeColor]):
         '''
         Helper method to add a DyeColorsRule to the config.
         '''
-        rule = RuleModule.DyesRule(dye_colors)
+        rule = Rule.DyesRule(dye_colors)
         self.AddRule(rule)
 
     def AddUpgrade(self, upgrade: Upgrade):
         '''
         Helper method to add an UpgradeRule to the config.
         '''
-        rule = RuleModule.UpgradesRule([upgrade])
+        rule = Rule.UpgradesRule([upgrade])
         self.AddRule(rule)
 
     def AddUpgrades(self, upgrades: list[(tuple[Upgrade, list[ItemType]] | Upgrade)]):
         '''
         Helper method to add an UpgradeRule to the config.
         '''
-        rule = RuleModule.UpgradesRule(upgrades)
+        rule = Rule.UpgradesRule(upgrades)
         self.AddRule(rule)
 
     #endregion Adding helper methods for creating and adding rules in one step
@@ -206,70 +206,70 @@ class RuleConfig(list[RuleModule.Rule]):
         '''
         Helper method to remove a ModelIdRule from the config.
         '''
-        rule = RuleModule.ModelIdsRule([model_id])
+        rule = Rule.ModelIdsRule([model_id])
         self.RemoveRule(rule)
         
     def RemoveModelIds(self, model_ids: list[int|ModelID]):
         '''
         Helper method to remove a ModelIdsRule from the config.
         '''
-        rule = RuleModule.ModelIdsRule(model_ids)
+        rule = Rule.ModelIdsRule(model_ids)
         self.RemoveRule(rule)
         
     def RemoveRarity(self, rarity: Rarity):
         '''
         Helper method to remove a RarityRule from the config.
         '''
-        rule = RuleModule.RaritiesRule([rarity])
+        rule = Rule.RaritiesRule([rarity])
         self.RemoveRule(rule)
         
     def RemoveRarities(self, rarities: list[Rarity]):
         '''
         Helper method to remove a RaritiesRule from the config.
         '''
-        rule = RuleModule.RaritiesRule(rarities)
+        rule = Rule.RaritiesRule(rarities)
         self.RemoveRule(rule)
         
     def RemoveItemType(self, item_type: ItemType):
         '''
         Helper method to remove an ItemTypesRule from the config.
         '''
-        rule = RuleModule.ItemTypesRule([item_type])
+        rule = Rule.ItemTypesRule([item_type])
         self.RemoveRule(rule)
         
     def RemoveItemTypes(self, item_types: list[ItemType]):
         '''
         Helper method to remove an ItemTypesRule from the config.
         '''
-        rule = RuleModule.ItemTypesRule(item_types)
+        rule = Rule.ItemTypesRule(item_types)
         self.RemoveRule(rule)
         
     def RemoveDyeColor(self, dye_color: DyeColor):
         '''
         Helper method to remove a DyesRule from the config.
         '''
-        rule = RuleModule.DyesRule([dye_color])
+        rule = Rule.DyesRule([dye_color])
         self.RemoveRule(rule)
         
     def RemoveDyeColors(self, dye_colors: list[DyeColor]):
         '''
         Helper method to remove a DyesRule from the config.
         '''
-        rule = RuleModule.DyesRule(dye_colors)
+        rule = Rule.DyesRule(dye_colors)
         self.RemoveRule(rule)
 
     def RemoveUpgrade(self, upgrade: Upgrade):
         '''
         Helper method to remove an UpgradeRule from the config.
         '''
-        rule = RuleModule.UpgradesRule([upgrade])
+        rule = Rule.UpgradesRule([upgrade])
         self.RemoveRule(rule)
 
     def RemoveUpgrades(self, upgrades: list[(tuple[Upgrade, list[ItemType]] | Upgrade)]):
         '''
         Helper method to remove an UpgradeRule from the config.
         '''
-        rule = RuleModule.UpgradesRule(upgrades)
+        rule = Rule.UpgradesRule(upgrades)
         self.RemoveRule(rule)
     #endregion Deleting helper methods for creating and adding rules in one step
     
@@ -291,20 +291,20 @@ class RuleConfig(list[RuleModule.Rule]):
         if not isinstance(json_data, list):
             raise ValueError("RuleConfig JSON payload must be a list of rule objects.")
 
-        parsed_rules: list[RuleModule.Rule] = []
+        parsed_rules: list[Rule.BaseRule] = []
 
         for rule_data in json_data:
             if not isinstance(rule_data, dict):
                 continue
 
-            rule = RuleModule.Rule.from_dict(rule_data)
+            rule = Rule.BaseRule.from_dict(rule_data)
             if rule is None:
                 continue
 
             if not cls._is_allowed_rule_type(rule):
                 continue
 
-            typed_rule = cast(RuleModule.Rule, rule)
+            typed_rule = cast(Rule.BaseRule, rule)
 
             if any(existing_rule.equals(typed_rule) for existing_rule in parsed_rules):
                 continue

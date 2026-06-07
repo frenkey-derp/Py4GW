@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import IntEnum
 from typing import Any, ClassVar, NamedTuple, Optional, Sequence, TypeAlias, cast
 
 import Py4GW
@@ -46,6 +47,157 @@ class InherentFilter:
 
         return InherentFilter(inherent=inherent, ranges=ranges)
 
+    @staticmethod
+    def _normalize_range_bounds(min_value: Any, max_value: Any, fallback: DamageRange) -> DamageRange:
+        try:
+            normalized_min = int(min_value)
+            normalized_max = int(max_value)
+        except (TypeError, ValueError):
+            return fallback
+
+        if normalized_min > normalized_max:
+            normalized_min, normalized_max = normalized_max, normalized_min
+
+        return DamageRange(normalized_min, normalized_max)
+
+    @classmethod
+    def normalize_collection(cls, inherents: Optional[Sequence["InherentFilter | Inherent"]]) -> InherentFilters:
+        if inherents is None:
+            return []
+
+        normalized: InherentFilters = []
+        for inherent in inherents:
+            if isinstance(inherent, InherentFilter):
+                normalized.append(inherent)
+            elif isinstance(inherent, Inherent):
+                normalized.append(cls.from_inherent(inherent))
+
+        return normalized
+
+    @classmethod
+    def serialize_collection(cls, inherents: InherentFilters) -> list[dict[str, Any]]:
+        return [
+            {
+                "inherent": inherent_filter.inherent.to_dict(),
+                "ranges": [
+                    {
+                        "target": target,
+                        "min_value": value_range.min_value,
+                        "max_value": value_range.max_value,
+                    }
+                    for target, value_range in sorted(inherent_filter.ranges.items())
+                ],
+            }
+            for inherent_filter in inherents
+        ]
+
+    @classmethod
+    def _deserialize_range_filters(cls, entry: dict[str, Any], inherent: Inherent) -> dict[str, DamageRange]:
+        default_filter = cls.from_inherent(inherent)
+        ranges = dict(default_filter.ranges)
+        raw_ranges = entry.get("ranges", [])
+
+        if isinstance(raw_ranges, dict):
+            raw_ranges = [
+                {**value, "target": target}
+                for target, value in raw_ranges.items()
+                if isinstance(value, dict)
+            ]
+
+        if not isinstance(raw_ranges, list):
+            return ranges
+
+        for raw_range in raw_ranges:
+            if not isinstance(raw_range, dict):
+                continue
+
+            target = raw_range.get("target")
+            if not isinstance(target, str) or target not in ranges:
+                continue
+
+            ranges[target] = cls._normalize_range_bounds(
+                raw_range.get("min_value"),
+                raw_range.get("max_value"),
+                ranges[target],
+            )
+
+        return ranges
+
+    @classmethod
+    def deserialize_collection(cls, data: dict[str, Any]) -> InherentFilters:
+        raw_inherents = data.get("inherents", [])
+        if not raw_inherents:
+            raw_inherents = data.get("properties", [])
+
+        inherents: InherentFilters = []
+        for entry in raw_inherents:
+            if not isinstance(entry, dict):
+                continue
+
+            raw_upgrade = entry.get("inherent", entry)
+            if not isinstance(raw_upgrade, dict):
+                continue
+
+            upgrade = Upgrade.from_dict(raw_upgrade)
+            if isinstance(upgrade, Inherent):
+                if "inherent" in entry:
+                    ranges = cls._deserialize_range_filters(entry, upgrade)
+                else:
+                    ranges = cls.from_inherent(upgrade).ranges
+                inherents.append(cls(inherent=upgrade, ranges=ranges))
+
+        return inherents
+
+    @staticmethod
+    def _range_targets(inherent: Inherent) -> set[str]:
+        return {
+            instruction.target
+            for instruction in type(inherent).upgrade_info
+            if isinstance(instruction, RangeInstruction)
+        }
+
+    @classmethod
+    def _fixed_values(cls, inherent: Inherent) -> dict[str, Any]:
+        range_targets = cls._range_targets(inherent)
+        return {
+            property_name: Upgrade._normalize_comparison_value(getattr(inherent, property_name))
+            for property_name in type(inherent)._get_serializable_property_names()
+            if property_name not in range_targets
+        }
+
+    def matches_upgrade(self, actual: Upgrade) -> bool:
+        if type(actual) is not type(self.inherent):
+            return False
+
+        if not isinstance(actual, Inherent):
+            return False
+
+        if self._fixed_values(self.inherent) != self._fixed_values(actual):
+            return False
+
+        for target, value_range in self.ranges.items():
+            actual_value = getattr(actual, target, None)
+            if actual_value is None or actual_value < value_range.min_value or actual_value > value_range.max_value:
+                return False
+
+        return True
+
+    def matches_any(self, item_inherents: list[Upgrade]) -> bool:
+        return any(self.matches_upgrade(inherent) for inherent in item_inherents)
+
+    @classmethod
+    def comparison_data(cls, inherents: InherentFilters) -> tuple[Any, ...]:
+        return tuple(
+            sorted(
+                (
+                    type(inherent_filter.inherent).__name__,
+                    tuple(sorted(cls._fixed_values(inherent_filter.inherent).items())),
+                    tuple(sorted(inherent_filter.ranges.items())),
+                )
+                for inherent_filter in inherents
+            )
+        )
+
 
 WeaponRequirementRanges: TypeAlias = dict[int, RequirementFilter]
 InherentFilters: TypeAlias = list[InherentFilter]
@@ -66,349 +218,14 @@ class ConditionEvaluationContext:
     cache: dict[str, Any] = field(default_factory=dict)
 
 
-def _default_damage_range(item_type: Optional[ItemType], requirement: int) -> DamageRange:
-    if item_type is None:
-        return DamageRange(0, 0)
-
-    min_value, max_value = DAMAGE_RANGES.get(item_type, {}).get(requirement, (0, 0))
-    return DamageRange(min_value, max_value)
-
-
-def _normalize_attribute_list(attributes: Any) -> list[Attribute]:
-    normalized: list[Attribute] = []
-    if not isinstance(attributes, list):
-        return normalized
-
-    for attribute in attributes:
-        if isinstance(attribute, Attribute):
-            if attribute not in normalized and attribute != Attribute.None_:
-                normalized.append(attribute)
-            continue
-
-        if isinstance(attribute, str) and attribute in Attribute.__members__:
-            parsed_attribute = Attribute[attribute]
-            if parsed_attribute not in normalized and parsed_attribute != Attribute.None_:
-                normalized.append(parsed_attribute)
-
-    return normalized
-
-
-def _normalize_requirement_filter(value: Any) -> RequirementFilter | None:
-    if isinstance(value, RequirementFilter):
-        return RequirementFilter(
-            value_range=DamageRange(int(value.value_range.min_value), int(value.value_range.max_value)),
-            allowed_attributes=_normalize_attribute_list(value.allowed_attributes),
-            disallowed_attributes=_normalize_attribute_list(value.disallowed_attributes),
-        )
-
-    if isinstance(value, DamageRange):
-        return RequirementFilter(
-            value_range=DamageRange(int(value.min_value), int(value.max_value)),
-        )
-
-    return None
-
-
-def normalize_requirement_ranges(
-    requirements: Optional[WeaponRequirementRanges],
-    item_type: Optional[ItemType] = None,
-    requirement_min: int = 0,
-    requirement_max: int = 13,
-) -> WeaponRequirementRanges:
-    if requirements is not None:
-        normalized: WeaponRequirementRanges = {}
-        for requirement, value in requirements.items():
-            normalized_filter = _normalize_requirement_filter(value)
-            if normalized_filter is None:
-                continue
-            normalized[int(requirement)] = normalized_filter
-        return normalized
-
-    return {}
-
-
-def serialize_requirement_ranges(requirements: WeaponRequirementRanges) -> list[dict[str, Any]]:
-    return [
-        {
-            "requirement": requirement,
-            "min_value": requirement_filter.value_range.min_value,
-            "max_value": requirement_filter.value_range.max_value,
-            "allowed_attributes": [attribute.name for attribute in requirement_filter.allowed_attributes],
-            "disallowed_attributes": [attribute.name for attribute in requirement_filter.disallowed_attributes],
-        }
-        for requirement, requirement_filter in sorted(requirements.items())
-    ]
-
-
-def deserialize_requirement_ranges(data: dict[str, Any], item_type: Optional[ItemType] = None) -> WeaponRequirementRanges:
-    raw_requirements = data.get("requirements")
-    if isinstance(raw_requirements, list):
-        requirements: WeaponRequirementRanges = {}
-        for entry in raw_requirements:
-            if not isinstance(entry, dict):
-                continue
-
-            requirement = entry.get("requirement")
-            min_value = entry.get("min_value")
-            max_value = entry.get("max_value")
-            if isinstance(requirement, int) and isinstance(min_value, int) and isinstance(max_value, int):
-                requirements[requirement] = RequirementFilter(
-                    value_range=DamageRange(min_value, max_value),
-                    allowed_attributes=_normalize_attribute_list(entry.get("allowed_attributes", [])),
-                    disallowed_attributes=_normalize_attribute_list(entry.get("disallowed_attributes", [])),
-                )
-
-        return requirements
-
-    return normalize_requirement_ranges(
-        None,
-        item_type,
-        int(data.get("requirement_min", 0)),
-        int(data.get("requirement_max", 13)),
-    )
-
-
-def requirement_range_matches(item_snapshot: ItemSnapshot, requirements: WeaponRequirementRanges) -> bool:
-    requirement_filter = requirements.get(int(item_snapshot.requirement))
-    if requirement_filter is None:
-        return False
-
-    if int(item_snapshot.requirement) == 0:
-        return item_snapshot.attribute == Attribute.None_
-
-    value_range = requirement_filter.value_range
-    if value_range.min_value == 0 and value_range.max_value == 0:
-        value_range = _default_damage_range(item_snapshot.item_type, item_snapshot.requirement)
-
-    if item_snapshot.min_damage < value_range.min_value or item_snapshot.max_damage > value_range.max_value:
-        return False
-
-    item_attribute = item_snapshot.attribute
-    if item_attribute in requirement_filter.disallowed_attributes:
-        return False
-
-    if requirement_filter.allowed_attributes and item_attribute not in requirement_filter.allowed_attributes:
-        return False
-
-    return True
-
-
-def requirement_comparison_data(requirements: WeaponRequirementRanges) -> tuple[Any, ...]:
-    return tuple(
-        sorted(
-            (
-                requirement,
-                requirement_filter.value_range.min_value,
-                requirement_filter.value_range.max_value,
-                tuple(attribute.name for attribute in requirement_filter.allowed_attributes),
-                tuple(attribute.name for attribute in requirement_filter.disallowed_attributes),
-            )
-            for requirement, requirement_filter in requirements.items()
-        )
-    )
-
-
-def requirement_ranges_to_attribute_requirements(
-    requirements: Optional[WeaponRequirementRanges],
-    item_type: Optional[ItemType] = None,
-    requirement_min: int = 0,
-    requirement_max: int = 13,
-) -> list["AttributeRequirement"]:
-    normalized = normalize_requirement_ranges(requirements, item_type, requirement_min, requirement_max)
-    converted: list[AttributeRequirement] = []
-    selected_weapon_type = cast(Optional[WeaponType], item_type) if item_type in WEAPON_TYPES else None
-
-    for attribute_level, requirement_filter in sorted(normalized.items()):
-        requirement = AttributeRequirement(
-            attribute=list(requirement_filter.allowed_attributes),
-            attribute_level=int(attribute_level),
-            weapon_type=selected_weapon_type,
-        )
-        if selected_weapon_type is not None:
-            requirement.apply_max_ranges(selected_weapon_type)
-
-        value_range = requirement_filter.value_range
-        if value_range.min_value != 0 or value_range.max_value != 0:
-            requirement.min_values = (int(value_range.min_value), int(value_range.max_value))
-
-        converted.append(requirement)
-
-    return converted
-
-
-def attribute_requirements_to_requirement_ranges(requirements: Sequence["AttributeRequirement"]) -> WeaponRequirementRanges:
-    converted: WeaponRequirementRanges = {}
-    for requirement in requirements:
-        converted[int(requirement.attribute_level)] = RequirementFilter(
-            value_range=DamageRange(int(requirement.min_values[0]), int(requirement.min_values[1])),
-            allowed_attributes=list(requirement.attributes),
-            disallowed_attributes=[],
-        )
-
-    return converted
-
-
-def _normalize_range_bounds(min_value: Any, max_value: Any, fallback: DamageRange) -> DamageRange:
-    try:
-        normalized_min = int(min_value)
-        normalized_max = int(max_value)
-    except (TypeError, ValueError):
-        return fallback
-
-    if normalized_min > normalized_max:
-        normalized_min, normalized_max = normalized_max, normalized_min
-
-    return DamageRange(normalized_min, normalized_max)
-
-
-def normalize_inherent_filters(inherents: Optional[Sequence[InherentFilter | Inherent]]) -> InherentFilters:
-    if inherents is None:
-        return []
-
-    normalized: InherentFilters = []
-    for inherent in inherents:
-        if isinstance(inherent, InherentFilter):
-            normalized.append(inherent)
-        elif isinstance(inherent, Inherent):
-            normalized.append(InherentFilter.from_inherent(inherent))
-
-    return normalized
-
-
-def serialize_inherent_filters(inherents: InherentFilters) -> list[dict[str, Any]]:
-    return [
-        {
-            "inherent": inherent_filter.inherent.to_dict(),
-            "ranges": [
-                {
-                    "target": target,
-                    "min_value": value_range.min_value,
-                    "max_value": value_range.max_value,
-                }
-                for target, value_range in sorted(inherent_filter.ranges.items())
-            ],
-        }
-        for inherent_filter in inherents
-    ]
-
-
-def _deserialize_inherent_range_filters(entry: dict[str, Any], inherent: Inherent) -> dict[str, DamageRange]:
-    default_filter = InherentFilter.from_inherent(inherent)
-    ranges = dict(default_filter.ranges)
-    raw_ranges = entry.get("ranges", [])
-
-    if isinstance(raw_ranges, dict):
-        raw_ranges = [
-            {**value, "target": target}
-            for target, value in raw_ranges.items()
-            if isinstance(value, dict)
-        ]
-
-    if not isinstance(raw_ranges, list):
-        return ranges
-
-    for raw_range in raw_ranges:
-        if not isinstance(raw_range, dict):
-            continue
-
-        target = raw_range.get("target")
-        if not isinstance(target, str) or target not in ranges:
-            continue
-
-        ranges[target] = _normalize_range_bounds(
-            raw_range.get("min_value"),
-            raw_range.get("max_value"),
-            ranges[target],
-        )
-
-    return ranges
-
-
-def deserialize_inherent_filters(data: dict[str, Any]) -> InherentFilters:
-    raw_inherents = data.get("inherents", [])
-    if not raw_inherents:
-        raw_inherents = data.get("properties", [])
-
-    inherents: InherentFilters = []
-    for entry in raw_inherents:
-        if not isinstance(entry, dict):
-            continue
-
-        raw_upgrade = entry.get("inherent", entry)
-        if not isinstance(raw_upgrade, dict):
-            continue
-
-        upgrade = Upgrade.from_dict(raw_upgrade)
-        if isinstance(upgrade, Inherent):
-            if "inherent" in entry:
-                ranges = _deserialize_inherent_range_filters(entry, upgrade)
-            else:
-                ranges = InherentFilter.from_inherent(upgrade).ranges
-            inherents.append(InherentFilter(inherent=upgrade, ranges=ranges))
-
-    return inherents
-
-
-def _inherent_range_targets(inherent: Inherent) -> set[str]:
-    return {
-        instruction.target
-        for instruction in type(inherent).upgrade_info
-        if isinstance(instruction, RangeInstruction)
-    }
-
-
-def _inherent_fixed_values(inherent: Inherent) -> dict[str, Any]:
-    range_targets = _inherent_range_targets(inherent)
-    return {
-        property_name: Upgrade._normalize_comparison_value(getattr(inherent, property_name))
-        for property_name in type(inherent)._get_serializable_property_names()
-        if property_name not in range_targets
-    }
-
-
-def _single_inherent_filter_matches(expected: InherentFilter, actual: Upgrade) -> bool:
-    if type(actual) is not type(expected.inherent):
-        return False
-
-    if not isinstance(actual, Inherent):
-        return False
-
-    if _inherent_fixed_values(expected.inherent) != _inherent_fixed_values(actual):
-        return False
-
-    for target, value_range in expected.ranges.items():
-        actual_value = getattr(actual, target, None)
-        if actual_value is None or actual_value < value_range.min_value or actual_value > value_range.max_value:
-            return False
-
-    return True
-
-
-def inherent_filter_matches(expected: InherentFilter, item_inherents: list[Upgrade]) -> bool:
-    return any(_single_inherent_filter_matches(expected, inherent) for inherent in item_inherents)
-
-
-def inherent_comparison_data(inherents: InherentFilters) -> tuple[Any, ...]:
-    return tuple(
-        sorted(
-            (
-                type(inherent_filter.inherent).__name__,
-                tuple(sorted(_inherent_fixed_values(inherent_filter.inherent).items())),
-                tuple(sorted(inherent_filter.ranges.items())),
-            )
-            for inherent_filter in inherents
-        )
-    )
-
-
-class Condition:
+class BaseCondition:
     """Base condition that checks one reusable rule fragment against an item."""
-    _registry: ClassVar[dict[str, type["Condition"]]] = {}
+    _registry: ClassVar[dict[str, type["BaseCondition"]]] = {}
     ui_selectable: ClassVar[bool] = True
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        Condition._registry[cls.__name__] = cls
+        BaseCondition._registry[cls.__name__] = cls
 
     def is_valid(self) -> bool:
         return True
@@ -420,7 +237,7 @@ class Condition:
         return ()
 
     def equals(self, other: object) -> bool:
-        return isinstance(other, Condition) and type(self) is type(other) and self._comparison_data() == other._comparison_data()
+        return isinstance(other, BaseCondition) and type(self) is type(other) and self._comparison_data() == other._comparison_data()
 
     def __eq__(self, other: object) -> bool:
         return self.equals(other)
@@ -437,7 +254,7 @@ class Condition:
         return payload
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "Condition | None":
+    def from_dict(cls, payload: dict[str, Any]) -> "BaseCondition | None":
         condition_type_name = str(payload.get("condition_type", ""))
         condition_cls = cls._registry.get(condition_type_name)
         if condition_cls is None:
@@ -451,7 +268,7 @@ class Condition:
             return None
 
 
-class ModelIdsCondition(Condition):
+class ModelIdsCondition(BaseCondition):
     """Matches items whose model ID is in the configured list."""
     def __init__(self, model_ids: Optional[list[ModelID | int]] = None):
         self.model_ids: list[ModelID | int] = model_ids if model_ids is not None else []
@@ -494,7 +311,7 @@ class ModelIdsCondition(Condition):
                 self.model_ids.append(model_id)
 
 
-class ItemTypesCondition(Condition):
+class ItemTypesCondition(BaseCondition):
     """Matches items whose item type is one of the selected types."""
     def __init__(self, item_types: Optional[list[ItemType]] = None):
         self.item_types: list[ItemType] = item_types if item_types is not None else []
@@ -523,7 +340,7 @@ class ItemTypesCondition(Condition):
         ]
 
 
-class ExactItemTypeCondition(Condition):
+class ExactItemTypeCondition(BaseCondition):
     """Matches items whose type matches one exact item type."""
     def __init__(self, item_type: Optional[ItemType] = None):
         self.item_type = item_type
@@ -546,7 +363,7 @@ class ExactItemTypeCondition(Condition):
         self.item_type = ItemType[item_type_name] if isinstance(item_type_name, str) and item_type_name in ItemType.__members__ else None
 
 
-class BowTypeCondition(Condition):
+class BowTypeCondition(BaseCondition):
     """Matches bows whose type is one of the selected bow types."""
     def __init__(self, bow_types: Optional[list[BowType]] = None):
         self.bow_types: list[BowType] = bow_types if bow_types is not None else []
@@ -580,7 +397,7 @@ class BowTypeCondition(Condition):
         self.bow_types = bow_types
 
 
-class ModelIdsAndItemTypesCondition(Condition):
+class ModelIdsAndItemTypesCondition(BaseCondition):
     """Matches specific combinations of model ID and item type."""
     def __init__(self, items: Optional[list[ModelIdAndItemType]] = None):
         self.modelids_and_itemtypes: list[ModelIdAndItemType] = items if items is not None else []
@@ -641,7 +458,7 @@ class ModelIdsAndItemTypesCondition(Condition):
             self.modelids_and_itemtypes.append(ModelIdAndItemType(normalized_model_id, ItemType[item_type_name]))
 
 
-class EncodedNamesCondition(Condition):
+class EncodedNamesCondition(BaseCondition):
     """Matches items by their encoded name bytes."""
     def __init__(self, encoded_names: Optional[list[bytes]] = None):
         self.encoded_names: list[bytes] = encoded_names if encoded_names is not None else []
@@ -671,7 +488,7 @@ class EncodedNamesCondition(Condition):
         self.encoded_names = encoded_names
 
 
-class ModelFileIdsCondition(Condition):
+class ModelFileIdsCondition(BaseCondition):
     """Matches items whose model file ID is in the configured list."""
     def __init__(self, model_file_ids: Optional[list[int]] = None):
         self.model_file_ids: list[int] = model_file_ids if model_file_ids is not None else []
@@ -693,7 +510,7 @@ class ModelFileIdsCondition(Condition):
         self.model_file_ids = [model_file_id for model_file_id in data.get("model_file_ids", []) if isinstance(model_file_id, int)]
 
 
-class ModelFileIdsAndItemTypesCondition(Condition):
+class ModelFileIdsAndItemTypesCondition(BaseCondition):
     """Matches specific combinations of model file ID and item type."""
     def __init__(self, items: Optional[list[ModelFileIdAndItemType]] = None):
         self.model_file_ids_and_item_types: list[ModelFileIdAndItemType] = items if items is not None else []
@@ -739,7 +556,7 @@ class ModelFileIdsAndItemTypesCondition(Condition):
             self.model_file_ids_and_item_types.append(ModelFileIdAndItemType(model_file_id=model_file_id, item_type=ItemType[item_type_name]))
 
 
-class StackQuantityCondition(Condition):
+class StackQuantityCondition(BaseCondition):
     """Matches items whose stack quantity falls inside the configured inclusive range."""
     def __init__(self, min_quantity: int = 0, max_quantity: int = 250):
         self.min_quantity = max(0, min(250, int(min_quantity)))
@@ -770,6 +587,101 @@ class StackQuantityCondition(Condition):
 
 
 class AttributeRequirement:
+    @staticmethod
+    def _normalize_attribute_list(attributes: Any) -> list[Attribute]:
+        normalized: list[Attribute] = []
+        if not isinstance(attributes, list):
+            return normalized
+
+        for attribute in attributes:
+            if isinstance(attribute, Attribute):
+                if attribute not in normalized and attribute != Attribute.None_:
+                    normalized.append(attribute)
+                continue
+
+            if isinstance(attribute, str) and attribute in Attribute.__members__:
+                parsed_attribute = Attribute[attribute]
+                if parsed_attribute not in normalized and parsed_attribute != Attribute.None_:
+                    normalized.append(parsed_attribute)
+
+        return normalized
+
+    @classmethod
+    def _normalize_requirement_filter(cls, value: Any) -> RequirementFilter | None:
+        if isinstance(value, RequirementFilter):
+            return RequirementFilter(
+                value_range=DamageRange(int(value.value_range.min_value), int(value.value_range.max_value)),
+                allowed_attributes=cls._normalize_attribute_list(value.allowed_attributes),
+                disallowed_attributes=cls._normalize_attribute_list(value.disallowed_attributes),
+            )
+
+        if isinstance(value, DamageRange):
+            return RequirementFilter(
+                value_range=DamageRange(int(value.min_value), int(value.max_value)),
+            )
+
+        return None
+
+    @classmethod
+    def normalize_requirement_ranges(
+        cls,
+        requirements: Optional[WeaponRequirementRanges],
+        item_type: Optional[ItemType] = None,
+        requirement_min: int = 0,
+        requirement_max: int = 13,
+    ) -> WeaponRequirementRanges:
+        if requirements is None:
+            return {}
+
+        normalized: WeaponRequirementRanges = {}
+        for requirement, value in requirements.items():
+            normalized_filter = cls._normalize_requirement_filter(value)
+            if normalized_filter is None:
+                continue
+            normalized[int(requirement)] = normalized_filter
+        return normalized
+
+    @classmethod
+    def from_requirement_ranges(
+        cls,
+        requirements: Optional[WeaponRequirementRanges],
+        item_type: Optional[ItemType] = None,
+        requirement_min: int = 0,
+        requirement_max: int = 13,
+    ) -> list["AttributeRequirement"]:
+        normalized = cls.normalize_requirement_ranges(requirements, item_type, requirement_min, requirement_max)
+        converted: list[AttributeRequirement] = []
+        selected_weapon_type = cast(Optional[WeaponType], item_type) if item_type in WEAPON_TYPES else None
+
+        for attribute_level, requirement_filter in sorted(normalized.items()):
+            requirement = cls(
+                attribute=list(requirement_filter.allowed_attributes),
+                attribute_level=int(attribute_level),
+                weapon_type=selected_weapon_type,
+            )
+            if selected_weapon_type is not None:
+                requirement.apply_max_ranges(selected_weapon_type)
+
+            value_range = requirement_filter.value_range
+            if value_range.min_value != 0 or value_range.max_value != 0:
+                requirement.min_values = (int(value_range.min_value), int(value_range.max_value))
+
+            converted.append(requirement)
+
+        return converted
+
+    @staticmethod
+    def to_requirement_ranges(requirements: Sequence["AttributeRequirement"]) -> WeaponRequirementRanges:
+        converted: WeaponRequirementRanges = {}
+        for requirement in requirements:
+            converted[int(requirement.attribute_level)] = RequirementFilter(
+                value_range=DamageRange(int(requirement.min_values[0]), int(requirement.min_values[1])),
+                allowed_attributes=list(requirement.attributes),
+                disallowed_attributes=[],
+            )
+
+        return converted
+
     def __init__(self, attribute : list[Attribute] = [], attribute_level: int = 0, weapon_type: Optional[WeaponType] = None):
         self.attributes = attribute
         self.weapon_type : ItemType = ItemType.Unknown if weapon_type is None else weapon_type
@@ -795,7 +707,7 @@ class AttributeRequirement:
         min_values = data.get("min_values", (0, 0))
         
         if isinstance(attribute_names, list):
-            requirement.attributes = [Attribute[name] for name in attribute_names if name in Attribute.__members__]
+            requirement.attributes = AttributeRequirement._normalize_attribute_list(attribute_names)
         
         if isinstance(attribute_level, int):
             requirement.attribute_level = attribute_level
@@ -855,7 +767,7 @@ class AttributeRequirement:
         return self.weapon_type == ItemType.Offhand   
     
     
-class WeaponRequirementCondition(Condition):
+class WeaponRequirementCondition(BaseCondition):
     """Matches weapons with any specified requirement for a certain attribute."""
 
     def __init__(self, requirements: Optional[list[AttributeRequirement]] = None):
@@ -936,41 +848,43 @@ class WeaponRequirementCondition(Condition):
                 self.requirements.append(requirement)
 
 
-class QuantityMatchCondition(Condition):
-    """Partitions same-kind inventory stacks into kept and excess groups, then matches the configured group."""
-    COUNT_MODE_TOTAL_QUANTITY: ClassVar[str] = "total_quantity"
-    COUNT_MODE_FULL_STACKS: ClassVar[str] = "full_stacks"
-    COUNT_MODES: ClassVar[tuple[str, ...]] = (
-        COUNT_MODE_TOTAL_QUANTITY,
-        COUNT_MODE_FULL_STACKS,
-    )
-    COUNT_SCOPE_INVENTORY_ONLY: ClassVar[str] = "inventory_only"
-    COUNT_SCOPE_INVENTORY_AND_STORAGE: ClassVar[str] = "inventory_and_storage"
-    COUNT_SCOPES: ClassVar[tuple[str, ...]] = (
-        COUNT_SCOPE_INVENTORY_ONLY,
-        COUNT_SCOPE_INVENTORY_AND_STORAGE,
-    )
+class QuantityMatchCountMode(IntEnum):
+    TotalQuantity = 0
+    FullStacks = 1
 
+
+class QuantityMatchCountScope(IntEnum):
+    InventoryOnly = 0
+    InventoryAndStorage = 1
+
+
+class QuantityMatchTarget(IntEnum):
+    Kept = 0
+    Excess = 1
+
+
+class QuantityMatchCondition(BaseCondition):
+    """Partitions same-kind inventory stacks into kept and excess groups, then matches the configured group."""
     def __init__(
         self,
         keep_quantity: int = MAX_STACK_SIZE,
-        match_excess: bool = True,
-        count_mode: str = COUNT_MODE_TOTAL_QUANTITY,
-        count_scope: str = COUNT_SCOPE_INVENTORY_ONLY,
+        match_target: QuantityMatchTarget = QuantityMatchTarget.Excess,
+        count_mode: QuantityMatchCountMode = QuantityMatchCountMode.TotalQuantity,
+        count_scope: QuantityMatchCountScope = QuantityMatchCountScope.InventoryOnly,
     ):
-        self.quantity_limit = max(0, min(5000, int(keep_quantity)))
-        self.match_excess = bool(match_excess)
-        self.count_mode = count_mode if count_mode in self.COUNT_MODES else self.COUNT_MODE_TOTAL_QUANTITY
-        self.count_scope = count_scope if count_scope in self.COUNT_SCOPES else self.COUNT_SCOPE_INVENTORY_ONLY
+        self.quantity_limit = max(0,int(keep_quantity))
+        self.match_target = match_target if isinstance(match_target, QuantityMatchTarget) else QuantityMatchTarget.Excess
+        self.count_mode = count_mode if isinstance(count_mode, QuantityMatchCountMode) else QuantityMatchCountMode.TotalQuantity
+        self.count_scope = count_scope if isinstance(count_scope, QuantityMatchCountScope) else QuantityMatchCountScope.InventoryOnly
 
     def _threshold_quantity(self) -> int:
         threshold = max(0, self.quantity_limit)
-        if self.count_mode == self.COUNT_MODE_FULL_STACKS:
+        if self.count_mode == QuantityMatchCountMode.FullStacks:
             return threshold * MAX_STACK_SIZE
         return threshold
 
     def _counted_bags(self) -> list[Any]:
-        return [*INVENTORY_BAGS, *STORAGE_BAGS] if self.count_scope == self.COUNT_SCOPE_INVENTORY_AND_STORAGE else list(INVENTORY_BAGS)
+        return [*INVENTORY_BAGS, *STORAGE_BAGS] if self.count_scope == QuantityMatchCountScope.InventoryAndStorage else list(INVENTORY_BAGS)
 
     def _measured_quantity(self, item_snapshot: ItemSnapshot) -> int:
         return max(0, int(item_snapshot.quantity))
@@ -1046,34 +960,54 @@ class QuantityMatchCondition(Condition):
         threshold_quantity = self._threshold_quantity()
         total_quantity = sum(self._measured_quantity(inventory_item) for inventory_item in ordered_items)
         if total_quantity <= threshold_quantity:
-            return not self.match_excess
+            return self.match_target == QuantityMatchTarget.Kept
 
         kept_item_ids = self._select_kept_item_ids(ordered_items, threshold_quantity)
         matches_excess = int(item_snapshot.id) not in kept_item_ids
-        return matches_excess if self.match_excess else not matches_excess
+        return matches_excess if self.match_target == QuantityMatchTarget.Excess else not matches_excess
 
     def _comparison_data(self) -> Any:
-        return (self.quantity_limit, self.match_excess, self.count_mode, self.count_scope)
+        return (self.quantity_limit, self.match_target.value, self.count_mode.value, self.count_scope.value)
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
             "keep_quantity": self.quantity_limit,
-            "match_excess": self.match_excess,
-            "count_mode": self.count_mode,
-            "count_scope": self.count_scope,
+            "match_target": self.match_target.value,
+            "count_mode": self.count_mode.value,
+            "count_scope": self.count_scope.value,
         }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
         raw_value = data.get("keep_quantity", MAX_STACK_SIZE)
         self.quantity_limit = int(raw_value if isinstance(raw_value, int) else MAX_STACK_SIZE)
-        self.match_excess = bool(data.get("match_excess", True))
-        raw_count_mode = data.get("count_mode", self.COUNT_MODE_TOTAL_QUANTITY)
-        self.count_mode = raw_count_mode if isinstance(raw_count_mode, str) and raw_count_mode in self.COUNT_MODES else self.COUNT_MODE_TOTAL_QUANTITY
-        raw_count_scope = data.get("count_scope", self.COUNT_SCOPE_INVENTORY_ONLY)
-        self.count_scope = raw_count_scope if isinstance(raw_count_scope, str) and raw_count_scope in self.COUNT_SCOPES else self.COUNT_SCOPE_INVENTORY_ONLY
+        raw_match_target = data.get("match_target")
+        if isinstance(raw_match_target, int) and raw_match_target in QuantityMatchTarget._value2member_map_:
+            self.match_target = QuantityMatchTarget(raw_match_target)
+        elif raw_match_target == "kept":
+            self.match_target = QuantityMatchTarget.Kept
+        elif raw_match_target == "excess":
+            self.match_target = QuantityMatchTarget.Excess
+        else:
+            self.match_target = QuantityMatchTarget.Excess if bool(data.get("match_excess", True)) else QuantityMatchTarget.Kept
+
+        raw_count_mode = data.get("count_mode", QuantityMatchCountMode.TotalQuantity.value)
+        if isinstance(raw_count_mode, int) and raw_count_mode in QuantityMatchCountMode._value2member_map_:
+            self.count_mode = QuantityMatchCountMode(raw_count_mode)
+        elif raw_count_mode == "full_stacks":
+            self.count_mode = QuantityMatchCountMode.FullStacks
+        else:
+            self.count_mode = QuantityMatchCountMode.TotalQuantity
+
+        raw_count_scope = data.get("count_scope", QuantityMatchCountScope.InventoryOnly.value)
+        if isinstance(raw_count_scope, int) and raw_count_scope in QuantityMatchCountScope._value2member_map_:
+            self.count_scope = QuantityMatchCountScope(raw_count_scope)
+        elif raw_count_scope == "inventory_and_storage":
+            self.count_scope = QuantityMatchCountScope.InventoryAndStorage
+        else:
+            self.count_scope = QuantityMatchCountScope.InventoryOnly
 
 
-class NickItemCondition(Condition):
+class NickItemCondition(BaseCondition):
     """Matches Nicholas the Traveler items whose next cycle happens within the configured number of weeks."""
     def __init__(self, weeks_before_next_cycle: int = 0):
         self.weeks_before_next_cycle = max(0, min(NICK_CYCLE_COUNT, int(weeks_before_next_cycle)))
@@ -1097,7 +1031,7 @@ class NickItemCondition(Condition):
         self.weeks_before_next_cycle = max(0, min(NICK_CYCLE_COUNT, int(raw_value if isinstance(raw_value, int) else 0)))
 
 
-class IsMaterialCondition(Condition):
+class IsMaterialCondition(BaseCondition):
     """Matches common and rare materials, or only rare materials when configured."""
     def __init__(self, rare_materials: bool = True, common_materials: bool = True):
         self.rare_materials = bool(rare_materials)
@@ -1125,11 +1059,11 @@ class IsMaterialCondition(Condition):
         self.common_materials = bool(data.get("common_materials", False))
 
 
-class InherentFiltersCondition(Condition):
+class InherentFiltersCondition(BaseCondition):
     """Matches weapon inherents, including optional numeric ranges on the inherent values."""
     def __init__(self, inherents: Optional[Sequence[InherentFilter | Inherent]] = None, inscribable: bool = False):
         self.inscribable = inscribable
-        self.inherents = normalize_inherent_filters(inherents)
+        self.inherents = InherentFilter.normalize_collection(inherents)
 
     def is_valid(self) -> bool:
         return len(self.inherents) > 0 or self.inscribable
@@ -1143,23 +1077,23 @@ class InherentFiltersCondition(Condition):
         if self.inscribable and item_snapshot.is_inscribable:
             return True
         
-        return any(inherent_filter_matches(inherent, item_inherents) for inherent in self.inherents)
+        return any(inherent.matches_any(item_inherents) for inherent in self.inherents)
 
     def _comparison_data(self) -> Any:
-        return inherent_comparison_data(self.inherents), self.inscribable
+        return InherentFilter.comparison_data(self.inherents), self.inscribable
 
     def _serialize_data(self) -> dict[str, Any]:
         return {
-            "inherents": serialize_inherent_filters(self.inherents),
+            "inherents": InherentFilter.serialize_collection(self.inherents),
             "inscribable": self.inscribable,
             }
 
     def _deserialize_data(self, data: dict[str, Any]) -> None:
-        self.inherents = deserialize_inherent_filters(data)
+        self.inherents = InherentFilter.deserialize_collection(data)
         self.inscribable = bool(data.get("inscribable", True))
 
 
-class InscribableCondition(Condition):
+class InscribableCondition(BaseCondition):
     """Matches items that are inscribable."""
     def __init__(self, inscribable: bool = True):
         super().__init__()
@@ -1178,7 +1112,7 @@ class InscribableCondition(Condition):
         self.inscribable = bool(data.get("inscribable", True))
 
 
-class HalvesCastAndRechargeAttributeCondition(Condition):
+class HalvesCastAndRechargeAttributeCondition(BaseCondition):
     """Matches spellcasting weapons with either a HCT or HSR inherent sharing the same attribute as the weapon itself."""
     def __init__(self,):
         super().__init__()
@@ -1198,7 +1132,7 @@ class HalvesCastAndRechargeAttributeCondition(Condition):
         return item_attribute == upgrade.attribute
 
 
-class SalvagesToMaterialsCondition(Condition):
+class SalvagesToMaterialsCondition(BaseCondition):
     """Matches items that can salvage into one of the selected materials."""
     def __init__(self, materials: Optional[list[ModelID | int]] = None):
         self.materials: list[ModelID | int] = materials if materials is not None else []
@@ -1234,7 +1168,7 @@ class SalvagesToMaterialsCondition(Condition):
                 self.materials.append(material)
 
 
-class RaritiesCondition(Condition):
+class RaritiesCondition(BaseCondition):
     """Matches items whose rarity is one of the selected rarities."""
     def __init__(self, rarities: Optional[list[Rarity]] = None):
         self.rarities: list[Rarity] = rarities if rarities is not None else []
@@ -1259,7 +1193,7 @@ class RaritiesCondition(Condition):
         ]
 
 
-class UnidentifiedCondition(Condition):
+class UnidentifiedCondition(BaseCondition):
     """Matches items that are still unidentified."""
     def __init__(self, identified: bool = False):
         super().__init__()
@@ -1278,7 +1212,7 @@ class UnidentifiedCondition(Condition):
         self.identified = bool(data.get("identified", False))
 
 
-class IsCustomizedCondition(Condition):
+class IsCustomizedCondition(BaseCondition):
     """Matches items based on whether they are customized."""
     def __init__(self, customized: bool = True):
         super().__init__()
@@ -1297,7 +1231,7 @@ class IsCustomizedCondition(Condition):
         self.customized = bool(data.get("customized", True))
 
 
-class DyeColorsCondition(Condition):
+class DyeColorsCondition(BaseCondition):
     ui_selectable: ClassVar[bool] = False
     
     """Matches dye items whose color is one of the selected dye colors."""
@@ -1325,7 +1259,7 @@ class DyeColorsCondition(Condition):
         ]
 
 
-class UpgradeMatchCondition(Condition):
+class UpgradeMatchCondition(BaseCondition):
     """Base condition for matching extractable upgrades on items."""
     ui_selectable: ClassVar[bool] = False
 
