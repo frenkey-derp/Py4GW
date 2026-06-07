@@ -29,7 +29,7 @@ Utils.ClearSubModules("Sources.frenkeyLib.Core")
 Utils.ClearSubModules("Sources.frenkeyLib.BTDev")
 
 from Py4GWCoreLib.routines_src.behaviourtrees_src.items import BTItems
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
+from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 from Py4GWCoreLib.UIManager import (
     AnySalvageWindow,

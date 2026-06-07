@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import Upgrade
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs import Rule as RuleModule
+from Py4GWCoreLib.global_configs import Rule as RuleModule
 
 
 class RuleConfig(list[RuleModule.Rule]):

@@ -27,12 +27,12 @@ from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig as FrenkeyLootConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import SortingConfig
+from Py4GWCoreLib.global_configs.BuyConfig import BuyConfig
+from Py4GWCoreLib.global_configs.CraftingConfig import CraftingConfig
+from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
+from Py4GWCoreLib.global_configs.LootConfig import LootConfig as FrenkeyLootConfig
+from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+from Py4GWCoreLib.global_configs.SortingConfig import SortingConfig
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler

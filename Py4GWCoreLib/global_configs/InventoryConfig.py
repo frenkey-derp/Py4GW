@@ -1,6 +1,6 @@
 from typing import ClassVar, Self, cast, Self
 
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
 
 class InventoryConfig(RuleConfig):    
     _initialized: bool = False    

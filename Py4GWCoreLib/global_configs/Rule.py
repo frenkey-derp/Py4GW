@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import WEAPON_TYPES, ItemAction, ItemType, Rarity, SalvageMode, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_mods_src.upgrades import ArmorUpgrade, Inherent, Upgrade
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
+from Py4GWCoreLib.global_configs.Condition import (
     ArmorUpgradesCondition,
     Condition,
     ConditionEvaluationContext,

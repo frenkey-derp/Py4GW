@@ -8,7 +8,7 @@ from Py4GWCoreLib.enums_src.GameData_enums import Range
 
 from Py4GWCoreLib.enums_src.Item_enums import ItemAction
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
 
 class LootConfig(RuleConfig):
     _initialized: bool = False

@@ -537,7 +537,6 @@ class SortingConfig:
         )
         self.slot_groups: list[SlotGroupConfig] = []
 
-
     def get_groups_for_bag(self, bag: Bags) -> list[SlotGroupConfig]:
         return [
             group

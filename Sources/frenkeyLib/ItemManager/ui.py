@@ -68,15 +68,15 @@ from Py4GWCoreLib.py4gwcorelib_src.Color import Color, ColorPalette
 from Py4GWCoreLib.py4gwcorelib_src.Timer import ThrottledTimer
 from Py4GWCoreLib.py4gwcorelib_src.Utils import Utils
 from Py4GWCoreLib.routines_src.BehaviourTrees import BT
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.BuyConfig import BuyConfig, BuyConfigEntry
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.CraftingConfig import CraftingConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.InventoryConfig import InventoryConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.LootConfig import LootConfig
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.ProfileManager import GlobalConfigProfileManager
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.SortingConfig import BagSortPlan, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
+from Py4GWCoreLib.global_configs.BuyConfig import BuyConfig, BuyConfigEntry
+from Py4GWCoreLib.global_configs.CraftingConfig import CraftingConfig
+from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
+from Py4GWCoreLib.global_configs.LootConfig import LootConfig
+from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Rule import *
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
+from Py4GWCoreLib.global_configs.Rule import *
+from Py4GWCoreLib.global_configs.Condition import (
     ArmorUpgradesCondition,
     Condition,
     BowTypeCondition,
@@ -106,7 +106,7 @@ from Sources.frenkeyLib.ItemHandling.GlobalConfigs.Condition import (
     UnidentifiedCondition,
     UpgradeRangesCondition,
 )
-from Sources.frenkeyLib.ItemHandling.GlobalConfigs.RuleConfig import RuleConfig
+from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
 from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT, InventoryPreviewEntry
 from Py4GWCoreLib.item_data.ItemData import ItemData
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
@@ -490,6 +490,9 @@ class UI:
         self.sorting_preview_throttle : ThrottledTimer = ThrottledTimer(1000)
         self.sorting_preview_plan: Optional[BagSortPlan] = None
         self._sorting_preview_cache_key: tuple[tuple[int, ...], str] | None = None
+        self._sorting_preview_plan_tree = None
+        self._sorting_preview_plan_status: str = ''
+        self._sorting_preview_plan_error: str = ''
 
         self.configs : list[ConfigInfo] = [
             ConfigInfo(
@@ -1976,6 +1979,9 @@ class UI:
     def _invalidate_sorting_preview_cache(self) -> None:
         self.sorting_preview_plan = None
         self._sorting_preview_cache_key = None
+        self._sorting_preview_plan_tree = None
+        self._sorting_preview_plan_status = ''
+        self._sorting_preview_plan_error = ''
         self.sorting_preview_throttle.Reset()
 
     @staticmethod
@@ -2498,6 +2504,9 @@ class UI:
         preview_config = self._get_config_info_by_type(self.preview_window_config_type)
         if preview_config is None:
             self.show_preview_window = False
+            return
+
+        if not self.show_preview_window:
             return
 
         PyImGui.set_next_window_size((800, 600), PyImGui.ImGuiCond.FirstUseEver)      
@@ -4195,14 +4204,37 @@ class UI:
             return
 
         cache_key = self._build_sorting_preview_cache_key(config, self.sorting_preview_selected_bags)
-        if self.sorting_preview_plan is None or self._sorting_preview_cache_key != cache_key or self.sorting_preview_throttle.IsExpired():
-            self.sorting_preview_plan = BT.Items.Bags.GetBagSortPlan(self.sorting_preview_selected_bags)
+        needs_rebuild = self._sorting_preview_cache_key != cache_key or self.sorting_preview_throttle.IsExpired()
+        if self._sorting_preview_plan_tree is None and (self.sorting_preview_plan is None or needs_rebuild):
             self._sorting_preview_cache_key = cache_key
+            self._sorting_preview_plan_tree = BT.Items.Bags.CreateBagSortPlanTree(self.sorting_preview_selected_bags)
+            self._sorting_preview_plan_status = 'Starting sorting preview...'
+            self._sorting_preview_plan_error = ''
             self.sorting_preview_throttle.Reset()
+
+        if self._sorting_preview_plan_tree is not None:
+            planner_state = BT.NodeState.RUNNING
+            try:
+                planner_state = self._sorting_preview_plan_tree.tick()
+            except Exception as exc:
+                planner_state = BT.NodeState.FAILURE
+                self._sorting_preview_plan_error = f'{type(exc).__name__}: {exc!r}'
+
+            self._sorting_preview_plan_status = getattr(self._sorting_preview_plan_tree, 'progress_text', self._sorting_preview_plan_status)
+            self._sorting_preview_plan_error = getattr(self._sorting_preview_plan_tree, 'error_text', self._sorting_preview_plan_error)
+
+            if planner_state == BT.NodeState.SUCCESS:
+                self.sorting_preview_plan = cast(Optional[BagSortPlan], getattr(self._sorting_preview_plan_tree, 'plan_result', None))
+                self._sorting_preview_plan_tree = None
+            elif planner_state == BT.NodeState.FAILURE:
+                self._sorting_preview_plan_tree = None
 
         plan = self.sorting_preview_plan
         if plan is None:
-            ImGui.text_wrapped('Unable to build sorting preview right now.')
+            if self._sorting_preview_plan_error:
+                ImGui.text_colored(self._sorting_preview_plan_error, UI.RED_COLOR.color_tuple)
+            else:
+                ImGui.text_wrapped(self._sorting_preview_plan_status or 'Building sorting preview...')
             return
         for warning in plan.warnings:
             ImGui.text_colored(warning, UI.RED_COLOR.color_tuple)
