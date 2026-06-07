@@ -4726,9 +4726,6 @@ class UI:
             if ImGui.button("Clear", button_width):
                 self._set_inventory_preview_bags([])
             PyImGui.same_line(0, 5)
-            if ImGui.button("Sort Bags", button_width) and self.inventory_preview_selected_bags:
-                self._execute_bag_sort(self.inventory_preview_selected_bags)
-            PyImGui.same_line(0, 5)
             manual_tick_clicked = ImGui.button("Manual Tick", button_width)
             manual_tick_active = PyImGui.is_item_active()
             if manual_tick_clicked:
