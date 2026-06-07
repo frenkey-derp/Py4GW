@@ -497,28 +497,28 @@ class UI:
         self.configs : list[ConfigInfo] = [
             ConfigInfo(
                 BuyConfig(),
-                "Kits, Keys & Lockpicks",
+                "Merchant Buying",
                 "Configure how many kits, keys and lockpicks to keep in stock",
                 lambda: self.profile_manager.get_active_config_folder('BuyConfig'),
                 on_save=self._handle_config_saved,
             ),
             ConfigInfo(
                 LootConfig(),
-                "Looting",
+                "Loot Filtering",
                 "Configure which items to pick up and which to ignore",
                 lambda: self.profile_manager.get_active_config_folder('LootConfig'),
                 on_save=self._handle_config_saved,
             ),
             ConfigInfo(
                 InventoryConfig(),
-                "Item Processing",
+                "Inventory Processing",
                 "Configure how to process items (Stash, Salvage, Extract Upgrades, Sell, ...)",
                 lambda: self.profile_manager.get_active_config_folder('InventoryConfig'),
                 on_save=self._handle_config_saved,
             ),
             ConfigInfo(
                 SortingConfig(),
-                "Bag Sorting",
+                "Xunlai- & Bag-Sorting",
                 "Configure slot groups and sort policies for inventory bags and Xunlai storage tabs",
                 lambda: self.profile_manager.get_active_config_folder('SortingConfig'),
                 on_save=self._handle_config_saved,
