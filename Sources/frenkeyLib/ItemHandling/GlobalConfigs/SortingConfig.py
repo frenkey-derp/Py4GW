@@ -6,6 +6,7 @@ from dataclasses import dataclass, field as dataclass_field
 from enum import IntEnum, StrEnum, auto
 from typing import Any, ClassVar, Optional, Self, cast
 
+from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
@@ -54,7 +55,7 @@ class SortArgument:
 
     @property
     def supports_custom_order(self) -> bool:
-        return self.field in {SortField.ItemType, SortField.ModelId, SortField.Rarity}
+        return self.field in {SortField.ItemType, SortField.ModelId, SortField.Rarity, SortField.Color}
 
     @staticmethod
     def _invert_string(value: str) -> tuple[int, ...]:
@@ -142,6 +143,14 @@ class SortArgument:
                 if isinstance(entry, str) and entry in Rarity.__members__
             ]
             return normalized_rarities.index(item.rarity) if item.rarity in normalized_rarities else None
+
+        if self.field == SortField.Color:
+            normalized_colors = [
+                DyeColor[entry]
+                for entry in self.custom_order
+                if isinstance(entry, str) and entry in DyeColor.__members__
+            ]
+            return normalized_colors.index(item.color) if item.color in normalized_colors else None
 
         return None
 
@@ -527,6 +536,7 @@ class SortingConfig:
             is_default=True,
         )
         self.slot_groups: list[SlotGroupConfig] = []
+
 
     def get_groups_for_bag(self, bag: Bags) -> list[SlotGroupConfig]:
         return [

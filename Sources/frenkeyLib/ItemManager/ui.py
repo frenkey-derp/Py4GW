@@ -22,6 +22,7 @@ import math
 import os
 import re
 import time
+import unicodedata
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Any, Callable, Generic, NamedTuple, Optional, TypeVar, cast
@@ -303,6 +304,8 @@ class UI:
     
     GENDER : Gender = Gender.Unknown
     RED_COLOR : Color = ColorPalette.GetColor("red")
+    OPAGUE_RED_COLOR : Color = ColorPalette.GetColor("red").opacity(0.5)
+    
     SUBTLE_TEXT_COLOR : Color = Color(90, 90, 90)
     SCREEN_SIZE : tuple[float, float] = (0.0, 0.0)
     CUSTOM_RULE_CONTENT_RECT : tuple[float, float] = (0.0, 0.0)
@@ -458,7 +461,6 @@ class UI:
     def __init__(self, module_config: Config):
         self.module_config = module_config
         self.queue_data_refresh_on_main_window_open = False
-        
         
         self.floating_button = ImGui.FloatingIcon(
                 icon_path=self.module_config.icon_path,
@@ -929,28 +931,48 @@ class UI:
 
     @staticmethod
     def _normalize_search_query(value: str) -> str:
-        return UI.LEADING_SEARCH_AMOUNT_RE.sub("", value.strip(), count=1).lower()
+        normalized = UI._strip_diacritics(value.strip())
+        normalized = UI.LEADING_SEARCH_AMOUNT_RE.sub("", normalized, count=1).lower()
+        return re.sub(r"\s+", " ", normalized).strip()
 
     @staticmethod
     def _normalize_searchable_text(value: str) -> str:
-        return UI.LEADING_SEARCH_AMOUNT_RE.sub("", value.strip()).lower()
+        normalized = UI._strip_diacritics(value.strip())
+        normalized = UI.LEADING_SEARCH_AMOUNT_RE.sub("", normalized).lower()
+        return re.sub(r"\s+", " ", normalized).strip()
+
+    @staticmethod
+    def _strip_diacritics(value: str) -> str:
+        normalized = unicodedata.normalize('NFKD', value)
+        return ''.join(character for character in normalized if not unicodedata.combining(character))
 
     @staticmethod
     def _singularize_search_query(value: str) -> str:
         return re.sub(r"\b([a-zA-Z]{4,})s\b", r"\1", value)
 
     @staticmethod
+    def _search_tokens_match(search_query: str, searchable_text: str) -> bool:
+        if search_query in searchable_text:
+            return True
+
+        query_tokens = [token for token in search_query.split(" ") if token]
+        if not query_tokens:
+            return True
+
+        if all(token in searchable_text for token in query_tokens):
+            return True
+
+        singular_tokens = [UI._singularize_search_query(token) for token in query_tokens]
+        return all(token in searchable_text for token in singular_tokens if token)
+
+    @staticmethod
     def _search_text_matches(search_query: str, *values: Any) -> bool:
         if not search_query:
             return True
 
-        raw_text = " ".join(str(value) for value in values if value is not None).lower()
+        raw_text = " ".join(str(value) for value in values if value is not None)
         searchable_text = UI._normalize_searchable_text(raw_text)
-        if search_query in raw_text or search_query in searchable_text:
-            return True
-
-        singular_query = UI._singularize_search_query(search_query)
-        return singular_query != search_query and singular_query in searchable_text
+        return UI._search_tokens_match(search_query, searchable_text)
 
     @staticmethod
     def _build_search_blob(*values: Any) -> str:
@@ -962,11 +984,7 @@ class UI:
         if not search_query:
             return True
 
-        if search_query in search_blob:
-            return True
-
-        singular_query = UI._singularize_search_query(search_query)
-        return singular_query != search_query and singular_query in search_blob
+        return UI._search_tokens_match(search_query, search_blob)
 
     @staticmethod
     def _focus_popup_search_field_on_appearing() -> None:
@@ -1992,6 +2010,7 @@ class UI:
             target_config.config_type,
             profile_name,
             source_profile_name=self.profile_manager.get_active_profile_name(target_config.config_type),
+            overwrite_existing=True,
         )
         if created_profile_name is None:
             return
@@ -2077,10 +2096,19 @@ class UI:
             self.global_config_new_profile_name,
         )
 
+        normalized_profile_name = GlobalConfigProfileManager.sanitize_profile_name(self.global_config_new_profile_name)
+        overwrite_existing = normalized_profile_name != '' and self.profile_manager.profile_exists(target_config.config_type, normalized_profile_name)
+        if overwrite_existing:
+            ImGui.text_colored(
+                'Warning: this profile already exists. Saving now will overwrite it.',
+                color=UI.RED_COLOR.color_tuple,
+                font_size=12,
+            )
+
         btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
-        create_disabled = GlobalConfigProfileManager.sanitize_profile_name(self.global_config_new_profile_name) == ''
+        create_disabled = normalized_profile_name == ''
         PyImGui.begin_disabled(create_disabled)        
-        if ImGui.button('Save As', btn_width):
+        if ImGui.button('Overwrite' if overwrite_existing else 'Save As', btn_width):
             self._save_active_config()
             self._create_global_config_profile(self.global_config_new_profile_name, target_config)
             PyImGui.close_current_popup()
@@ -2091,7 +2119,7 @@ class UI:
             self.global_config_new_profile_name = ''
             PyImGui.close_current_popup()
 
-        ImGui.show_tooltip('Creates or reuses a profile for this config type and assigns it to the current character.')
+        ImGui.show_tooltip('Creates a profile for this config type and assigns it to the current character. If the name already exists, it overwrites that profile.')
         PyImGui.end_popup_modal()
 
     def _open_manage_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
@@ -2472,7 +2500,7 @@ class UI:
             self.show_preview_window = False
             return
 
-        PyImGui.set_next_window_size((600, 800), PyImGui.ImGuiCond.FirstUseEver)      
+        PyImGui.set_next_window_size((800, 600), PyImGui.ImGuiCond.FirstUseEver)      
         expanded, open_ = ImGui.BeginWithClose(
             ini_key=self.module_config.main_ini_key,
             name="Item Manager - Preview",
@@ -3152,6 +3180,8 @@ class UI:
             return f'{len(argument.custom_order)} item type(s) prioritized'
         if argument.field == SortField.Rarity:
             return f'{len(argument.custom_order)} rarity tier(s) prioritized'
+        if argument.field == SortField.Color:
+            return f'{len(argument.custom_order)} color(s) prioritized'
         return f'{len(argument.custom_order)} custom entries'
 
     @staticmethod
@@ -3310,6 +3340,11 @@ class UI:
             selected_names = [entry for entry in argument.custom_order if isinstance(entry, str) and entry in Rarity.__members__]
             label_getter = lambda entry: self._humanize_name(entry.name)
             add_label = 'Add Rarity'
+        elif argument.field == SortField.Color:
+            available_entries = [entry for entry in self._sorted_dye_colors if entry != DyeColor.NoColor]
+            selected_names = [entry for entry in argument.custom_order if isinstance(entry, str) and entry in DyeColor.__members__]
+            label_getter = lambda entry: self._humanize_name(entry.name)
+            add_label = 'Add Color'
         else:
             return False
 
@@ -3330,8 +3365,10 @@ class UI:
                 item_unique_id = f'sort_argument_named_order_{unique_id}_{entry_name}_{index}'
                 if argument.field == SortField.ItemType:
                     color_tuple = UI.SUBTLE_TEXT_COLOR.color_tuple
-                else:
+                elif argument.field == SortField.Rarity:
                     color_tuple = self._get_rarity_color(Rarity[entry_name]).color_tuple if entry_name in Rarity.__members__ else UI.SUBTLE_TEXT_COLOR.color_tuple
+                else:
+                    color_tuple = UI.SUBTLE_TEXT_COLOR.color_tuple
 
                 if ImGui.begin_child(f'##{item_unique_id}', (0, 40), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
                     if ImGui.icon_button(f'{IconsFontAwesome5.ICON_ARROW_UP}##{item_unique_id}_up', 26, 24) and index > 0:
@@ -3367,7 +3404,7 @@ class UI:
         if argument.field == SortField.ModelId:
             changed = self._draw_sort_argument_model_id_order(argument, unique_id) or changed
             
-        elif argument.field in {SortField.ItemType, SortField.Rarity}:
+        elif argument.field in {SortField.ItemType, SortField.Rarity, SortField.Color}:
             changed = self._draw_sort_argument_named_order(argument, unique_id) or changed
         else:
             ImGui.text_wrapped('This sort field does not support a custom prioritized order.')
@@ -3690,7 +3727,7 @@ class UI:
                 
                 is_available = slot < inventory_bag_size
                 if has_rule:
-                    style.ChildBg.push_color_direct(UI.RED_COLOR.rgb_tuple)
+                    style.ChildBg.push_color_direct(UI.OPAGUE_RED_COLOR.rgb_tuple)
                 
                 elif not is_available:
                     style.ChildBg.push_color_direct(UI.SUBTLE_TEXT_COLOR.rgb_tuple)
@@ -3707,6 +3744,12 @@ class UI:
                         
                 if has_rule or not is_available:
                     style.ChildBg.pop_color_direct()
+                    
+                if has_rule:
+                    ImGui.show_tooltip('This slot is already assigned to a slot group. Selecting it will move it to the current group and remove it from the other group.')
+                
+                elif not is_available:
+                    ImGui.show_tooltip('This slot index exceeds the current size of the bag. It may become available if you add an expansion or buy more storage tabs.')
                     
                 PyImGui.table_next_column()
                     
@@ -4164,15 +4207,15 @@ class UI:
         for warning in plan.warnings:
             ImGui.text_colored(warning, UI.RED_COLOR.color_tuple)
 
-        if ImGui.begin_table('##sorting_preview_table', 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=360):
+        if ImGui.begin_table('##sorting_preview_table', 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX):
             PyImGui.table_setup_column('Bag', PyImGui.TableColumnFlags.WidthFixed, 110)
             PyImGui.table_setup_column('Slot', PyImGui.TableColumnFlags.WidthFixed, 45)
-            PyImGui.table_setup_column('Target Item', PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column('Target Item', PyImGui.TableColumnFlags.WidthFixed, 200)
             PyImGui.table_setup_column('From', PyImGui.TableColumnFlags.WidthFixed, 120)
             PyImGui.table_setup_column('Group', PyImGui.TableColumnFlags.WidthFixed, 150)
             PyImGui.table_setup_column('Allowed', PyImGui.TableColumnFlags.WidthFixed, 170)
-            PyImGui.table_setup_column('Policy', PyImGui.TableColumnFlags.WidthFixed, 120)
-            PyImGui.table_setup_column('Notes', PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column('Notes', PyImGui.TableColumnFlags.WidthFixed, 120)
+            PyImGui.table_setup_column('Policy', PyImGui.TableColumnFlags.WidthStretch)
             PyImGui.table_headers_row()
 
             for entry in plan.entries:
@@ -4194,9 +4237,9 @@ class UI:
                 PyImGui.table_next_column()
                 ImGui.text_wrapped(entry.group_summary)
                 PyImGui.table_next_column()
-                ImGui.text(entry.sorter.display_name)
+                ImGui.text(note_text if note_text else '-')
                 PyImGui.table_next_column()
-                ImGui.text_wrapped(note_text if note_text else '-')
+                ImGui.text(entry.sorter.display_name)
             ImGui.end_table()
 
     def draw_buy_config(self, config_info: ConfigInfo[BuyConfig]) -> None:
@@ -4676,10 +4719,10 @@ class UI:
             if not visible_entries:
                 return
 
-            if ImGui.begin_table("##inventory_preview_table", 6, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
+            if ImGui.begin_table("##inventory_preview_table", 6, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX):
                 PyImGui.table_setup_column("Bag", PyImGui.TableColumnFlags.WidthFixed, 110)
                 PyImGui.table_setup_column("Slot", PyImGui.TableColumnFlags.WidthFixed, 45)
-                PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+                PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthFixed, 200)
                 PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
                 PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 160)
                 PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
@@ -4704,7 +4747,7 @@ class UI:
                     PyImGui.table_next_column()
                     ImGui.text(rule_name)
                     PyImGui.table_next_column()
-                    ImGui.text_wrapped(entry.note if entry.note else ("Ready" if entry.executable else "-"))
+                    ImGui.text(entry.note if entry.note else ("Ready" if entry.executable else "-"))
 
                 ImGui.end_table()
         except Exception as e:
@@ -4781,9 +4824,9 @@ class UI:
             ImGui.text_wrapped("No nearby loot entries matched the current preview filters.")
             return
 
-        if ImGui.begin_table("##loot_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=320):
+        if ImGui.begin_table("##loot_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX):
             PyImGui.table_setup_column("Distance", PyImGui.TableColumnFlags.WidthFixed, 70)
-            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthFixed, 200)
             PyImGui.table_setup_column("Action", PyImGui.TableColumnFlags.WidthFixed, 120)
             PyImGui.table_setup_column("Rule", PyImGui.TableColumnFlags.WidthFixed, 180)
             PyImGui.table_setup_column("Notes", PyImGui.TableColumnFlags.WidthStretch)
@@ -4806,7 +4849,7 @@ class UI:
                 PyImGui.table_next_column()
                 ImGui.text(rule_name)
                 PyImGui.table_next_column()
-                ImGui.text_wrapped(note if note else "Ready")
+                ImGui.text(note if note else "Ready")
 
             ImGui.end_table()
     
@@ -4846,8 +4889,8 @@ class UI:
             ImGui.text_wrapped("No buy entries matched the current preview filters.")
             return
 
-        if ImGui.begin_table("##buy_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY, height=280):
-            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthStretch)
+        if ImGui.begin_table("##buy_preview_table", 5, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX):
+            PyImGui.table_setup_column("Item", PyImGui.TableColumnFlags.WidthFixed, 200)
             PyImGui.table_setup_column("Target", PyImGui.TableColumnFlags.WidthFixed, 70)
             PyImGui.table_setup_column("Current", PyImGui.TableColumnFlags.WidthFixed, 70)
             PyImGui.table_setup_column("Missing", PyImGui.TableColumnFlags.WidthFixed, 70)
@@ -4867,7 +4910,7 @@ class UI:
                 PyImGui.table_next_column()
                 ImGui.text(str(missing_quantity))
                 PyImGui.table_next_column()
-                ImGui.text_wrapped(note if entry.description == "" else f"{note} {entry.description}")
+                ImGui.text(note if entry.description == "" else f"{note} {entry.description}")
 
             ImGui.end_table()
 

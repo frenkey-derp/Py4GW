@@ -303,7 +303,13 @@ class GlobalConfigProfileManager:
 
         return True
 
-    def create_profile(self, config_type: str, profile_name: str, source_profile_name: str | None = None) -> str | None:
+    def create_profile(
+        self,
+        config_type: str,
+        profile_name: str,
+        source_profile_name: str | None = None,
+        overwrite_existing: bool = False,
+    ) -> str | None:
         normalized_config_type = self.normalize_config_type(config_type)
         normalized = self.sanitize_profile_name(profile_name)
         if normalized == '':
@@ -312,17 +318,22 @@ class GlobalConfigProfileManager:
         if normalized.upper() == self.SHARED_PROFILE_NAME:
             return self.SHARED_PROFILE_NAME
 
-        if self.profile_exists(normalized_config_type, normalized):
+        profile_exists = self.profile_exists(normalized_config_type, normalized)
+        if profile_exists and not overwrite_existing:
             return normalized
 
         target_folder = self.get_profile_folder(normalized_config_type, normalized)
         os.makedirs(target_folder, exist_ok=True)
 
+        target_file_path = self._get_profile_file_path(normalized, normalized_config_type)
         if source_profile_name:
             source_file_path = self._get_profile_file_path(source_profile_name, normalized_config_type)
-            target_file_path = self._get_profile_file_path(normalized, normalized_config_type)
             if os.path.isfile(source_file_path):
                 shutil.copy2(source_file_path, target_file_path)
+            elif overwrite_existing and os.path.isfile(target_file_path):
+                os.remove(target_file_path)
+        elif overwrite_existing and os.path.isfile(target_file_path):
+            os.remove(target_file_path)
 
         return normalized
 
