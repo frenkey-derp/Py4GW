@@ -6,6 +6,8 @@ from dataclasses import dataclass, field as dataclass_field
 from enum import IntEnum, StrEnum, auto
 from typing import Any, ClassVar, Optional, Self, cast
 
+from Py4GWCoreLib.global_configs.Condition import BaseCondition, ConditionEvaluationContext
+from Py4GWCoreLib.global_configs.Rule import ConditionOperator, CustomRule
 from Py4GWCoreLib.enums_src.GameData_enums import DyeColor
 from Py4GWCoreLib.enums_src.Item_enums import Bags, ItemType, Rarity
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
@@ -277,99 +279,71 @@ class DefaultSorter(Sorter):
         super().__init__(_default_sort_arguments())
 
 
-@dataclass(slots=True)
-class SlotMatcherConfig:
-    model_ids: list[ModelID | int] = dataclass_field(default_factory=list)
-    item_types: list[ItemType] = dataclass_field(default_factory=list)
-    rarities: list[Rarity] = dataclass_field(default_factory=list)
-    min_quantity: int = 0
-    max_quantity: int = 250
+class SlotMatcherConfig(CustomRule):
+    def __init__(
+        self,
+        conditions: Optional[list[BaseCondition]] = None,
+        condition_operator: ConditionOperator = ConditionOperator.All,
+    ):
+        super().__init__(conditions=conditions, condition_operator=condition_operator)
 
     def matches(self, item: Optional[ItemSnapshot]) -> bool:
         if item is None or not item.is_valid:
             return False
+        if not self.conditions:
+            return True
 
-        if self.model_ids:
-            normalized_model_ids = {
-                int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                for model_id in self.model_ids
-            }
-            if int(item.model_id) not in normalized_model_ids:
-                return False
+        context = ConditionEvaluationContext(item_id=int(item.id), item_snapshot=item)
+        evaluations = [condition.evaluate(context) for condition in self.conditions if condition.is_valid()]
+        if not evaluations:
+            return True
 
-        if self.item_types and not any(item.item_type.matches(item_type) for item_type in self.item_types):
-            return False
+        if self.condition_operator == ConditionOperator.Any:
+            return any(evaluations)
 
-        if self.rarities and item.rarity not in self.rarities:
-            return False
-
-        if item.quantity < self.min_quantity or item.quantity > self.max_quantity:
-            return False
-
-        return True
+        return all(evaluations)
 
     def is_restrictive(self) -> bool:
-        return bool(self.model_ids or self.item_types or self.rarities or self.min_quantity > 0 or self.max_quantity < 250)
+        return any(condition.is_valid() for condition in self.conditions)
 
     def summary(self) -> str:
-        parts: list[str] = []
-        if self.model_ids:
-            parts.append(f'Model IDs: {len(self.model_ids)}')
-        if self.item_types:
-            parts.append(f'Item Types: {len(self.item_types)}')
-        if self.rarities:
-            parts.append(f'Rarities: {len(self.rarities)}')
-        if self.min_quantity > 0 or self.max_quantity < 250:
-            parts.append(f'Qty {self.min_quantity}-{self.max_quantity}')
-        return ', '.join(parts) if parts else 'Any item'
+        valid_conditions = [condition for condition in self.conditions if condition.is_valid()]
+        if not valid_conditions:
+            return 'Any item'
+
+        condition_names = [
+            type(condition).__name__.replace('Condition', '')
+            for condition in valid_conditions[:3]
+        ]
+        operator = 'Any' if self.condition_operator == ConditionOperator.Any else 'All'
+        suffix = '...' if len(valid_conditions) > 3 else ''
+        return f'{operator}: {", ".join(condition_names)}{suffix}'
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            'model_ids': [
-                int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                for model_id in self.model_ids
-            ],
-            'item_types': [item_type.name for item_type in self.item_types],
-            'rarities': [rarity.name for rarity in self.rarities],
-            'min_quantity': max(0, int(self.min_quantity)),
-            'max_quantity': max(0, int(self.max_quantity)),
+            'condition_operator': self.condition_operator.name,
+            'conditions': [condition.to_dict() for condition in self.conditions],
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> 'SlotMatcherConfig':
-        raw_model_ids = data.get('model_ids', [])
-        raw_item_types = data.get('item_types', [])
-        raw_rarities = data.get('rarities', [])
-
-        model_ids: list[ModelID | int] = []
-        for model_id_raw in raw_model_ids if isinstance(raw_model_ids, list) else []:
-            if not isinstance(model_id_raw, int):
-                continue
-            try:
-                model_ids.append(ModelID(model_id_raw))
-            except ValueError:
-                model_ids.append(int(model_id_raw))
-
-        item_types = [
-            ItemType[item_type_name]
-            for item_type_name in raw_item_types if isinstance(raw_item_types, list)
-            if isinstance(item_type_name, str) and item_type_name in ItemType.__members__
-        ]
-        rarities = [
-            Rarity[rarity_name]
-            for rarity_name in raw_rarities if isinstance(raw_rarities, list)
-            if isinstance(rarity_name, str) and rarity_name in Rarity.__members__
-        ]
-
-        min_quantity = max(0, int(data.get('min_quantity', 0) or 0))
-        max_quantity = max(min_quantity, int(data.get('max_quantity', 250) or 250))
-        return cls(
-            model_ids=model_ids,
-            item_types=item_types,
-            rarities=rarities,
-            min_quantity=min_quantity,
-            max_quantity=max_quantity,
+    def from_dict(cls, payload: dict[str, Any]) -> 'SlotMatcherConfig':
+        operator_name = payload.get('condition_operator')
+        condition_operator = (
+            ConditionOperator[operator_name]
+            if isinstance(operator_name, str) and operator_name in ConditionOperator.__members__
+            else ConditionOperator.All
         )
+        conditions: list[BaseCondition] = []
+        raw_conditions = payload.get('conditions', [])
+        if isinstance(raw_conditions, list):
+            for raw_condition in raw_conditions:
+                if not isinstance(raw_condition, dict):
+                    continue
+                condition = BaseCondition.from_dict(raw_condition)
+                if condition is not None:
+                    conditions.append(condition)
+
+        return cls(conditions=conditions, condition_operator=condition_operator)
 
 
 @dataclass(frozen=True, slots=True)

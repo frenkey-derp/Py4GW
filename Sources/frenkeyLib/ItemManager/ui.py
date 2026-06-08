@@ -73,7 +73,7 @@ from Py4GWCoreLib.global_configs.CraftingConfig import CraftingConfig
 from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
 from Py4GWCoreLib.global_configs.LootConfig import LootConfig
 from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
-from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
+from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Py4GWCoreLib.global_configs.Rule import *
 from Py4GWCoreLib.global_configs.Condition import (
@@ -300,6 +300,9 @@ class UpgradeTexture(NamedTuple):
 class UI:
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
+    RANDOM_COLORS : list[Color] = [
+        Color.random(50) for _ in range(100)
+    ]
     
     SELECTABLE_SELECTED_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.5)
     SELECTABLE_HOVERED_COLOR : Color = ColorPalette.GetColor("gw_green").opacity(0.3)
@@ -316,6 +319,7 @@ class UI:
     LEADING_SEARCH_AMOUNT_RE = re.compile(r"(?<!\S)(?:[1-9]|[1-9]\d|1\d\d|2[0-4]\d|250)\s+")
     _RULE_TYPES_CACHE: list[type[BaseRule]] | None = None
     _CONDITION_TYPES_CACHE: list[type[BaseCondition]] | None = None
+    _ALL_CONDITION_TYPES_CACHE: list[type[BaseCondition]] | None = None
     INVENTORY_PREVIEW_BAGS: list[Bags] = [
         Bags.Backpack,
         Bags.BeltPouch,
@@ -739,6 +743,10 @@ class UI:
         self._rule_delete_popup_requested: bool = False
         self._rule_delete_target_config: ConfigInfo[RuleConfig] | None = None
         self._rule_delete_target_rule: BaseRule | None = None
+        self._sorting_group_delete_popup_id: str = '##sorting_group_delete_popup'
+        self._sorting_group_delete_popup_requested: bool = False
+        self._sorting_group_delete_target_config: ConfigInfo[SortingConfig] | None = None
+        self._sorting_group_delete_target_group: SlotGroupConfig | None = None
         self.buy_preview_show_satisfied: bool = True
         
         self.selected_bag_slots : list[tuple[Bags, int]] = []
@@ -760,6 +768,7 @@ class UI:
         UI.ITEM_TYPE_NAMES[ItemType.OffhandOrShield] = "Focus Or Shield"
         UI.ITEM_TYPE_NAMES[ItemType.CC_Shards] = "Stackable Salvage"
         UI.ITEM_TYPE_NAMES[ItemType.Salvage] = "Armor Salvage"
+        UI.ITEM_TYPE_NAMES[ItemType.Materials_Zcoins] = "Materials & Z-Coins"
         
         UI.ITEM_TYPE_NAMES = {item_type: self._humanize_name(name) for item_type, name in UI.ITEM_TYPE_NAMES.items()} 
         
@@ -896,6 +905,30 @@ class UI:
         ]
         UI._CONDITION_TYPES_CACHE = sorted(types, key=lambda t: t.__name__)
         return UI._CONDITION_TYPES_CACHE
+
+    @staticmethod
+    def _get_all_condition_types() -> list[type[BaseCondition]]:
+        if UI._ALL_CONDITION_TYPES_CACHE is not None:
+            return UI._ALL_CONDITION_TYPES_CACHE
+
+        discovered_condition_types: list[type[BaseCondition]] = []
+
+        def visit(condition_type: type[BaseCondition]) -> None:
+            for child_condition_type in condition_type.__subclasses__():
+                if child_condition_type not in discovered_condition_types:
+                    discovered_condition_types.append(child_condition_type)
+                visit(child_condition_type)
+
+        visit(BaseCondition)
+        types = [
+            condition_type
+            for condition_type in discovered_condition_types
+            if condition_type is not BaseCondition
+            and condition_type.__name__ != 'UpgradeMatchCondition'
+            and not inspect.isabstract(condition_type)
+        ]
+        UI._ALL_CONDITION_TYPES_CACHE = sorted(types, key=lambda t: t.__name__)
+        return UI._ALL_CONDITION_TYPES_CACHE
 
     @staticmethod
     def _humanize_name(value: str) -> str:
@@ -2278,6 +2311,11 @@ class UI:
         self._rule_delete_target_rule = rule
         self._rule_delete_popup_requested = True
 
+    def _open_sorting_group_delete_popup(self, config_info: ConfigInfo[SortingConfig], group: SlotGroupConfig) -> None:
+        self._sorting_group_delete_target_config = config_info
+        self._sorting_group_delete_target_group = group
+        self._sorting_group_delete_popup_requested = True
+
     def _draw_rule_delete_popup(self) -> None:
         if self._rule_delete_popup_requested:
             PyImGui.open_popup(f'Delete Rule##{self._rule_delete_popup_id}')
@@ -2288,8 +2326,17 @@ class UI:
         if target_config is None or target_rule is None:
             return
 
+        popup_width = 380
+        popup_height = 120
+        popup_x = max(0.0, (UI.SCREEN_SIZE[0] - popup_width) * 0.5)
+        popup_y = max(0.0, (UI.SCREEN_SIZE[1] - popup_height) * 0.5)
+        PyImGui.set_next_window_pos((popup_x, popup_y), PyImGui.ImGuiCond.Always)
         PyImGui.set_next_window_size((380, 0), PyImGui.ImGuiCond.Always)
-        if not PyImGui.begin_popup_modal(f'Delete Rule##{self._rule_delete_popup_id}', True, PyImGui.WindowFlags.AlwaysAutoResize):
+        if not PyImGui.begin_popup_modal(
+            f'Delete Rule##{self._rule_delete_popup_id}',
+            True,
+            PyImGui.WindowFlags.AlwaysAutoResize | PyImGui.WindowFlags.NoMove,
+        ):
             return
 
         rule_name = target_rule.name or self._humanize_name(target_rule.__class__.__name__)
@@ -2311,6 +2358,52 @@ class UI:
         if ImGui.button('Cancel', btn_width):
             self._rule_delete_target_config = None
             self._rule_delete_target_rule = None
+            PyImGui.close_current_popup()
+
+        PyImGui.end_popup_modal()
+
+    def _draw_sorting_group_delete_popup(self) -> None:
+        if self._sorting_group_delete_popup_requested:
+            PyImGui.open_popup(f'Delete Sort Policy##{self._sorting_group_delete_popup_id}')
+            self._sorting_group_delete_popup_requested = False
+
+        target_config = self._sorting_group_delete_target_config
+        target_group = self._sorting_group_delete_target_group
+        if target_config is None or target_group is None:
+            return
+
+        popup_width = 380
+        popup_height = 120
+        popup_x = max(0.0, (UI.SCREEN_SIZE[0] - popup_width) * 0.5)
+        popup_y = max(0.0, (UI.SCREEN_SIZE[1] - popup_height) * 0.5)
+        PyImGui.set_next_window_pos((popup_x, popup_y), PyImGui.ImGuiCond.Always)
+        PyImGui.set_next_window_size((380, 0), PyImGui.ImGuiCond.Always)
+        if not PyImGui.begin_popup_modal(
+            f'Delete Sort Policy##{self._sorting_group_delete_popup_id}',
+            True,
+            PyImGui.WindowFlags.AlwaysAutoResize | PyImGui.WindowFlags.NoMove,
+        ):
+            return
+
+        group_name = target_group.display_name()
+        ImGui.text_wrapped(f'Are you sure you want to delete sort policy "{group_name}"?')
+
+        btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+        if ImGui.button('Delete', btn_width):
+            if target_group in target_config.config.slot_groups:
+                deleted_index = target_config.config.slot_groups.index(target_group)
+                target_config.config.slot_groups.remove(target_group)
+                target_config.save()
+                replacement_group = target_config.config.slot_groups[min(deleted_index, len(target_config.config.slot_groups) - 1)] if target_config.config.slot_groups else None
+                self._set_active_sorting_group(replacement_group)
+            self._sorting_group_delete_target_config = None
+            self._sorting_group_delete_target_group = None
+            PyImGui.close_current_popup()
+
+        PyImGui.same_line(0, 8)
+        if ImGui.button('Cancel', btn_width):
+            self._sorting_group_delete_target_config = None
+            self._sorting_group_delete_target_group = None
             PyImGui.close_current_popup()
 
         PyImGui.end_popup_modal()
@@ -2473,6 +2566,9 @@ class UI:
             return False
 
         clipboard_type = type(clipboard_condition)
+        if isinstance(rule, SlotMatcherConfig):
+            return True
+
         if isinstance(rule, CustomRule):
             return self._supports_custom_condition_editor(clipboard_type)
 
@@ -2490,6 +2586,10 @@ class UI:
             rule.conditions[replacement_index] = clipboard_condition
             return True
 
+        if isinstance(rule, SlotMatcherConfig):
+            rule.conditions.append(clipboard_condition)
+            return True
+
         if isinstance(rule, CustomRule) and self._supports_custom_condition_editor(clipboard_type):
             rule.conditions.append(clipboard_condition)
             return True
@@ -2501,6 +2601,9 @@ class UI:
         if clipboard_condition is None:
             return False
 
+        if isinstance(rule, SlotMatcherConfig):
+            return True
+
         if isinstance(rule, CustomRule):
             return self._supports_custom_condition_editor(type(clipboard_condition))
 
@@ -2510,6 +2613,16 @@ class UI:
         clipboard_condition = self._get_condition_clipboard()
         if clipboard_condition is None:
             return False
+
+        if isinstance(rule, SlotMatcherConfig):
+            try:
+                condition_index = rule.conditions.index(condition)
+            except ValueError:
+                rule.conditions.append(clipboard_condition)
+                return True
+
+            rule.conditions[condition_index] = clipboard_condition
+            return True
 
         if isinstance(rule, CustomRule):
             if not self._supports_custom_condition_editor(type(clipboard_condition)):
@@ -2800,9 +2913,7 @@ class UI:
             ImGui.separator()
 
             if ImGui.menu_item("Delete Group"):
-                config_info.config.slot_groups.remove(group)
-                config_info.save()
-                self._set_active_sorting_group(config_info.config.slot_groups[0] if len(config_info.config.slot_groups) > 0 else None)
+                self._open_sorting_group_delete_popup(config_info, group)
 
             ImGui.end_popup()
             return True
@@ -3228,6 +3339,140 @@ class UI:
         return f'{len(argument.custom_order)} custom entries'
 
     @staticmethod
+    def _get_sort_argument_natural_item_type_order() -> list[ItemType]:
+        prioritized_values = [
+            int(ItemType.Kit),
+            int(ItemType.Key),
+            int(ItemType.Usable),
+            int(ItemType.Trophy),
+            int(ItemType.Quest_Item),
+            int(ItemType.Materials_Zcoins),
+        ]
+        prioritized_types = [
+            item_type
+            for item_type in ItemType
+            if int(item_type) in prioritized_values
+        ]
+        remaining_types = [
+            item_type
+            for item_type in ItemType
+            if int(item_type) not in prioritized_values
+        ]
+        prioritized_types.sort(key=lambda item_type: prioritized_values.index(int(item_type)))
+        return prioritized_types + remaining_types
+
+    def _get_sort_argument_named_entry_labels(self, argument: SortArgument) -> tuple[list[str], list[str], str]:
+        if argument.field == SortField.ItemType:
+            natural_entries = self._get_sort_argument_natural_item_type_order()
+            valid_names = [
+                entry
+                for entry in argument.custom_order
+                if isinstance(entry, str) and entry in ItemType.__members__
+            ]
+            label_lookup = {
+                item_type.name: self._item_type_name(item_type)
+                for item_type in natural_entries
+            }
+        elif argument.field == SortField.Rarity:
+            natural_entries = sorted(Rarity, key=lambda rarity: int(rarity.value))
+            valid_names = [
+                entry
+                for entry in argument.custom_order
+                if isinstance(entry, str) and entry in Rarity.__members__
+            ]
+            label_lookup = {
+                rarity.name: self._humanize_name(rarity.name)
+                for rarity in natural_entries
+            }
+        elif argument.field == SortField.Color:
+            natural_entries = sorted(
+                [color for color in DyeColor if color != DyeColor.NoColor],
+                key=lambda color: int(color.value),
+            )
+            valid_names = [
+                entry
+                for entry in argument.custom_order
+                if isinstance(entry, str) and entry in DyeColor.__members__ and entry != DyeColor.NoColor.name
+            ]
+            label_lookup = {
+                color.name: self._humanize_name(color.name)
+                for color in natural_entries
+            }
+        else:
+            return [], [], ''
+
+        prioritized_names = list(valid_names)
+        if argument.direction == SortDirection.Descending:
+            prioritized_names.reverse()
+
+        natural_names = [entry.name for entry in natural_entries]
+        remaining_names = [entry_name for entry_name in natural_names if entry_name not in valid_names]
+        return (
+            [label_lookup[entry_name] for entry_name in prioritized_names if entry_name in label_lookup],
+            [label_lookup[entry_name] for entry_name in remaining_names if entry_name in label_lookup],
+            self._humanize_name(argument.field.value),
+        )
+
+    def _draw_sort_argument_order_tooltip(self, argument: SortArgument) -> None:
+        PyImGui.set_next_window_size((400, 0), cond=PyImGui.ImGuiCond.Appearing)
+        if not PyImGui.begin_tooltip():
+            return
+
+        field_label = self._humanize_name(argument.field.value)
+        ImGui.text_colored(f'{field_label} Order Preview', UI.CREME_COLOR.color_tuple, font_size=14)
+        ImGui.separator()
+
+        if argument.field in {SortField.ItemType, SortField.Rarity, SortField.Color}:
+            prioritized_labels, remaining_labels, _ = self._get_sort_argument_named_entry_labels(argument)
+
+            if not argument.has_custom_order:
+                ImGui.text_wrapped('Natural order for this field:')
+                preview_labels = remaining_labels
+            else:
+                ImGui.text_wrapped('Prioritized entries come first in this order:')
+                preview_labels = prioritized_labels
+
+            for index, label in enumerate(preview_labels[:12], start=1):
+                ImGui.text(f'{index}. {label}')
+
+            if len(preview_labels) > 12:
+                ImGui.text_colored(f'... and {len(preview_labels) - 12} more', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+
+            if argument.has_custom_order:
+                ImGui.separator()
+                ImGui.text_wrapped('Remaining entries are equal priority in this argument. Later sort arguments decide their order.')
+                ImGui.text_colored('Natural remainder reference:', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                for label in remaining_labels[:8]:
+                    ImGui.text(label)
+                if len(remaining_labels) > 8:
+                    ImGui.text_colored(f'... and {len(remaining_labels) - 8} more', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+        elif argument.field == SortField.ModelId:
+            if not argument.has_custom_order:
+                natural_text = 'lower model IDs first' if argument.direction == SortDirection.Ascending else 'higher model IDs first'
+                ImGui.text_wrapped(f'Natural order: {natural_text}.')
+            else:
+                ImGui.text_wrapped('Prioritized items come first in this order:')
+                normalized_entries = [
+                    self._normalize_sort_argument_model_item_entry(entry)
+                    for entry in argument.custom_order
+                ]
+                visible_entries = [entry for entry in normalized_entries if entry is not None]
+                if argument.direction == SortDirection.Descending:
+                    visible_entries.reverse()
+                for index, (model_id, item_type) in enumerate(visible_entries[:10], start=1):
+                    label, subtitle = self._get_sort_argument_model_item_label(model_id, item_type)
+                    ImGui.text(f'{index}. {label}')
+                if len(visible_entries) > 10:
+                    ImGui.text_colored(f'... and {len(visible_entries) - 10} more', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                ImGui.separator()
+                ImGui.text_wrapped('Remaining items are equal priority in this argument. Later sort arguments decide their order.')
+        else:
+            natural_text = 'low to high' if argument.direction == SortDirection.Ascending else 'high to low'
+            ImGui.text_wrapped(f'Natural order: {natural_text}.')
+
+        PyImGui.end_tooltip()
+
+    @staticmethod
     def _normalize_sort_argument_model_item_entry(entry: Any) -> tuple[int, ItemType | None] | None:
         if isinstance(entry, int):
             return int(entry), None
@@ -3473,13 +3718,14 @@ class UI:
             
                 style.CellPadding.push_style_var_direct(2, 2)
                 if ImGui.begin_table(f'##sort_arguments_table_{unique_id}', 6, PyImGui.TableFlags.SizingStretchProp):
-                    PyImGui.table_setup_column('Up', PyImGui.TableColumnFlags.WidthFixed, 30)
-                    PyImGui.table_setup_column('Down', PyImGui.TableColumnFlags.WidthFixed, 30)
+                    PyImGui.table_setup_column('##Up', PyImGui.TableColumnFlags.WidthFixed, 30)
+                    PyImGui.table_setup_column('##Down', PyImGui.TableColumnFlags.WidthFixed, 30)
                     PyImGui.table_setup_column('Argument', PyImGui.TableColumnFlags.WidthStretch, 100)
                     PyImGui.table_setup_column('Direction', PyImGui.TableColumnFlags.WidthFixed, 120)
                     PyImGui.table_setup_column('Priority', PyImGui.TableColumnFlags.WidthFixed, 160)
-                    PyImGui.table_setup_column('Delete', PyImGui.TableColumnFlags.WidthFixed, 30)
+                    PyImGui.table_setup_column('##Delete', PyImGui.TableColumnFlags.WidthFixed, 30)
                 
+                    PyImGui.table_headers_row()
                     PyImGui.table_next_row()
                     PyImGui.table_next_column()
                                         
@@ -3522,6 +3768,11 @@ class UI:
                             button_label = self._format_sort_argument_custom_order_summary(argument)
                             if ImGui.button(f'{button_label}##{row_id}_priority', -1, 24):
                                 PyImGui.open_popup(popup_id)
+                            
+                            if PyImGui.is_item_hovered():
+                                self._draw_sort_argument_order_tooltip(argument)
+                            
+                            
                             changed = self._draw_sort_argument_custom_order_popup(argument, popup_id, row_id) or changed
                         else:
                             ImGui.text_colored('Natural only', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
@@ -3565,118 +3816,6 @@ class UI:
             if group.enabled
             for slot_ref in group.normalized_slot_refs()
         }
-
-    def _draw_slot_group_model_ids(self, matcher: SlotMatcherConfig, unique_id: str) -> bool:
-        changed = False
-        popup_id = f'##sorting_slot_group_model_ids_{unique_id}'
-        search_state_key = f'sorting_group_model_ids_{unique_id}'
-        selected_model_ids = {
-            int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-            for model_id in matcher.model_ids
-        }
-        style = ImGui.get_style()
-        spacing = style.ItemSpacing.value2 or 0
-        element_height = 48
-
-        if ImGui.button(f'Add Model ID##{unique_id}', -1):
-            PyImGui.open_popup(popup_id)
-
-        PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
-        if PyImGui.begin_popup(popup_id):
-            ImGui.text('Add Model ID')
-
-            PyImGui.set_next_item_width(-1)
-            self._focus_popup_search_field_on_appearing()
-            current_search = self._get_search_field_value(search_state_key)
-            _, current_search = ImGui.search_field(
-                f'##sorting_model_id_search_{unique_id}',
-                current_search,
-                'Search model ids or enter an integer...',
-            )
-            self._set_search_field_value(search_state_key, current_search)
-            PyImGui.set_next_item_width(-1)
-            search_query, matching_model_ids_raw = self._get_live_search_results(
-                search_state_key,
-                current_search,
-                lambda normalized_query: cast(list[Any], self._filter_cached_entries(self._model_id_search_cache, normalized_query, self._model_id_search_entries)),
-            )
-            matching_model_ids = cast(list[ModelID], matching_model_ids_raw)
-
-            manual_value: int | None = None
-            if search_query:
-                try:
-                    manual_value = int(search_query)
-                except ValueError:
-                    manual_value = None
-
-            exact_enum_match = manual_value in self._sorted_model_id_values if manual_value is not None else False
-
-            if manual_value is not None and not exact_enum_match and manual_value not in selected_model_ids:
-                if ImGui.begin_selectable(f'##sorting_manual_model_id_{manual_value}_{unique_id}', False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                    ImGui.text(f'Manual Model ID: {manual_value}')
-
-                if ImGui.end_selectable():
-                    matcher.model_ids.append(manual_value)
-                    changed = True
-                    PyImGui.close_current_popup()
-
-                if PyImGui.is_item_hovered():
-                    ImGui.show_tooltip('Add this raw integer model id even if it is not part of the ModelID enum yet.')
-
-            if ImGui.begin_child(f'##sorting_model_id_candidates_{unique_id}', (0, 320), border=True):
-                for model_id in matching_model_ids:
-                    model_id_value = int(model_id.value)
-                    already_selected = model_id_value in selected_model_ids
-                    
-                    if not already_selected:
-                        if PyImGui.is_rect_visible(0, 34):
-                            
-                            if ImGui.begin_selectable(f'##sorting_model_id_enum_{unique_id}_{model_id.name}', False, (0, 34), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                                ImGui.text(self._humanize_name(model_id.name))
-                                x, y = PyImGui.get_cursor_pos()
-                                PyImGui.set_cursor_pos(x, y - 4)
-                                ImGui.text_colored(f'{model_id_value}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-
-                            if ImGui.end_selectable():
-                                matcher.model_ids.append(model_id)
-                                changed = True
-                                PyImGui.close_current_popup()
-                            if PyImGui.is_item_hovered():
-                                ImGui.show_tooltip(f'{self._humanize_name(model_id.name)}\nModel ID: {model_id_value}')
-                        else:
-                            PyImGui.dummy(0, 34)
-            ImGui.end_child()
-
-            if ImGui.button('Cancel', -1):
-                PyImGui.close_current_popup()
-
-            PyImGui.end_popup()
-
-        if matcher.model_ids:
-            if ImGui.begin_child(f'##sorting_group_model_ids_selected_{unique_id}', (0, 0), border=False):
-                for index, model_id in enumerate(matcher.model_ids):
-                    model_id_value = int(model_id.value) if isinstance(model_id, ModelID) else int(model_id)
-                    label = self._humanize_name(model_id.name) if isinstance(model_id, ModelID) else f'Manual ID {model_id_value}'
-                    item_unique_id = f'sorting_model_ids_rule_{unique_id}_{model_id_value}_{index}'
-
-                    if ImGui.begin_child(f'##{item_unique_id}', (0, element_height), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                        if ImGui.icon_button(f'{IconsFontAwesome5.ICON_TRASH}##{item_unique_id}', 40, 30):
-                            matcher.model_ids.pop(index)
-                            changed = True
-                            ImGui.end_child()
-                            break
-
-                        PyImGui.same_line(0, 8)
-                        PyImGui.begin_group()
-                        ImGui.text(label)
-                        x, y = PyImGui.get_cursor_pos()
-                        PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(f'Model ID: {model_id_value}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                        PyImGui.end_group()
-                    ImGui.end_child()
-            ImGui.end_child()
-
-        return changed
 
     def _draw_slot_group_slot_selector_popup(self, group: SlotGroupConfig, popup_id: str) -> bool:
         changed = False
@@ -3932,58 +4071,19 @@ class UI:
             
         
         if PyImGui.begin_tab_bar(f'##sorting_group_tabs_{unique_id}'):
-            if PyImGui.begin_tab_item('Sorting'):
+            if PyImGui.begin_tab_item('Sort Items By'):
+                ImGui.text_wrapped('Items will be sorted in the order of these sort arguments (Top to Bottom). The default arguments are usually sufficient for most sorting needs, but you can add custom arguments or change their priority if you want to fine-tune the sorting behavior.')
                 changed = self._draw_sort_argument_editor(group.sorter, unique_id) or changed
                 PyImGui.end_tab_item()
             
-            if not group.is_default and PyImGui.begin_tab_item('Restrictions'):
-                if ImGui.begin_child(f'##sorting_item_types_{unique_id}', (0, 150), border=True):
-                    width = PyImGui.get_content_region_avail()[0]
-                    columns = max(1, int(width // 180))
-                    PyImGui.columns(columns, f'sorting_item_type_columns_{unique_id}', False)
-                    for item_type in self._sorted_item_types:
-                        is_selected = item_type in group.matcher.item_types
-                        selected = ImGui.checkbox(f'{self._item_type_name(item_type)}##sorting_item_type_{unique_id}_{item_type.name}', is_selected)
-                        if selected != is_selected:
-                            if selected:
-                                group.matcher.item_types.append(item_type)
-                            else:
-                                group.matcher.item_types = [entry for entry in group.matcher.item_types if entry != item_type]
-                            changed = True
-                        PyImGui.next_column()
-                    PyImGui.end_columns()
-                ImGui.end_child()
-
-                if ImGui.begin_child(f'##sorting_rarities_{unique_id}', (0, 45), border=True):
-                    for rarity in self._sorted_rarities:
-                        is_selected = rarity in group.matcher.rarities
-                        selected = ImGui.checkbox(f'##sorting_rarity_{unique_id}_{rarity.name}', is_selected)
-                        if selected != is_selected:
-                            if selected:
-                                group.matcher.rarities.append(rarity)
-                            else:
-                                group.matcher.rarities = [entry for entry in group.matcher.rarities if entry != rarity]
-                            changed = True
-                        PyImGui.same_line(0, 6)
-                        ImGui.text_colored(rarity.name, self._get_rarity_color(rarity).color_tuple)
-                        PyImGui.same_line(0, 10)
-                ImGui.end_child()
-
-                if ImGui.begin_child(f'##sorting_quantities_{unique_id}', (0, 93), border=True):
-                    min_quantity = ImGui.slider_int(f'Min Quantity##sorting_group_min_qty_{unique_id}', group.matcher.min_quantity, 0, 250)
-                    max_quantity = ImGui.slider_int(f'Max Quantity##sorting_group_max_qty_{unique_id}', group.matcher.max_quantity, 0, 250)
-                    normalized_min = min(min_quantity, max_quantity)
-                    normalized_max = max(min_quantity, max_quantity)
-                    if normalized_min != group.matcher.min_quantity or normalized_max != group.matcher.max_quantity:
-                        group.matcher.min_quantity = normalized_min
-                        group.matcher.max_quantity = normalized_max
-                        changed = True
-                ImGui.text_colored(f'Matches: {group.matcher.summary()}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                ImGui.end_child()
-
-                if ImGui.begin_child(f'##sorting_model_ids_{unique_id}', (0, 0), border=True):
-                    changed = self._draw_slot_group_model_ids(group.matcher, unique_id) or changed
-                ImGui.end_child()        
+            if not group.is_default and PyImGui.begin_tab_item('Filter Conditions'):
+                ImGui.text_wrapped('Only items matching these conditions will be sorted into this slot group. Leave the list empty to allow any item that reaches this group.')
+                ImGui.separator()
+                changed = self._draw_custom_rule(
+                    group.matcher,
+                    condition_types=self._get_all_condition_types(),
+                    editable_only=False,
+                ) or changed
                 PyImGui.end_tab_item()
             PyImGui.end_tab_bar()
             
@@ -3996,6 +4096,7 @@ class UI:
         active_drag = self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None
         self._drag_sorting_group_target_rect = None
         scroll_y = 0.0
+        self._draw_sorting_group_delete_popup()
 
         if ImGui.begin_table('##sorting_config_table', 2, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable):
             PyImGui.table_setup_column('Navigation', PyImGui.TableColumnFlags.WidthFixed, 220)
@@ -4274,7 +4375,15 @@ class UI:
         for warning in plan.warnings:
             ImGui.text_colored(warning, UI.RED_COLOR.color_tuple)
 
-        if ImGui.begin_table('##sorting_preview_table', 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX):
+        entries_by_bag: dict[Bags, list[BagSortPreviewEntry]] = {}
+        for entry in plan.entries:
+            if entry.bag not in entries_by_bag:
+                entries_by_bag[entry.bag] = []
+            
+            entries_by_bag[entry.bag].append(entry)
+        
+        style = ImGui.get_style()
+        if ImGui.begin_table('##sorting_preview_table', 8, PyImGui.TableFlags.Borders | PyImGui.TableFlags.Resizable | PyImGui.TableFlags.ScrollY | PyImGui.TableFlags.ScrollX | PyImGui.TableFlags.RowBg):
             PyImGui.table_setup_column('Bag', PyImGui.TableColumnFlags.WidthFixed, 110)
             PyImGui.table_setup_column('Slot', PyImGui.TableColumnFlags.WidthFixed, 45)
             PyImGui.table_setup_column('Target Item', PyImGui.TableColumnFlags.WidthFixed, 200)
@@ -4285,28 +4394,33 @@ class UI:
             PyImGui.table_setup_column('Policy', PyImGui.TableColumnFlags.WidthStretch)
             PyImGui.table_headers_row()
 
-            for entry in plan.entries:
-                item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name if entry.item is not None else '(empty)'
-                source_text = f'{self._humanize_name(entry.source_bag.name)}:{entry.source_slot}' if entry.source_bag is not None and entry.source_slot is not None else '-'
-                note_text = 'Fallback placement' if entry.used_fallback else ('Already in place' if entry.item is not None and entry.source_bag == entry.bag and entry.source_slot == entry.slot else '')
+            for bag, entries in entries_by_bag.items():
+                style.TableRowBg.push_color_direct(UI.RANDOM_COLORS[bag.value % len(UI.RANDOM_COLORS)].rgb_tuple)
+                style.TableRowBgAlt.push_color_direct(UI.RANDOM_COLORS[bag.value % len(UI.RANDOM_COLORS)].rgb_tuple)
+                for entry in entries:
+                    item_name = entry.item.complete_name or entry.item.singular_name or entry.item.name if entry.item is not None else '(empty)'
+                    source_text = f'{self._humanize_name(entry.source_bag.name)}:{entry.source_slot}' if entry.source_bag is not None and entry.source_slot is not None else '-'
+                    note_text = 'Fallback placement' if entry.used_fallback else ('Already in place' if entry.item is not None and entry.source_bag == entry.bag and entry.source_slot == entry.slot else '')
 
-                PyImGui.table_next_row()
-                PyImGui.table_next_column()
-                ImGui.text(self._humanize_name(entry.bag.name))
-                PyImGui.table_next_column()
-                ImGui.text(str(entry.slot))
-                PyImGui.table_next_column()
-                ImGui.text(item_name or '(unnamed item)', render_markdown=True)
-                PyImGui.table_next_column()
-                ImGui.text(source_text)
-                PyImGui.table_next_column()
-                ImGui.text(entry.group_name)
-                PyImGui.table_next_column()
-                ImGui.text_wrapped(entry.group_summary)
-                PyImGui.table_next_column()
-                ImGui.text(note_text if note_text else '-')
-                PyImGui.table_next_column()
-                ImGui.text(entry.sorter.display_name)
+                    PyImGui.table_next_row()
+                    PyImGui.table_next_column()
+                    ImGui.text(self._humanize_name(entry.bag.name))
+                    PyImGui.table_next_column()
+                    ImGui.text(str(entry.slot))
+                    PyImGui.table_next_column()
+                    ImGui.text(item_name or '(unnamed item)', render_markdown=True)
+                    PyImGui.table_next_column()
+                    ImGui.text(source_text)
+                    PyImGui.table_next_column()
+                    ImGui.text(entry.group_name)
+                    PyImGui.table_next_column()
+                    ImGui.text_wrapped(entry.group_summary)
+                    PyImGui.table_next_column()
+                    ImGui.text(note_text if note_text else '-')
+                    PyImGui.table_next_column()
+                    ImGui.text(entry.sorter.display_name)
+                style.TableRowBg.pop_color_direct()
+                style.TableRowBgAlt.pop_color_direct()
             ImGui.end_table()
 
     def draw_buy_config(self, config_info: ConfigInfo[BuyConfig]) -> None:
@@ -5352,20 +5466,24 @@ class UI:
                             condition_index = rule.conditions.index(condition)
                         except ValueError:
                             condition_index = -1
-
+                        
+                        conditions_amount = len(rule.conditions)
+                        
                         ImGui.separator()
-                        if condition_index > 0 and ImGui.menu_item('Move Up'):
-                            rule.conditions[condition_index - 1], rule.conditions[condition_index] = rule.conditions[condition_index], rule.conditions[condition_index - 1]
-                            ui._save_active_config()
-                            PyImGui.close_current_popup()
+                        
+                        if conditions_amount > 1:
+                            if condition_index > 0 and ImGui.menu_item('Move Up'):
+                                rule.conditions[condition_index - 1], rule.conditions[condition_index] = rule.conditions[condition_index], rule.conditions[condition_index - 1]
+                                ui._save_active_config()
+                                PyImGui.close_current_popup()
 
-                        if 0 <= condition_index < len(rule.conditions) - 1 and ImGui.menu_item('Move Down'):
-                            rule.conditions[condition_index], rule.conditions[condition_index + 1] = rule.conditions[condition_index + 1], rule.conditions[condition_index]
-                            ui._save_active_config()
-                            PyImGui.close_current_popup()
+                            if 0 <= condition_index < len(rule.conditions) - 1 and ImGui.menu_item('Move Down'):
+                                rule.conditions[condition_index], rule.conditions[condition_index + 1] = rule.conditions[condition_index + 1], rule.conditions[condition_index]
+                                ui._save_active_config()
+                                PyImGui.close_current_popup()
 
-                        if condition_index >= 0:
-                            ImGui.separator()
+                            if condition_index >= 0:
+                                ImGui.separator()
 
                         if ImGui.menu_item('Delete Condition'):
                             request_delete_popup = True
@@ -7408,9 +7526,16 @@ class UI:
         )
         return issubclass(condition_type, supported_types)
 
-    def _draw_custom_rule(self, rule: CustomRule) -> bool:
+    def _draw_custom_rule(
+        self,
+        rule: CustomRule,
+        condition_types: list[type[BaseCondition]] | None = None,
+        editable_only: bool = True,
+    ) -> bool:
         changed = False
         active_drag = self._drag_condition_source_rule is rule and self._drag_condition is not None
+        available_condition_types = condition_types if condition_types is not None else self._get_condition_types()
+        conditions_context_popup_id = f'##custom_rule_conditions_context_{id(rule)}'
         PyImGui.set_next_item_width(180)
         if PyImGui.begin_combo(f"##custom_rule_operator_{id(rule)}", self._humanize_name(rule.condition_operator.name), PyImGui.ImGuiComboFlags.NoFlag):
             for operator in ConditionOperator:
@@ -7422,8 +7547,15 @@ class UI:
 
         PyImGui.same_line(0, 8)
         if PyImGui.begin_combo(f"##custom_rule_add_condition_{id(rule)}", "Add Condition", PyImGui.ImGuiComboFlags.NoFlag):
-            for condition_type in self._get_condition_types():
-                if not self._supports_custom_condition_editor(condition_type):
+            if self._can_paste_condition_into_rule(rule):
+                paste_label = f'Paste Condition: {self._condition_clipboard_label}' if self._condition_clipboard_label else 'Paste Condition'
+                if ImGui.selectable(paste_label, False):
+                    if self._paste_condition_into_rule(rule):
+                        changed = True
+                ImGui.separator()
+
+            for condition_type in available_condition_types:
+                if editable_only and not self._supports_custom_condition_editor(condition_type):
                     continue
 
                 if ImGui.selectable(self._humanize_name(condition_type.__name__).replace("Condition", ""), False):
@@ -7435,6 +7567,20 @@ class UI:
         ImGui.separator()
         
         if ImGui.begin_child(f"##custom_rule_conditions_{id(rule)}", (0, 0), border=True):
+            if PyImGui.is_window_hovered() and PyImGui.is_mouse_clicked(1):
+                PyImGui.open_popup(conditions_context_popup_id)
+
+            if PyImGui.begin_popup(conditions_context_popup_id):
+                ImGui.text_colored('Conditions', color=UI.CREME_COLOR.color_tuple, font_size=16)
+                ImGui.separator()
+                if self._can_paste_condition_into_rule(rule):
+                    paste_label = f'Paste Condition: {self._condition_clipboard_label}' if self._condition_clipboard_label else 'Paste Condition'
+                    if ImGui.menu_item(paste_label):
+                        if self._paste_condition_into_rule(rule):
+                            changed = True
+                            PyImGui.close_current_popup()
+                ImGui.end_popup()
+
             self._condition_drag_handle_state.clear()
             io = PyImGui.get_io()
             child_pos = PyImGui.get_window_pos()
