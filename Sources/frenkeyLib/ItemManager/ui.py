@@ -3308,21 +3308,23 @@ class UI:
         ImGui.text("No editor available for this config.")
 
     def _slot_group_selection_summary(self, group: SlotGroupConfig) -> str:
-        slot_refs = group.normalized_slot_refs()
-        if group.is_default:
-            return 'All unassigned slots'
-        if not slot_refs:
-            return 'No slots selected'
-        grouped_slots: dict[Bags, list[int]] = {}
-        for slot_ref in slot_refs:
-            grouped_slots.setdefault(slot_ref.bag, []).append(slot_ref.slot)
+        sort_arguments = len(group.sorter.arguments)
+        conditions = len(group.matcher.conditions)
+        
         parts = []
-        for bag, slots in sorted(grouped_slots.items(), key=lambda item: item[0].value):
-            slot_list = ', '.join(str(slot) for slot in slots[:8])
-            if len(slots) > 8:
-                slot_list = f'{slot_list}, ...'
-            parts.append(f'{self._humanize_name(bag.name)}: {slot_list}')
+        
+        if sort_arguments == 0 and conditions == 0:
+            return 'No sort arguments or conditions'
+        
+        if sort_arguments > 0:
+            parts.append(f'{sort_arguments} Sort {"Argument" if sort_arguments == 1 else "Arguments"}')
+            
+        if conditions > 0:
+            parts.append(f'{conditions} Filter {"Condition" if conditions == 1 else "Conditions"}')
+        
+        
         return '\n'.join(parts)
+            
 
     def _format_sort_argument_custom_order_summary(self, argument: SortArgument) -> str:
         if not argument.has_custom_order:
@@ -3799,6 +3801,12 @@ class UI:
         self._invalidate_inventory_preview_cache()
         self.preview_throttle.Reset()
 
+    def _execute_bag_compact(self, bags: list[Bags]) -> None:
+        action_node = BT.Items.Bags.CompactBags(bags)
+        action_node.tick()
+        self._invalidate_inventory_preview_cache()
+        self.preview_throttle.Reset()
+
     def _refresh_sorting_bag_size_cache(self) -> None:
         self._sorting_bag_size_cache = {
             bag: PyInventory.Bag(bag.value, bag.name).GetSize()
@@ -4117,6 +4125,8 @@ class UI:
             ImGui.separator()
             PyImGui.spacing()
 
+            item_height = 56
+            self.rules_hovered = False
             if ImGui.begin_child('##sorting_groups', (0, 0), border=False):
                 io = PyImGui.get_io()
                 child_pos = PyImGui.get_window_pos()
@@ -4142,61 +4152,106 @@ class UI:
                     ImGui.text('Default Sort Policy')
                     x, y = PyImGui.get_cursor_pos()
                     PyImGui.set_cursor_pos(x, y - 4)
-                    ImGui.text_colored(config.default_group.sorter.display_name, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                    ImGui.text_colored(f'{len(config.default_group.sorter.arguments)} Sort {"Argument" if len(config.default_group.sorter.arguments) == 1 else "Arguments"}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                 if ImGui.end_selectable():
                     self._set_active_sorting_group(None)
 
-                self.rules_hovered = self.rules_hovered or PyImGui.is_item_hovered()
+                default_hovered = PyImGui.is_item_hovered()
+                self.rules_hovered = self.rules_hovered or default_hovered
+                if default_hovered:
+                    ImGui.show_tooltip('This is the default sort policy that applies to any slot that is not assigned to a custom slot group.')
 
-                for index, group in enumerate(config.slot_groups):
-                    group_label = group.name or f'Slot Group #{index + 1}'
-                    group_summary = self._slot_group_selection_summary(group)
+                for i, group in enumerate(config.slot_groups):
+                    if PyImGui.is_rect_visible(5, item_height):
+                        group_label = group.name or f'Slot Group #{i + 1}'
+                        group_summary = self._slot_group_selection_summary(group)
 
-                    cx, cy = PyImGui.get_cursor_pos()
-                    PyImGui.button(f"##sorting_group_nav_button_{index}", -1, 56)
-                    PyImGui.set_item_allow_overlap()
-                    PyImGui.set_cursor_pos(cx, cy)
+                        cx, cy = PyImGui.get_cursor_pos()
+                        PyImGui.button(f"##sorting_group_nav_button_{i}", -1, item_height)
+                        PyImGui.set_item_allow_overlap()
+                        PyImGui.set_cursor_pos(cx, cy)
 
-                    if ImGui.begin_selectable(f'##sorting_group_nav_{index}', selected=self.sorting_group is group, size=(0, 56), border=True, child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                        PyImGui.begin_disabled(not group.enabled)
-                        ImGui.text(group_label)
-                        x, y = PyImGui.get_cursor_pos()
-                        PyImGui.set_cursor_pos(x, y - 4)
-                        ImGui.text_colored(group_summary, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
-                        PyImGui.end_disabled()
-                    if ImGui.end_selectable():
-                        self._set_active_sorting_group(group)
+                        if ImGui.begin_selectable(f'##sorting_group_nav_{i}', selected=self.sorting_group is group, size=(0, item_height), border=True, child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+                            PyImGui.begin_disabled(not group.enabled)
+                            ImGui.text(group_label)
+                            x, y = PyImGui.get_cursor_pos()
+                            PyImGui.set_cursor_pos(x, y - 4)
+                            ImGui.text_colored(group_summary, UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                            PyImGui.end_disabled()
+                        
+                        if ImGui.end_selectable():
+                            self._set_active_sorting_group(group)
 
-                    hovered = PyImGui.is_item_hovered()
-                    self.rules_hovered = self.rules_hovered or hovered
+                        hovered = PyImGui.is_item_hovered()
+                        self.rules_hovered = self.rules_hovered or hovered
 
-                    if hovered and PyImGui.is_mouse_clicked(1):
-                        self.context_menu_id = f"sorting_group_{index}"
-                        self.context_menu_sorting_group = group
-                        self.context_menu_config = config_info
-                        PyImGui.open_popup(self.context_menu_id)
+                        if hovered and PyImGui.is_mouse_clicked(1):
+                            self.context_menu_id = f"sorting_group_{i}"
+                            self.context_menu_sorting_group = group
+                            self.context_menu_config = config_info
+                            PyImGui.open_popup(self.context_menu_id)
 
-                    item_min, item_max, item_size = ImGui.get_item_rect()
-                    hovered = PyImGui.is_item_hovered()
-                    clicked = PyImGui.is_item_clicked(0)
-                    in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
-                    item_key = ('sorting_group', id(group))
-                    self._remember_drag_clicked_item(item_key, clicked)
-                    
-                    if self._drag_sorting_group is None and self._can_start_drag_from_item(item_key, hovered):
-                        self._begin_sorting_group_drag(config_info, group, index)
+                        item_min, item_max, item_size = ImGui.get_item_rect()
+                        hovered = PyImGui.is_item_hovered()
+                        clicked = PyImGui.is_item_clicked(0)
+                        in_rect = ImGui.is_mouse_in_rect((item_min[0], item_min[1], item_size[0], item_size[1]))
+                        item_key = ('sorting_group', id(group))
+                        self._remember_drag_clicked_item(item_key, clicked)
+                        
+                        if self._drag_sorting_group is None and self._can_start_drag_from_item(item_key, hovered):
+                            self._begin_sorting_group_drag(config_info, group, i)
 
-                    if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None:
-                        group_rects[index] = (item_min[0], item_min[1], item_max[0], item_max[1])
-                        if index > 0 and (index - 1) in group_rects:
-                            previous_rect = group_rects[index - 1]
-                            gap = item_min[1] - previous_rect[3]
-                            if gap > 0.0:
-                                group_gap_values.append(gap)
+                        if self._drag_sorting_group_source_config is config_info and self._drag_sorting_group is not None:
+                            group_rects[i] = (item_min[0], item_min[1], item_max[0], item_max[1])
+                            if i > 0 and (i - 1) in group_rects:
+                                previous_rect = group_rects[i - 1]
+                                gap = item_min[1] - previous_rect[3]
+                                if gap > 0.0:
+                                    group_gap_values.append(gap)
 
-                        if in_rect:
-                            self._drag_sorting_group_target_index = index
-                            self._drag_sorting_group_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
+                            if in_rect:
+                                self._drag_sorting_group_target_index = i
+                                self._drag_sorting_group_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
+
+                        if hovered:
+                            PyImGui.set_next_window_size((300, 0), cond=PyImGui.ImGuiCond.Appearing)
+                            if PyImGui.begin_tooltip():
+                                ImGui.text_colored(group_label, color=UI.CREME_COLOR.color_tuple, font_size=16)
+                            
+                                sort_arguments = len(group.sorter.arguments)
+                                conditions = len(group.matcher.conditions)
+                                                                    
+                                if sort_arguments > 0:
+                                    ImGui.text(f'{sort_arguments} Sort {("Argument" if sort_arguments == 1 else "Arguments")}', font_size=14)
+                                    
+                                    PyImGui.columns(3, '##sorting_arguments_tooltip_columns', False)
+                                    
+                                    for argument_index, argument in enumerate(group.sorter.arguments):
+                                        ImGui.text(f'{self._humanize_name(argument.field.value)}', font_size=12)
+                                        PyImGui.next_column()
+                                        ImGui.text(f'{argument.direction.name}', font_size=12)
+                                        PyImGui.next_column()
+                                        ImGui.text(f'{"Custom order" if argument.has_custom_order else "Default"}', font_size=12)
+                                        if argument_index < sort_arguments - 1:
+                                            PyImGui.next_column()
+                                        
+                                    PyImGui.end_columns()
+                                
+                                if sort_arguments > 0 and conditions > 0:
+                                    PyImGui.separator()
+                                
+                                if conditions > 0:
+                                    ImGui.text(f'{conditions} Filter {("Condition" if conditions == 1 else "Conditions")}', font_size=14)
+                                    for condition in group.matcher.conditions:
+                                        condition_name = self._humanize_name(type(condition).__name__).replace("Condition", "")
+                                        ImGui.text(f"{condition_name}", font_size=12)
+                                
+                                PyImGui.separator()
+                                ImGui.text_colored('Drag to reorder or right-click for more options', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                                
+                                PyImGui.end_tooltip()
+                    else:
+                        PyImGui.dummy(0, item_height)
 
                 style.ButtonActive.pop_color_direct()
                 style.Button.pop_color_direct()
@@ -4317,6 +4372,11 @@ class UI:
         PyImGui.same_line(0, 5)
         if ImGui.button('Sort Selected', button_width):
             self._execute_bag_sort(self.sorting_preview_selected_bags)
+        ImGui.show_tooltip('Apply the current sorting policy to the selected bags.')
+        PyImGui.same_line(0, 5)
+        if ImGui.button('Compact Bags', button_width):
+            self._execute_bag_compact(self.sorting_preview_selected_bags)
+        ImGui.show_tooltip('Merge partial stacks across the selected bags to free up space.')
 
         if ImGui.begin_child('##sorting_preview_bags', (0, 90), border=True):
             width = PyImGui.get_content_region_avail()[0]
@@ -4618,13 +4678,8 @@ class UI:
                         if ImGui.end_selectable():
                             self._set_active_rule(rule)
                             selected_rule = rule
-                        
-                        
 
                         hovered = PyImGui.is_item_hovered()
-                        active = PyImGui.is_mouse_down(0)
-                        dragging = PyImGui.is_mouse_dragging(0, 0.01)
-                        
                         self.rules_hovered = self.rules_hovered or hovered
                         
                         if hovered and PyImGui.is_mouse_clicked(1):
@@ -4633,7 +4688,6 @@ class UI:
                             self.context_menu_config = config_info
                             PyImGui.open_popup(self.context_menu_id)
                             
-                        
                         item_min, item_max, item_size = ImGui.get_item_rect()
                         hovered = PyImGui.is_item_hovered()
                         clicked = PyImGui.is_item_clicked(0)
