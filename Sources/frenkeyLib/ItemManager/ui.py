@@ -4135,6 +4135,7 @@ class UI:
                 child_visible_top = child_pos[1]
                 child_visible_right = child_pos[0] + child_size[0]
                 child_visible_bottom = child_pos[1] + child_size[1]
+                default_policy_rect: tuple[float, float, float, float] | None = None
                 group_rects: dict[int, tuple[float, float, float, float]] = {}
                 group_gap_values: list[float] = []
                 style = ImGui.get_style()
@@ -4155,6 +4156,8 @@ class UI:
                     ImGui.text_colored(f'{len(config.default_group.sorter.arguments)} Sort {"Argument" if len(config.default_group.sorter.arguments) == 1 else "Arguments"}', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
                 if ImGui.end_selectable():
                     self._set_active_sorting_group(None)
+                default_item_min, default_item_max, _ = ImGui.get_item_rect()
+                default_policy_rect = (default_item_min[0], default_item_min[1], default_item_max[0], default_item_max[1])
 
                 default_hovered = PyImGui.is_item_hovered()
                 self.rules_hovered = self.rules_hovered or default_hovered
@@ -4309,6 +4312,8 @@ class UI:
                         if self._drag_sorting_group_target_index - 1 in group_rects:
                             previous_rect = group_rects[self._drag_sorting_group_target_index - 1]
                             line_y = (previous_rect[3] + current_rect[1]) / 2.0
+                        elif default_policy_rect is not None:
+                            line_y = (default_policy_rect[3] + current_rect[1]) / 2.0
                         else:
                             if current_rect[1] > child_visible_top:
                                 line_y = (child_visible_top + current_rect[1]) / 2.0
