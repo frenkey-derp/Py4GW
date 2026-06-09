@@ -27,12 +27,8 @@ from Py4GWCoreLib.Quest import Quest
 from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
-from Py4GWCoreLib.global_configs.BuyConfig import BuyConfig
-from Py4GWCoreLib.global_configs.CraftingConfig import CraftingConfig
-from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
 from Py4GWCoreLib.global_configs.LootConfig import LootConfig as FrenkeyLootConfig
 from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
-from Py4GWCoreLib.global_configs.SortingConfig import SortingConfig
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler
@@ -2870,40 +2866,8 @@ def Reload(index: int, message: SharedMessageStruct):
                     collector.load()
                                 
         match reload_type:
-            case ReloadType.Crafting:
-                config_path = profile_manager.get_active_config_file_path('CraftingConfig')
-                if os.path.isfile(config_path):
-                    CraftingConfig().load_dict(CraftingConfig().Load(config_path).to_dict())
-                else:
-                    CraftingConfig().load_dict({})
-            
-            case ReloadType.Buying:
-                config_path = profile_manager.get_active_config_file_path('BuyConfig')
-                if os.path.isfile(config_path):
-                    BuyConfig().load_dict(BuyConfig().Load(config_path).to_dict())
-                else:
-                    BuyConfig().load_dict({})
-            
-            case ReloadType.Inventory:
-                config_path = profile_manager.get_active_config_file_path('InventoryConfig')
-                if os.path.isfile(config_path):
-                    InventoryConfig().Load(config_path)
-                else:
-                    InventoryConfig().clear()
-
-            case ReloadType.Sorting:
-                config_path = profile_manager.get_active_config_file_path('SortingConfig')
-                if os.path.isfile(config_path):
-                    SortingConfig().load_dict(SortingConfig().Load(config_path).to_dict())
-                else:
-                    SortingConfig().load_dict({})
-            
-            case ReloadType.Looting:
-                config_path = profile_manager.get_active_config_file_path('LootConfig')
-                if os.path.isfile(config_path):
-                    FrenkeyLootConfig().Load(config_path)
-                else:
-                    FrenkeyLootConfig().clear()
+            case ReloadType.Crafting | ReloadType.Buying | ReloadType.Inventory | ReloadType.Sorting | ReloadType.Looting:
+                profile_manager.refresh_and_sync(force=True)
             
     except Exception as exc:
         ConsoleLog(MODULE_NAME, f"ReloadConfig message error: {exc}", Console.MessageType.Error, False)

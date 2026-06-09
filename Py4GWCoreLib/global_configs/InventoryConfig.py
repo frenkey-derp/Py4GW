@@ -1,4 +1,4 @@
-from typing import ClassVar, Self, cast, Self
+from typing import ClassVar, Self, cast
 
 from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
 
@@ -16,7 +16,17 @@ class InventoryConfig(RuleConfig):
     
     def __init__(self: Self) -> None:
         if self._initialized:
+            self._ensure_profile_sync()
             return
         
         self._initialized = True
         super().__init__()
+        self._ensure_profile_sync()
+
+    def _ensure_profile_sync(self) -> None:
+        try:
+            from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+
+            GlobalConfigProfileManager().refresh_and_sync()
+        except Exception:
+            pass

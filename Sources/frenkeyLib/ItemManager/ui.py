@@ -230,41 +230,18 @@ class ConfigInfo(Generic[TConfig]):
             return
 
         if isinstance(self.config, RuleConfig):
-            if not os.path.isfile(self.file_path):
-                self.config.clear()
-                Py4GW.Console.Log("Item Manager", f"No config file found for {self.name} at {self.file_path}. Loaded empty config.", Py4GW.Console.MessageType.Info)
-                return
-
-            loaded_config = self.config.Load(self.file_path)
-            Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {len(loaded_config)} rules.", Py4GW.Console.MessageType.Info)
+            self.config.reload_from_file(self.file_path)
+            Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {len(self.config)} rules.", Py4GW.Console.MessageType.Info)
             return
 
         if isinstance(self.config, BuyConfig):
-            if not os.path.isfile(self.file_path):
-                self.config.load_dict({})
-                return
-
-            with open(self.file_path, 'r', encoding='utf-8') as file:
-                json_data = json.load(file)
-
-            if isinstance(json_data, dict):
-                self.config.load_dict(json_data)
-
+            self.config.reload_from_file(self.file_path)
             configured_entries = sum(1 for entry in self.config.get_entries() if entry.quantity > 0)
             Py4GW.Console.Log("Item Manager", f"Loaded config for {self.name} from {self.file_path} with {configured_entries} configured consumables.", Py4GW.Console.MessageType.Info)
             return
 
         if isinstance(self.config, CraftingConfig):
-            if not os.path.isfile(self.file_path):
-                self.config.load_dict({})
-                return
-
-            with open(self.file_path, 'r', encoding='utf-8') as file:
-                json_data = json.load(file)
-
-            if isinstance(json_data, dict):
-                self.config.load_dict(json_data)
-
+            self.config.reload_from_file(self.file_path)
             Py4GW.Console.Log(
                 "Item Manager",
                 f"Loaded config for {self.name} from {self.file_path} with {len(self.config.selected_recipe_keys)} selected recipes.",
@@ -273,16 +250,7 @@ class ConfigInfo(Generic[TConfig]):
             return
 
         if isinstance(self.config, SortingConfig):
-            if not os.path.isfile(self.file_path):
-                self.config.load_dict({})
-                return
-
-            with open(self.file_path, 'r', encoding='utf-8') as file:
-                json_data = json.load(file)
-
-            if isinstance(json_data, dict):
-                self.config.load_dict(json_data)
-
+            self.config.reload_from_file(self.file_path)
             Py4GW.Console.Log(
                 "Item Manager",
                 f"Loaded config for {self.name} from {self.file_path} with {len(self.config.slot_groups)} slot groups.",
@@ -491,6 +459,7 @@ class UI:
         self.manage_profile_window_config_type: str = 'BuyConfig'
         self.profile_manager = GlobalConfigProfileManager()
         self.profile_manager.refresh()
+        self._last_seen_profile_context_signatures: dict[str, tuple[str, str, str]] = {}
         self._profile_context_refresh_timer: ThrottledTimer = ThrottledTimer(1000)
         self.preview_entries : Optional[list[InventoryPreviewEntry]] = None
         self.preview_throttle : ThrottledTimer = ThrottledTimer(1000)
@@ -545,6 +514,7 @@ class UI:
 
         for config_info in self.configs:
             config_info.load()
+        self._update_profile_context_signatures()
 
         self.config : Optional[ConfigInfo] = None
         self.rule : Optional[BaseRule] = None
@@ -2001,8 +1971,18 @@ class UI:
             config_info.save()
 
     def _reload_all_configs(self) -> None:
-        for config_info in self.configs:
-            config_info.load()
+        self.profile_manager.sync_loaded_configs(force=True)
+        self._update_profile_context_signatures()
+        self._after_global_config_reload()
+
+    def _reset_selected_config_state(self) -> None:
+        self.rule = None
+        self.rule_index = None
+        self.sorting_group = None
+        self.sorting_group_index = None
+
+    def _after_global_config_reload(self) -> None:
+        self._reset_selected_config_state()
         self._sync_selected_rule()
         self._sync_selected_sorting_group()
         self._refresh_sorting_assigned_slot_cache()
@@ -2010,13 +1990,32 @@ class UI:
         self._invalidate_inventory_preview_cache()
         self._invalidate_sorting_preview_cache()
 
-    def _refresh_global_config_profile_context(self, force: bool = False) -> None:
-        if not force and not self._profile_context_refresh_timer.IsExpired():
+    def _profile_context_signature(self, config_type: str) -> tuple[str, str, str]:
+        return (
+            self.profile_manager.get_current_character(),
+            self.profile_manager.get_active_profile_name(config_type),
+            self.profile_manager.get_active_config_file_path(config_type),
+        )
+
+    def _update_profile_context_signatures(self) -> None:
+        for config_info in self.configs:
+            self._last_seen_profile_context_signatures[config_info.config_type] = self._profile_context_signature(config_info.config_type)
+
+    def _watch_global_config_profile_context(self) -> None:
+        if not self._profile_context_refresh_timer.IsExpired():
             return
 
         self._profile_context_refresh_timer.Reset()
-        if self.profile_manager.refresh(force=force):
-            self._reload_all_configs()
+        profile_context_changed = False
+        for config_info in self.configs:
+            config_type = config_info.config_type
+            next_signature = self._profile_context_signature(config_type)
+            if self._last_seen_profile_context_signatures.get(config_type) != next_signature:
+                self._last_seen_profile_context_signatures[config_type] = next_signature
+                profile_context_changed = True
+
+        if profile_context_changed:
+            self._after_global_config_reload()
 
     def _invalidate_sorting_preview_cache(self) -> None:
         self.sorting_preview_plan = None
@@ -2069,10 +2068,14 @@ class UI:
             return
 
         self._save_all_configs()
+        
+        self.profile_manager.refresh(force=True)
+        
         if self.profile_manager.set_profile_for_current_character(target_config.config_type, profile_name):
             self.profile_manager.ensure_active_config_folder(target_config.config_type)
             self._profile_context_refresh_timer.Reset()
             self._reload_all_configs()
+            self.config = target_config
 
     def _create_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_active_config_info(config_info)
@@ -2100,7 +2103,6 @@ class UI:
             return
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
-        self.profile_manager.refresh(force=True)
         self._profile_context_refresh_timer.Reset()
         self._reload_all_configs()
 
@@ -2118,8 +2120,8 @@ class UI:
             return
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
-        self.profile_manager.refresh(force=True)
         self._profile_context_refresh_timer.Reset()
+        self._reload_all_configs()
 
     def _rename_global_config_profile(self, source_profile_name: str, target_profile_name: str, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_active_config_info(config_info)
@@ -2135,7 +2137,6 @@ class UI:
             return
 
         GlobalConfigProfileManager.broadcast_reload(target_config.config_type)
-        self.profile_manager.refresh(force=True)
         self._profile_context_refresh_timer.Reset()
         self._reload_all_configs()
 
@@ -2709,7 +2710,15 @@ class UI:
         return (Gender.Female if living_agent.is_female else Gender.Male) if living_agent else Gender.Unknown
 
     def draw_explorer(self):
-        self._refresh_global_config_profile_context()
+        self._watch_global_config_profile_context()
+        if self.config is not None:
+            
+            live_config = self._get_config_info_by_type(self.config.config_type)
+            if live_config is not None and self.config is not live_config:
+                Py4GW.Console.Log("Item Manager", f"Change detected for config type {self.config.config_type}. We changed from {self.config.name} to {live_config.name}.", Py4GW.Console.MessageType.Info)
+                Py4GW.Console.Log("Item Manager", f"Active config '{self.config.name}' was reloaded externally. Switching to the latest version of the config.", Py4GW.Console.MessageType.Warning)
+                self.config = live_config
+
         style = ImGui.get_style()
         io = PyImGui.get_io()
         
@@ -2752,6 +2761,8 @@ class UI:
             if ImGui.begin_child("##content", (0, 0), border=False):
                 if self.config:
                     active_config = self._get_active_config_info(self.config)
+                    if active_config is not None and self.config is not active_config:
+                        self.config = active_config
                     active_config_name = active_config.name if active_config is not None and active_config is not self.config else None
                     title = self.config.name if active_config_name is None else f"{self.config.name} / {active_config_name}"
 
@@ -2772,7 +2783,6 @@ class UI:
                             active_config_type = active_config.config_type
                             profile_names = self.profile_manager.list_profiles(active_config_type)
                             active_profile_name = self.profile_manager.get_active_profile_name(active_config_type)
-                            
                             current_profile_index = profile_names.index(active_profile_name) if active_profile_name in profile_names else 0
                             PyImGui.set_next_item_width(-32)
                             selected_profile_index = ImGui.combo('##global_config_profile', current_profile_index, profile_names)
@@ -2798,7 +2808,7 @@ class UI:
                     style.CellPadding.pop_style_var_direct()
 
                     self._draw_save_as_profile_popup(active_config)
-                    self.draw_config(self.config)
+                    self.draw_config(active_config or self.config)
 
             ImGui.end_child()
 
@@ -4074,7 +4084,6 @@ class UI:
             ImGui.text_wrapped('This policy is used for every slot that is not assigned to a special slot group.')
         
         if self._draw_slot_group_slot_selector_popup(group, slot_popup_id):
-            Py4GW.Console.Log("ITEM_MANAGER", f"Applied slot assignment for group '{group.display_name()}'.")
             changed = True
             
         

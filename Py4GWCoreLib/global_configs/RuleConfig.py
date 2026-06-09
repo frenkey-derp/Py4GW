@@ -17,6 +17,31 @@ class RuleConfig(list[Rule.BaseRule]):
     def __init__(self):        
         self.blacklisted_items : list[int] = []
         self.whitelisted_items : list[int] = []
+
+    def reset_to_defaults(self) -> None:
+        '''
+        Resets the persisted and transient state for this config instance.
+        '''
+        self.clear()
+        self.reset()
+
+    def reload_from_file(self, file_path: str) -> None:
+        '''
+        Reloads the current singleton instance in place from the provided file path.
+        '''
+        if not os.path.isfile(file_path):
+            self.reset_to_defaults()
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+
+        loaded = type(self).from_json(json_data)
+        if loaded is not self:
+            self.clear()
+            self.extend(loaded)
+            self.blacklisted_items = list(getattr(loaded, 'blacklisted_items', []))
+            self.whitelisted_items = list(getattr(loaded, 'whitelisted_items', []))
         
     def reset(self):
         '''
@@ -312,7 +337,7 @@ class RuleConfig(list[Rule.BaseRule]):
             parsed_rules.append(typed_rule)
 
         instance = cls()
-        instance.clear()
+        instance.reset_to_defaults()
         instance.extend(parsed_rules)
         
         return instance
@@ -336,7 +361,9 @@ class RuleConfig(list[Rule.BaseRule]):
         Loads the config from a JSON file at the specified file path and returns a new instance of the config with the loaded rules.
         '''
         if not os.path.isfile(file_path):
-            return cls()  # Return an empty config if the file does not exist
+            instance = cls()
+            instance.reset_to_defaults()
+            return instance
         
         with open(file_path, 'r', encoding='utf-8') as f:
             json_data = json.load(f)

@@ -500,9 +500,22 @@ class SortingConfig:
 
     def __init__(self) -> None:
         if self._initialized:
+            self._ensure_profile_sync()
             return
 
         self._initialized = True
+        self.reset_to_defaults()
+        self._ensure_profile_sync()
+
+    def _ensure_profile_sync(self) -> None:
+        try:
+            from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+
+            GlobalConfigProfileManager().refresh_and_sync()
+        except Exception:
+            pass
+
+    def reset_to_defaults(self) -> None:
         self.default_group: SlotGroupConfig = SlotGroupConfig(
             sorter=DefaultSorter(),
             name='Default Sort Policy',
@@ -510,6 +523,16 @@ class SortingConfig:
             is_default=True,
         )
         self.slot_groups: list[SlotGroupConfig] = []
+
+    def reload_from_file(self, file_path: str) -> None:
+        if not os.path.isfile(file_path):
+            self.reset_to_defaults()
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            json_data = json.load(file)
+
+        self.load_dict(json_data if isinstance(json_data, dict) else {})
 
     def get_groups_for_bag(self, bag: Bags) -> list[SlotGroupConfig]:
         return [
@@ -575,12 +598,6 @@ class SortingConfig:
 
     @classmethod
     def Load(cls: type[Self], file_path: str) -> Self:
-        if not os.path.isfile(file_path):
-            return cls()
-
-        with open(file_path, 'r', encoding='utf-8') as file:
-            json_data = json.load(file)
-
         instance = cls()
-        instance.load_dict(json_data or {})
+        instance.reload_from_file(file_path)
         return instance

@@ -1,6 +1,7 @@
 import PyImGui
 from Py4GWCoreLib import *
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
+from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
 
 #do not ever disable this module, it is the main module for everything
 MODULE_NAME = "Environment Upkeeper"
@@ -32,6 +33,7 @@ class WidgetConfig:
         self.throttle_salvage_queue = ThrottledTimer(325)
         self.throttle_identify_queue = ThrottledTimer(250)
         self.throttle_fast_queue = ThrottledTimer(20)
+        self.throttle_global_config_sync = ThrottledTimer(250)
 
 widget_config = WidgetConfig()
 
@@ -45,6 +47,7 @@ def reset_on_load():
     widget_config.throttle_salvage_queue.Reset()
     widget_config.throttle_identify_queue.Reset()
     widget_config.throttle_fast_queue.Reset()
+    widget_config.throttle_global_config_sync.Reset()
     
     #Resetting all queues
     widget_config.action_queue_manager.ResetAllQueues()
@@ -89,6 +92,10 @@ def main():
     global widget_config
 
     HOTKEY_MANAGER.update()
+
+    if widget_config.throttle_global_config_sync.IsExpired():
+        GlobalConfigProfileManager().refresh_and_sync()
+        widget_config.throttle_global_config_sync.Reset()
     
     if Routines.Checks.Map.MapValid():
         GLOBAL_CACHE._update_cache()

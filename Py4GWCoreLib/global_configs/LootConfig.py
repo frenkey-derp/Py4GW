@@ -24,6 +24,7 @@ class LootConfig(RuleConfig):
 
     def __init__(self: Self) -> None:
         if self._initialized:
+            self._ensure_profile_sync()
             return
 
         self._initialized = True
@@ -31,6 +32,20 @@ class LootConfig(RuleConfig):
         self.whitelisted_models: list[int] = []
         
         super().__init__()
+        self._ensure_profile_sync()
+
+    def _ensure_profile_sync(self) -> None:
+        try:
+            from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+
+            GlobalConfigProfileManager().refresh_and_sync()
+        except Exception:
+            pass
+
+    def reset_to_defaults(self) -> None:
+        super().reset_to_defaults()
+        self.blacklisted_models.clear()
+        self.whitelisted_models.clear()
         
     def EvaluateItem(self, item_id):
         if not super().EvaluateItem(item_id):

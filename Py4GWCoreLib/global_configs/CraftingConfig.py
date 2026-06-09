@@ -21,11 +21,34 @@ class CraftingConfig():
             
     def __init__(self):
         if self._initialized:
+            self._ensure_profile_sync()
             return
 
         self._initialized = True
+        self.reset_to_defaults()
+        self._ensure_profile_sync()
+
+    def _ensure_profile_sync(self) -> None:
+        try:
+            from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+
+            GlobalConfigProfileManager().refresh_and_sync()
+        except Exception:
+            pass
+
+    def reset_to_defaults(self) -> None:
         self.selected_recipe_keys: list[str] = []
         self.allow_shopping: bool = False
+
+    def reload_from_file(self, file_path: str) -> None:
+        if not os.path.isfile(file_path):
+            self.reset_to_defaults()
+            return
+
+        with open(file_path, 'r', encoding='utf-8') as f:
+            json_data = json.load(f)
+
+        self.load_dict(json_data if isinstance(json_data, dict) else {})
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -52,13 +75,6 @@ class CraftingConfig():
         '''
         Loads the config from a JSON file at the specified file path and returns a new instance of the config with the loaded rules.
         '''
-        if not os.path.isfile(file_path):
-            return cls()  # Return an empty config if the file does not exist
-        
-        with open(file_path, 'r', encoding='utf-8') as f:
-            json_data = json.load(f)
-        
         instance = cls()
-        instance.load_dict(json_data or {})
-        
+        instance.reload_from_file(file_path)
         return instance
