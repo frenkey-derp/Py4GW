@@ -4059,30 +4059,34 @@ class UI:
         ImGui.text_aligned("Enabled" if group.enabled else "Disabled", alignment=Alignment.MidLeft, height=25, color=UI.GREEN_COLOR.color_tuple if group.enabled else UI.RED_COLOR.color_tuple)
         PyImGui.same_line(60, 5)
         enabled = PyImGui.checkbox("##rule_enabled", group.enabled)
-        if enabled != group.enabled:
-            group.enabled = enabled
-            self._save_active_config()
-        ImGui.show_tooltip("Whether this rule is active. Disabled rules are ignored but keep their settings.")
-        PyImGui.same_line(0, 5)
-        if ImGui.button(f'Choose Slots##sorting_group_slots_{unique_id}', -1):
-            self._sorting_slot_picker_selection = [(slot_ref.bag, slot_ref.slot) for slot_ref in group.normalized_slot_refs()]
-            self.selected_bag_slots = list(self._sorting_slot_picker_selection)
-            self._sorting_slot_selector_popup_id = slot_popup_id
-            self._sorting_slot_selector_group = group
-            self._refresh_sorting_bag_size_cache()
-            PyImGui.open_popup(slot_popup_id)
         
-        if PyImGui.is_item_hovered():
-            if PyImGui.begin_tooltip():
-                PyImGui.push_text_wrap_pos(300)
-                ImGui.text_wrapped(self._slot_group_selection_summary(group))
-                PyImGui.pop_text_wrap_pos()
-                PyImGui.end_tooltip()
+        if not group.is_default:
+            if enabled != group.enabled:
+                group.enabled = enabled
+                self._save_active_config()
+            ImGui.show_tooltip("Whether this rule is active. Disabled rules are ignored but keep their settings.")
+            PyImGui.same_line(0, 5)
+            if ImGui.button(f'Choose Slots##sorting_group_slots_{unique_id}', -1):
+                self._sorting_slot_picker_selection = [(slot_ref.bag, slot_ref.slot) for slot_ref in group.normalized_slot_refs()]
+                self.selected_bag_slots = list(self._sorting_slot_picker_selection)
+                self._sorting_slot_selector_popup_id = slot_popup_id
+                self._sorting_slot_selector_group = group
+                self._refresh_sorting_bag_size_cache()
+                PyImGui.open_popup(slot_popup_id)
+            
+            if PyImGui.is_item_hovered():
+                if PyImGui.begin_tooltip():
+                    PyImGui.push_text_wrap_pos(300)
+                    ImGui.text_wrapped(self._slot_group_selection_summary(group))
+                    PyImGui.pop_text_wrap_pos()
+                    PyImGui.end_tooltip()
         PyImGui.end_disabled()
-                        
+
         if group.is_default:
-            ImGui.text_wrapped('This policy is used for every slot that is not assigned to a special slot group.')
-        
+            PyImGui.same_line(0, 5)
+            ImGui.text_aligned('This policy is used for every slot that is not assigned to a special slot group.', alignment=Alignment.MidLeft, height=23)
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() + 10)
+                                
         if self._draw_slot_group_slot_selector_popup(group, slot_popup_id):
             changed = True
             
