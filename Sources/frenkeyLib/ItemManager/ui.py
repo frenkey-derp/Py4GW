@@ -41,14 +41,15 @@ from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar
 from Py4GWCoreLib.UIManager import TraderWindow
-from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession, Range
+from Py4GWCoreLib.enums_src.GameData_enums import Attribute, DyeColor, Gender, Profession, Range
 from Py4GWCoreLib.enums_src.IO_enums import ImGuiKey, Key
-from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, BowType, ItemAction, ItemType, WeaponType
+from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, BowType, ItemAction, ItemType, Rarity, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
 from Py4GWCoreLib.item_mods_src.item_mod import ItemMod
 from Py4GWCoreLib.item_mods_src.types import ItemUpgradeType
 from Py4GWCoreLib.item_mods_src.upgrades import (
+    ArmorUpgrade,
     HalvesCastingTimeAttributeUpgrade,
     HalvesRechargeTimeAttributeUpgrade,
     Inherent,
@@ -76,7 +77,21 @@ from Py4GWCoreLib.global_configs.LootConfig import LootConfig
 from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
 from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
-from Py4GWCoreLib.global_configs.Rule import *
+from Py4GWCoreLib.global_configs.Rule import (
+    ArmorUpgradeRule,
+    BaseRule,
+    ConditionOperator,
+    create_rule_from_preset,
+    CustomRule,
+    DyesRule,
+    ExtractUpgradeRule,
+    get_rule_presets,
+    WeaponUpgradeRule,
+    NickItemRule,
+    ResultInterpretation,
+    RulePreset,
+    CustomWeaponUpgradeRule,
+)
 from Py4GWCoreLib.global_configs.Condition import (
     ArmorUpgradesCondition,
     BaseCondition,
@@ -93,8 +108,10 @@ from Py4GWCoreLib.global_configs.Condition import (
     IsMaterialCondition,
     ItemTypesCondition,
     MaxWeaponUpgradesCondition,
+    ModelFileIdAndItemType,
     ModelFileIdsAndItemTypesCondition,
     ModelFileIdsCondition,
+    ModelIdAndItemType,
     ModelIdsAndItemTypesCondition,
     ModelIdsCondition,
     NickItemCondition,
@@ -102,6 +119,8 @@ from Py4GWCoreLib.global_configs.Condition import (
     QuantityMatchCountScope,
     QuantityMatchTarget,
     QuantityMatchCondition,
+    RangedUpgrade,
+    UpgradeAndItemType,
     WeaponRequirementCondition,
     StackQuantityCondition,
     RaritiesCondition,
@@ -1056,7 +1075,23 @@ class UI:
         ImGui.text_colored(drag_note, color=UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
         
         PyImGui.end_tooltip()
-        
+
+    @staticmethod
+    def show_rule_preset_tooltip(rule_preset: RulePreset, wrap_width: float = 420.0):
+        if not PyImGui.is_item_hovered():
+            return
+
+        drag_note = 'Creates a Custom Rule seeded with the preset conditions.'
+
+        PyImGui.begin_tooltip()
+        PyImGui.push_text_wrap_pos(PyImGui.get_cursor_pos_x() + wrap_width)
+        ImGui.text_colored(rule_preset.label, color=UI.CREME_COLOR.color_tuple, font_size=16)
+        if rule_preset.description:
+            PyImGui.text_wrapped(rule_preset.description)
+        PyImGui.pop_text_wrap_pos()
+
+        ImGui.text_colored(drag_note, color=UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+        PyImGui.end_tooltip()
 
     @staticmethod
     def _format_condition_type_tooltip(condition_type: type) -> str:
@@ -4275,7 +4310,7 @@ class UI:
             ImGui.separator()
             PyImGui.spacing()
 
-            item_height = 56
+            item_height = 46
             self.rules_hovered = False
             if ImGui.begin_child('##sorting_groups', (0, 0), border=False):
                 io = PyImGui.get_io()
@@ -4774,22 +4809,44 @@ class UI:
             PyImGui.table_next_column()
 
             PyImGui.set_next_item_width(-1)
-            if ImGui.begin_combo("##add_rule", "Add Rule", PyImGui.ImGuiComboFlags.NoFlag):
-                for rule_type in self._get_rule_types():
-                    if not config_info.config.IsAllowedRuleType(rule_type):
-                        continue
-                    if ImGui.selectable(UI._humanize_name(rule_type.__name__), False):
-                        new_rule = rule_type()
-                        config_info.config.AddRule(new_rule)
-                        config_info.save()
-                        self._set_active_rule(new_rule)
-                    self.show_rule_type_tooltip(rule_type)
+            if ImGui.begin_combo("##add_rule", "Add Rule", PyImGui.ImGuiComboFlags.HeightLargest):
+                visible_rule_types = [
+                    rule_type
+                    for rule_type in self._get_rule_types()
+                    if config_info.config.IsAllowedRuleType(rule_type)
+                ]
+                if visible_rule_types:
+                    ImGui.text_colored('Rules', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                    ImGui.separator()
+                    for rule_type in visible_rule_types:
+                        if ImGui.selectable(UI._humanize_name(rule_type.__name__), False):
+                            new_rule = rule_type()
+                            config_info.config.AddRule(new_rule)
+                            config_info.save()
+                            self._set_active_rule(new_rule)
+                        self.show_rule_type_tooltip(rule_type)
+
+                rule_presets = get_rule_presets()
+                if rule_presets:
+                    if visible_rule_types:
+                        PyImGui.spacing()
+                    ImGui.text_colored('Custom Rule Presets', UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+                    ImGui.separator()
+                    for rule_preset in rule_presets:
+                        if ImGui.selectable(rule_preset.label, False):
+                            new_rule = create_rule_from_preset(rule_preset.preset_id)
+                            if new_rule is not None:
+                                config_info.config.AddRule(new_rule)
+                                config_info.save()
+                                self._set_active_rule(new_rule)
+                        self.show_rule_preset_tooltip(rule_preset)
                 ImGui.end_combo()
 
             ImGui.separator()
             PyImGui.spacing()
 
             item_height = 50
+            item_height = 40
             self.rules_hovered = False
             scroll_y = 0.0           
             selected_rule = self.rule if self.rule in config_info.config else None
@@ -4816,22 +4873,7 @@ class UI:
                         PyImGui.set_item_allow_overlap()
                         PyImGui.set_cursor_pos(cx, cy)
                         
-                        if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
-                            PyImGui.begin_disabled(not rule.enabled)
-                            ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
-                            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
-                            PyImGui.separator()
-                            x, y = PyImGui.get_cursor_pos()
-                            PyImGui.set_cursor_pos(x, y - 2)
-                            ImGui.text(f"{UI._humanize_name(rule.action.name)}" + (" (Disabled)" if not rule.enabled else ""), font_size=13)
-                            PyImGui.set_cursor_pos(x, PyImGui.get_cursor_pos_y() - 5)
-                            ImGui.text_colored(f"{rule.__class__.__name__}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=11)
-
-                            PyImGui.end_disabled()
-                            
-                        if ImGui.end_selectable():
-                            self._set_active_rule(rule)
-                            selected_rule = rule
+                        selected_rule = self.draw_rule_card(item_height, selected_rule, i, rule)
 
                         hovered = PyImGui.is_item_hovered()
                         self.rules_hovered = self.rules_hovered or hovered
@@ -4973,6 +5015,27 @@ class UI:
             if not PyImGui.is_mouse_down(0):
                 self._apply_rule_drag(config_info)
 
+    def draw_rule_card(self, item_height, selected_rule, i, rule):
+        if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+            PyImGui.begin_disabled(not rule.enabled)
+            ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
+            PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
+            PyImGui.separator()
+            x, y = PyImGui.get_cursor_pos()
+            PyImGui.set_cursor_pos(x, y - 2)
+            # ImGui.text(f"{UI._humanize_name(rule.action.name)}" + (" (Disabled)" if not rule.enabled else ""), font_size=13)
+            ImGui.text_colored(f"{UI._humanize_name(rule.action.name)}" + (" (Disabled)" if not rule.enabled else ""), UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=13)
+            
+            # PyImGui.set_cursor_pos(x, PyImGui.get_cursor_pos_y() - 5)
+            # ImGui.text_colored(f"{rule.__class__.__name__}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=11)
+
+            PyImGui.end_disabled()
+                            
+        if ImGui.end_selectable():
+            self._set_active_rule(rule)
+            selected_rule = rule
+        return selected_rule
+    
     def _set_inventory_preview_bags(self, bags: list[Bags]) -> None:
         self.inventory_preview_selected_bags = list(bags)
         self._invalidate_inventory_preview_cache()
@@ -7753,7 +7816,7 @@ class UI:
         ImGui.show_tooltip("Choose whether all conditions must match or whether any single condition is enough.")
 
         PyImGui.same_line(0, 8)
-        if PyImGui.begin_combo(f"##custom_rule_add_condition_{id(rule)}", "Add Condition", PyImGui.ImGuiComboFlags.NoFlag):
+        if PyImGui.begin_combo(f"##custom_rule_add_condition_{id(rule)}", "Add Condition", PyImGui.ImGuiComboFlags.HeightLargest):
             if self._can_paste_condition_into_rule(rule):
                 paste_label = f'Paste Condition: {self._condition_clipboard_label}' if self._condition_clipboard_label else 'Paste Condition'
                 if ImGui.selectable(paste_label, False):
@@ -7908,107 +7971,9 @@ class UI:
                 ImGui.text_wrapped("Build this rule from reusable condition sections. Add any supported conditions, reorder the rule itself in the list, and choose whether all or any conditions must match.")
                 return self._draw_custom_rule(rule)
 
-            case ModelIdsRule():
-                ImGui.text_wrapped("This rule matches items based on their model IDs. You can specify one or more model IDs to match against the item.")
-                return UI.ConditionEditor.ForModelIdsCondition(self, rule, rule.condition)
-
-            case EncodedNameRule():
-                ImGui.text_wrapped("This rule matches items by their encoded item name. You can add values from the item database or paste a raw encoded name string.")
-                return UI.ConditionEditor.ForEncodedNamesCondition(self, rule, rule.condition)
-
-            case ModelFileIdRule():
-                ImGui.text_wrapped("This rule matches items based on their model file ID. You can add values from known item data or enter raw ids manually.")
-                return UI.ConditionEditor.ForModelFileIdsCondition(self, rule, rule.condition)
-
-            case ModelFileIdAndItemTypeRule():
-                ImGui.text_wrapped("This rule matches items using a combination of model file ID and item type.")
-                return UI.ConditionEditor.ForModelFileIdsAndItemTypesCondition(self, rule, rule.condition)
-
-            case UnidentifiedRule():
-                ImGui.text_wrapped("This rule matches unidentified items.")
-                return UI.ConditionEditor.ForUnidentifiedCondition(self, rule, rule.condition)
-            
-            case UnidentifiedAndRarityRule():
-                ImGui.text_wrapped("This rule matches unidentified items of specific rarities.")
-                changed = False
-                
-                changed = self._draw_condition_editor(rule, rule.conditions[0], size=(0, 60)) or changed
-                changed = self._draw_condition_editor(rule, rule.conditions[1], size=(0, 0)) or changed
-
-                return changed
-
-            case WeaponSkinRule():
-                ImGui.text_wrapped("This rule matches weapon skins by model file id, with configurable requirement damage ranges and optional inherent upgrade filters.")
-                
-                avail = PyImGui.get_content_region_avail()
-                width = (avail[0] - 5) * 0.5
-                height = (avail[1] - 5) * 0.5
-                changed = False
-                
-                changed = UI.ConditionEditor.ForModelFileIdsCondition(self, rule, rule._model_file_condition(), size=(width, height)) or changed
-                PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForWeaponRequirementAndDamageCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
-                
-                changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
-                
-                return changed
-
-            case WeaponTypeRule():
-                ImGui.text_wrapped("This rule matches a weapon type, with configurable requirement damage ranges and optional inherent upgrade filters.")
-                avail = PyImGui.get_content_region_avail()
-                width = (avail[0] - 5) * 0.5
-                height = (avail[1] - 5) * 0.5
-                changed = False
-                
-                changed = UI.ConditionEditor.ForExactItemTypeCondition(self, rule, rule._item_type_condition(), size=(width, height)) or changed
-                PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForWeaponRequirementAndDamageCondition(self, rule, rule._requirement_condition(), size=(width, height)) or changed
-
-                changed = UI.ConditionEditor.ForInherentFiltersCondition(self, rule, rule._inherent_condition(), size=(width * 2, height)) or changed
-                
-                return changed
-
-            case SalvagesToMaterialRule():
-                ImGui.text_wrapped("This rule matches items that can salvage into any of the selected materials. We rely on the scraped salvage data from the GW-Wiki which is stored in our items data collection.")
-                return UI.ConditionEditor.ForSalvagesToMaterialsCondition(self, rule, rule.condition)
-
-            case ModelIdsAndItemTypesRule():
-                ImGui.text_wrapped("This rule matches items based on their model id and item type. You can specify one or more model id and item type pairs to match against the item.")
-                return UI.ConditionEditor.ForModelIdsAndItemTypesCondition(self, rule, rule.condition)
-
-            case ItemTypesRule():
-                ImGui.text_wrapped("This rule matches items based on their item types. You can specify one or more item types to match against the item.")
-                return UI.ConditionEditor.ForItemTypesCondition(self, rule, rule.condition)
-
-            case QuantityRule():
-                ImGui.text_wrapped("This rule matches items whose quantity falls inside the configured inclusive range.")
-                return UI.ConditionEditor.ForStackQuantityCondition(self, rule, rule.condition)
-
             case NickItemRule():
                 ImGui.text_wrapped("This rule matches Nicholas the Traveler items that come up within the configured number of weeks, and previews the affected cycle items.")
                 return UI.ConditionEditor.ForNickItemCondition(self, rule, rule.condition)
-
-            case IsMaterialRule():
-                ImGui.text_wrapped("This rule matches materials. You can specify whether to match any material, only common or only rare materials.")
-                return UI.ConditionEditor.ForIsMaterialCondition(self, rule, rule.condition)
-
-            case RaritiesRule():
-                ImGui.text_wrapped("This rule matches items based on their rarity. You can specify one or more rarities to match against the item.")
-                return UI.ConditionEditor.ForRaritiesCondition(self, rule, rule.condition)
-
-            case RaritiesAndItemTypesRule():
-                ImGui.text_wrapped("This rule matches items based on a combination of rarity and item type. You can specify pairs of rarities and item types to match against the item.")
-                
-                avail = PyImGui.get_content_region_avail()
-                rarity_width = min((avail[0] - 5) * 0.5, 150)
-                item_type_width = avail[0] - rarity_width - 5
-                changed = False
-                
-                changed = UI.ConditionEditor.ForRaritiesCondition(self, rule, rule._rarity_condition(), size=(rarity_width, 0)) or changed
-                PyImGui.same_line(0, 5)
-                changed = UI.ConditionEditor.ForItemTypesCondition(self, rule, rule._item_type_condition(), size=(item_type_width, 0)) or changed
-
-                return changed
             
             case DyesRule():
                 ImGui.text_wrapped("This rule matches items based on their dye color. You can specify one or more dye colors to match against the item.")
@@ -8019,21 +7984,21 @@ class UI:
                 changed = self.draw_extracted_action(rule)
                 return UI.ConditionEditor.ForArmorUpgradesCondition(self, rule, rule.condition) or changed
 
-            case MaxWeaponUpgradeRule():
+            case WeaponUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their weapon upgrades. You can specify one or more weapon upgrades to match against the item.")
                 changed = self.draw_extracted_action(rule) 
                 return UI.ConditionEditor.ForMaxWeaponUpgradesCondition(self, rule, rule.condition) or changed
 
-            case UpgradeRangeRule():
+            case CustomWeaponUpgradeRule():
                 ImGui.text_wrapped("This rule matches items based on their upgrades that have a numeric value within a specified range.")
                 changed = self.draw_extracted_action(rule)
                 return UI.ConditionEditor.ForUpgradeRangesCondition(self, rule, rule.condition) or changed
 
             case _:
-                ImGui.text("No editor available for this rule type.")
+                ImGui.text_wrapped("This rule type is no longer supported by the editor. Create a Custom Rule Preset instead for new rules.")
                 return False
 
-    def draw_extracted_action(self, rule : ArmorUpgradeRule | MaxWeaponUpgradeRule | UpgradeRangeRule) -> bool:
+    def draw_extracted_action(self, rule : ArmorUpgradeRule | WeaponUpgradeRule | CustomWeaponUpgradeRule) -> bool:
         changed = False
         style = ImGui.get_style()
         unset = rule.extracted_action == ItemAction.NONE
