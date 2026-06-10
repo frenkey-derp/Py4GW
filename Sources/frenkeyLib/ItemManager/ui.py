@@ -40,8 +40,9 @@ from Py4GWCoreLib.Player import Player
 from Py4GWCoreLib.ImGui_src.IconsFontAwesome5 import IconsFontAwesome5
 from Py4GWCoreLib.ImGui_src.ImGuisrc import ImGui
 from Py4GWCoreLib.ImGui_src.types import Alignment, ImGuiStyleVar
-from Py4GWCoreLib.UIManager import MerchantWindow
+from Py4GWCoreLib.UIManager import TraderWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Attribute, Gender, Profession, Range
+from Py4GWCoreLib.enums_src.IO_enums import ImGuiKey, Key
 from Py4GWCoreLib.enums_src.Item_enums import BAG_ROW_SLOTS, DAMAGE_RANGES as ITEM_DAMAGE_RANGES, INVENTORY_BAGS, ITEM_TYPE_META_TYPES, MAX_STACK_SIZE, NICK_CYCLE_COUNT, STORAGE_BAGS, MAX_BAG_SIZES, WEAPON_TYPES, Bags, BowType, ItemAction, ItemType, WeaponType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Texture_enums import ProfessionTextureMap
@@ -787,6 +788,17 @@ class UI:
     # -------------------------------------------------------------------------
     # General formatting / discovery helpers
     # -------------------------------------------------------------------------
+    @staticmethod
+    def _is_confirm_key_pressed() -> bool:
+        return (
+            PyImGui.is_key_pressed(ImGuiKey.Enter.value)
+            or PyImGui.is_key_pressed(ImGuiKey.KeypadEnter.value)
+        )
+
+    @staticmethod
+    def _is_cancel_key_pressed() -> bool:
+        return PyImGui.is_key_pressed(Key.Escape.value)
+
     def _set_active_rule(self, rule: Optional[BaseRule]) -> None:
         if self.config and isinstance(self.config.config, RuleConfig):
             self.rule = rule if rule in self.config.config else None
@@ -1404,6 +1416,20 @@ class UI:
     def _get_armor_upgrade_types_for_profession(self, profession: Profession) -> list[type[Upgrade]]:
         return self._armor_upgrade_types_by_profession.get(profession, [])
 
+    def _get_all_armor_upgrade_types(self) -> list[type[Upgrade]]:
+        all_upgrade_types: list[type[Upgrade]] = []
+        seen_upgrade_types: set[type[Upgrade]] = set()
+
+        for profession in Profession:
+            for upgrade_type in self._get_armor_upgrade_types_for_profession(profession):
+                if upgrade_type in seen_upgrade_types:
+                    continue
+
+                seen_upgrade_types.add(upgrade_type)
+                all_upgrade_types.append(upgrade_type)
+
+        return all_upgrade_types
+
     def _get_weapon_upgrade_types_for_mod_type(self, mod_type: ItemUpgradeType) -> list[type[Upgrade]]:
         return self._weapon_upgrade_types_by_mod_type.get(mod_type, [])
 
@@ -1764,11 +1790,11 @@ class UI:
 
         return allowed_item_types
 
-    def _get_trader_armor_upgrade_quotes(self) -> list[TraderQuote]:
+    def _get_trader_armor_upgrade_quotes(self, filter_by_profession: bool = True) -> list[TraderQuote]:
         trader_output = TraderPriceCheckManager.get_output()
         quotes = [quote for quote in trader_output.quotes.values() if quote.is_rune_mod]
 
-        if self.profession != Profession._None:
+        if filter_by_profession and self.profession != Profession._None:
             quotes = [quote for quote in quotes if quote.profession in (self.profession, Profession._None)]
 
         return quotes
@@ -1796,9 +1822,19 @@ class UI:
 
         return upgrades
 
-    def _get_armor_upgrade_quote_lookup(self) -> dict[Any, TraderQuote]:
-        quotes = self._get_trader_armor_upgrade_quotes()
+    def _get_armor_upgrade_quote_lookup(self, filter_by_profession: bool = True) -> dict[Any, TraderQuote]:
+        quotes = self._get_trader_armor_upgrade_quotes(filter_by_profession=filter_by_profession)
         generation = TraderPriceCheckManager.get_generation()
+
+        if not filter_by_profession:
+            quote_lookup: dict[Any, TraderQuote] = {}
+            for quote in quotes:
+                for parsed_upgrade in self._extract_armor_upgrades_from_trader_quote(quote):
+                    comparison_key = parsed_upgrade._comparison_data()
+                    current_quote = quote_lookup.get(comparison_key)
+                    if current_quote is None or quote.quoted_value > current_quote.quoted_value:
+                        quote_lookup[comparison_key] = quote
+            return quote_lookup
 
         if (
             self._armor_upgrade_quote_cache_generation != generation
@@ -1827,8 +1863,12 @@ class UI:
 
         return self._armor_upgrade_quote_cache
 
-    def _get_trader_quote_for_armor_upgrade(self, upgrade: ArmorUpgrade) -> TraderQuote | None:
-        return self._get_armor_upgrade_quote_lookup().get(upgrade._comparison_data())
+    def _get_trader_quote_for_armor_upgrade(
+        self,
+        upgrade: ArmorUpgrade,
+        filter_by_profession: bool = True,
+    ) -> TraderQuote | None:
+        return self._get_armor_upgrade_quote_lookup(filter_by_profession=filter_by_profession).get(upgrade._comparison_data())
 
     def _get_range_instructions(self, upgrade: Upgrade) -> list[RangeInstruction]:
         return [instruction for instruction in type(upgrade).upgrade_info if isinstance(instruction, RangeInstruction)]
@@ -2271,8 +2311,9 @@ class UI:
         btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
         target_name = GlobalConfigProfileManager.sanitize_profile_name(self._profile_action_target_name)
         action_disabled = False if self._profile_action_mode == 'delete' else target_name == ''
+        confirm_with_enter = self._profile_action_mode == 'delete' and self._is_confirm_key_pressed()
         PyImGui.begin_disabled(action_disabled)
-        if ImGui.button(action_label, btn_width):
+        if ImGui.button(action_label, btn_width) or (confirm_with_enter and not action_disabled):
             if self._profile_action_mode == 'rename':
                 self._rename_global_config_profile(
                     self._profile_action_source_name,
@@ -2298,7 +2339,7 @@ class UI:
         PyImGui.end_disabled()
 
         PyImGui.same_line(0, 8)
-        if ImGui.button('Cancel', btn_width):
+        if ImGui.button('Cancel', btn_width) or self._is_cancel_key_pressed():
             self._profile_action_mode = ''
             self._profile_action_popup_requested = False
             self._profile_action_source_name = ''
@@ -2344,7 +2385,7 @@ class UI:
         ImGui.text_wrapped(f'Are you sure you want to delete rule "{rule_name}"?')
 
         btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
-        if ImGui.button('Delete', btn_width):
+        if ImGui.button('Delete', btn_width) or self._is_confirm_key_pressed():
             if target_rule in target_config.config:
                 deleted_index = target_config.config.index(target_rule)
                 target_config.config.remove(target_rule)
@@ -2356,7 +2397,7 @@ class UI:
             PyImGui.close_current_popup()
 
         PyImGui.same_line(0, 8)
-        if ImGui.button('Cancel', btn_width):
+        if ImGui.button('Cancel', btn_width) or self._is_cancel_key_pressed():
             self._rule_delete_target_config = None
             self._rule_delete_target_rule = None
             PyImGui.close_current_popup()
@@ -2390,7 +2431,7 @@ class UI:
         ImGui.text_wrapped(f'Are you sure you want to delete sort policy "{group_name}"?')
 
         btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
-        if ImGui.button('Delete', btn_width):
+        if ImGui.button('Delete', btn_width) or self._is_confirm_key_pressed():
             if target_group in target_config.config.slot_groups:
                 deleted_index = target_config.config.slot_groups.index(target_group)
                 target_config.config.slot_groups.remove(target_group)
@@ -2402,7 +2443,7 @@ class UI:
             PyImGui.close_current_popup()
 
         PyImGui.same_line(0, 8)
-        if ImGui.button('Cancel', btn_width):
+        if ImGui.button('Cancel', btn_width) or self._is_cancel_key_pressed():
             self._sorting_group_delete_target_config = None
             self._sorting_group_delete_target_group = None
             PyImGui.close_current_popup()
@@ -5400,13 +5441,13 @@ class UI:
                     content_height = 30
 
                 case ArmorUpgradesCondition():
-                    content_height = math.ceil(150 + max(1, len(condition.armor_upgrades)) * 24)
+                    content_height = 0
 
                 case MaxWeaponUpgradesCondition():
-                    content_height = math.ceil(140 + max(1, len(condition.weapon_upgrades)) * 70)
+                    content_height = 0
 
                 case UpgradeRangesCondition():
-                    content_height = math.ceil(32 + (spacing_y + 12) + max(1, len(condition.upgrade_ranges)) * 100)
+                    content_height = 0
 
                 case _:
                     content_height = 180
@@ -5501,7 +5542,7 @@ class UI:
                     ImGui.text_wrapped(f'Are you sure you want to delete the "{title}" condition?')
 
                     btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
-                    if ImGui.button('Delete', btn_width):
+                    if ImGui.button('Delete', btn_width) or ui._is_confirm_key_pressed():
                         if condition in rule.conditions:
                             rule.conditions.remove(condition)
                             ui._save_active_config()
@@ -5510,7 +5551,7 @@ class UI:
                         return False
 
                     PyImGui.same_line(0, 8)
-                    if ImGui.button('Cancel', btn_width):
+                    if ImGui.button('Cancel', btn_width) or ui._is_cancel_key_pressed():
                         PyImGui.close_current_popup()
 
                     PyImGui.end_popup_modal()
@@ -7044,9 +7085,8 @@ class UI:
         def ForArmorUpgradesCondition(ui: "UI", rule: BaseRule, condition: ArmorUpgradesCondition, size: Optional[tuple[float, float]] = None) -> bool:
             changed = False
             popup_id = f"##armor_upgrade_price_popup_{id(condition)}"
-            trader_open = MerchantWindow.IsOpen()
+            trader_open = TraderWindow.IsOpen()
             kind = TraderPriceCheckManager.get_kind()
-            selected_upgrade_types: set[type[Upgrade]] = {type(existing_upgrade) for existing_upgrade in condition.armor_upgrades}
             sizes = UI.ConditionEditor.GetSizes(rule, condition, size)
 
             if UI.ConditionEditor.BeginConditionContainer(ui, rule, condition, (sizes.get("width", 0), sizes.get("height", 0))):
@@ -7054,7 +7094,7 @@ class UI:
                 if ImGui.button("Select From Trader Prices", -1):
                     PyImGui.open_popup(popup_id)
                 PyImGui.end_disabled()
-
+                
                 if PyImGui.is_item_hovered():
                     if not trader_open or kind != "runes":
                         ImGui.show_tooltip("Open the rune trader window to enable this option.")
@@ -7068,46 +7108,38 @@ class UI:
                     if new_threshold != ui.armor_upgrade_price_threshold:
                         ui.armor_upgrade_price_threshold = max(0, new_threshold)
 
-                    quote_count = len(ui._get_trader_armor_upgrade_quotes())
+                    quote_count = len(ui._get_trader_armor_upgrade_quotes(filter_by_profession=False))
                     ImGui.text_colored(f"Available trader quotes: {quote_count}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
 
                     if ImGui.button("Apply Threshold", -1):
-                        quotes = ui._get_trader_armor_upgrade_quotes()
-                        added_count = 0
-                        upgrades_handled: list[ArmorUpgrade] = []
-                        for quote in quotes:
-                            upgrades = ui._extract_armor_upgrades_from_trader_quote(quote)
-                            upgrades_handled.extend(upgrades)
-                            
-                            if quote.quoted_value < ui.armor_upgrade_price_threshold:
-                                continue
-                            
-                            for selected_upgrade in upgrades:
-                                if type(selected_upgrade) in selected_upgrade_types:
-                                    continue
-                                condition.armor_upgrades.append(selected_upgrade)
-                                selected_upgrade_types.add(type(selected_upgrade))
-                                changed = True
-                                added_count += 1
-
-                        for upgrade_type in ui._get_armor_upgrade_types_for_profession(ui.profession):
-                            unavailable_upgrade = cast(ArmorUpgrade, upgrade_type())
-                            
-                            if any(ui._upgrade_equals(existing_upgrade, unavailable_upgrade) for existing_upgrade in upgrades_handled):
+                        all_quote_lookup = ui._get_armor_upgrade_quote_lookup(filter_by_profession=False)
+                        desired_upgrades: list[ArmorUpgrade] = []
+                        for upgrade_type in ui._get_all_armor_upgrade_types():
+                            default_upgrade = cast(ArmorUpgrade, upgrade_type())
+                            quote = all_quote_lookup.get(default_upgrade._comparison_data())
+                            if quote is not None and quote.quoted_value >= ui.armor_upgrade_price_threshold:
+                                desired_upgrades.append(default_upgrade)
                                 continue
 
-                            if upgrade_type in selected_upgrade_types:
-                                continue
+                            if quote is None:
+                                desired_upgrades.append(default_upgrade)
 
-                            condition.armor_upgrades.append(unavailable_upgrade)
-                            selected_upgrade_types.add(upgrade_type)
-                            changed = True
-                            added_count += 1
-                                
-                        if not changed:
-                            Py4GW.Console.Log("Item Manager", "Trader-based selection found matches, but all of them were already selected.", Py4GW.Console.MessageType.Warning)
+                        previous_upgrade_keys = [upgrade._comparison_data() for upgrade in condition.armor_upgrades]
+                        next_upgrade_keys = [upgrade._comparison_data() for upgrade in desired_upgrades]
+                        if previous_upgrade_keys == next_upgrade_keys:
+                            Py4GW.Console.Log("Item Manager", "Trader-based selection already matches the current threshold.", Py4GW.Console.MessageType.Warning)
                         else:
-                            Py4GW.Console.Log("Item Manager", f"Trader-based selection added {added_count} upgrades to the condition.", Py4GW.Console.MessageType.Success)
+                            previous_upgrades_by_key = {upgrade._comparison_data(): upgrade for upgrade in condition.armor_upgrades}
+                            next_upgrades_by_key = {upgrade._comparison_data(): upgrade for upgrade in desired_upgrades}
+                            added_count = len([key for key in next_upgrades_by_key if key not in previous_upgrades_by_key])
+                            removed_count = len([key for key in previous_upgrades_by_key if key not in next_upgrades_by_key])
+                            condition.armor_upgrades = desired_upgrades
+                            changed = True
+                            Py4GW.Console.Log(
+                                "Item Manager",
+                                f"Trader-based selection synced upgrades to the current threshold. Added {added_count}, removed {removed_count}.",
+                                Py4GW.Console.MessageType.Success,
+                            )
                         PyImGui.close_current_popup()
 
                     if ImGui.button("Cancel", -1):
@@ -7119,6 +7151,7 @@ class UI:
                     PyImGui.table_setup_column("Upgrades", PyImGui.TableColumnFlags.WidthStretch)
                     PyImGui.table_next_row()
                     PyImGui.table_next_column()
+                    selected_upgrade_keys = {existing_upgrade._comparison_data() for existing_upgrade in condition.armor_upgrades}
 
                     if ImGui.begin_child(f"##armor_upgrade_condition_profession_{id(condition)}", (0, 0), border=False):
                         for profession in Profession:
@@ -7142,17 +7175,22 @@ class UI:
                             for upgrade_type in [*insignias, *runes]:
                                 upgrade: ArmorUpgrade = upgrade_type()
                                 upgrade_label = ui._format_upgrade_label(upgrade)
-                                is_upgrade_selected = upgrade_type in selected_upgrade_types
+                                upgrade_key = upgrade._comparison_data()
+                                is_upgrade_selected = upgrade_key in selected_upgrade_keys
                                 if ImGui.begin_selectable(f"##armor_upgrade_{id(condition)}_{upgrade_type.__name__}", is_upgrade_selected, (0, 20), selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
                                     rarity_color = UI._get_rarity_color(upgrade.rarity)
                                     ImGui.text_colored(upgrade_label, rarity_color.color_tuple, font_size=14)
                                 if ImGui.end_selectable():
                                     if is_upgrade_selected:
-                                        condition.armor_upgrades = [existing_upgrade for existing_upgrade in condition.armor_upgrades if not isinstance(existing_upgrade, upgrade_type)]
-                                        selected_upgrade_types.discard(upgrade_type)
+                                        condition.armor_upgrades = [
+                                            existing_upgrade
+                                            for existing_upgrade in condition.armor_upgrades
+                                            if existing_upgrade._comparison_data() != upgrade_key
+                                        ]
+                                        selected_upgrade_keys.discard(upgrade_key)
                                     else:
-                                        condition.armor_upgrades.append(upgrade_type())
-                                        selected_upgrade_types.add(upgrade_type)
+                                        condition.armor_upgrades.append(upgrade)
+                                        selected_upgrade_keys.add(upgrade_key)
                                     changed = True
 
                                 if PyImGui.is_item_hovered():
@@ -7388,103 +7426,105 @@ class UI:
                 style = ImGui.get_style()
                 style.ToggleButtonEnabled.push_color(ui._get_rarity_color(Rarity.Gold).opacity(0.85).rgb_tuple)
                 style.ToggleButtonDisabled.push_color((0, 0, 0, 85))
-                for index, upgrade_range in enumerate(condition.upgrade_ranges):
-                    unique_id = f"upgrade_range_condition_{id(condition)}_{index}"
-                    instruction = ui._get_range_instruction(upgrade_range.upgrade, upgrade_range.target)
-                    if instruction is None:
-                        continue
-                    if ImGui.begin_child(f"##{unique_id}", (0, 105), border=True):
-                        style.CellPadding.push_style_var_direct(4, 4)
-                        if ImGui.begin_table(f"##{unique_id}_table", 3, PyImGui.TableFlags.NoBordersInBody):
-                            PyImGui.table_setup_column("Name", PyImGui.TableColumnFlags.WidthFixed, 200)
-                            PyImGui.table_setup_column("ItemTypes", PyImGui.TableColumnFlags.WidthStretch)
-                            PyImGui.table_setup_column("Delete", PyImGui.TableColumnFlags.WidthFixed, 50)
-                            PyImGui.table_next_row()
-                            PyImGui.table_next_column()
-                            rarity_color = UI._get_rarity_color(upgrade_range.upgrade.rarity)
-                            ImGui.text_colored(ui._format_upgrade_label(upgrade_range.upgrade), rarity_color.color_tuple, font_size=14)
-                            PyImGui.table_next_column()
-                            item_types = ui._get_allowed_item_types(upgrade_range.upgrade)
-                            if item_types:
-                                existing_entry = upgrade_ranges_by_type.get(type(upgrade_range.upgrade))
-                                selected_item_types = set(existing_entry.item_types) if existing_entry is not None else set()
-                                style.ChildBg.push_color_direct((0, 0, 0, 80))
-                                style.WindowPadding.push_style_var_direct(4, 4)
-                                if ImGui.begin_child(f"##{unique_id}_item_types", (0, 32), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
-                                    for item_type in item_types:
-                                        is_upgrade_selected = item_type in selected_item_types
-                                        texture = ui.weapon_upgrade_textures.get(item_type)
-                                        if texture:
-                                            texture_path = ui._get_texture_path_for_model_file_id_direct(texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix)
-                                            ImGui.image_toggle_button(f"##{id(condition)}_{index}_{item_type.name}", texture_path, is_upgrade_selected, 24, 24)
-                                            encoded = upgrade_range.upgrade.create_upgrade_name(item_type)
-                                            if PyImGui.is_item_clicked(0):
-                                                io = PyImGui.get_io()
-                                                if io.key_ctrl:
-                                                    should_select_all = not is_upgrade_selected
-                                                    if should_select_all:
-                                                        if existing_entry:
-                                                            existing_entry.item_types.clear()
-                                                            existing_entry.item_types.extend(item_types)
-                                                            selected_item_types = set(item_types)
+                if ImGui.begin_child(f"##existing_upgrade_ranges_{id(condition)}", (0, 0), border=False):
+                    for index, upgrade_range in enumerate(condition.upgrade_ranges):
+                        unique_id = f"upgrade_range_condition_{id(condition)}_{index}"
+                        instruction = ui._get_range_instruction(upgrade_range.upgrade, upgrade_range.target)
+                        if instruction is None:
+                            continue
+                        if ImGui.begin_child(f"##{unique_id}", (0, 105), border=True):
+                            style.CellPadding.push_style_var_direct(4, 4)
+                            if ImGui.begin_table(f"##{unique_id}_table", 3, PyImGui.TableFlags.NoBordersInBody):
+                                PyImGui.table_setup_column("Name", PyImGui.TableColumnFlags.WidthFixed, 200)
+                                PyImGui.table_setup_column("ItemTypes", PyImGui.TableColumnFlags.WidthStretch)
+                                PyImGui.table_setup_column("Delete", PyImGui.TableColumnFlags.WidthFixed, 50)
+                                PyImGui.table_next_row()
+                                PyImGui.table_next_column()
+                                rarity_color = UI._get_rarity_color(upgrade_range.upgrade.rarity)
+                                ImGui.text_colored(ui._format_upgrade_label(upgrade_range.upgrade), rarity_color.color_tuple, font_size=14)
+                                PyImGui.table_next_column()
+                                item_types = ui._get_allowed_item_types(upgrade_range.upgrade)
+                                if item_types:
+                                    existing_entry = upgrade_ranges_by_type.get(type(upgrade_range.upgrade))
+                                    selected_item_types = set(existing_entry.item_types) if existing_entry is not None else set()
+                                    style.ChildBg.push_color_direct((0, 0, 0, 80))
+                                    style.WindowPadding.push_style_var_direct(4, 4)
+                                    if ImGui.begin_child(f"##{unique_id}_item_types", (0, 32), border=True, flags=PyImGui.WindowFlags.NoScrollbar | PyImGui.WindowFlags.NoScrollWithMouse):
+                                        for item_type in item_types:
+                                            is_upgrade_selected = item_type in selected_item_types
+                                            texture = ui.weapon_upgrade_textures.get(item_type)
+                                            if texture:
+                                                texture_path = ui._get_texture_path_for_model_file_id_direct(texture.prefix if upgrade_range.upgrade.mod_type == ItemUpgradeType.Prefix else texture.suffix)
+                                                ImGui.image_toggle_button(f"##{id(condition)}_{index}_{item_type.name}", texture_path, is_upgrade_selected, 24, 24)
+                                                encoded = upgrade_range.upgrade.create_upgrade_name(item_type)
+                                                if PyImGui.is_item_clicked(0):
+                                                    io = PyImGui.get_io()
+                                                    if io.key_ctrl:
+                                                        should_select_all = not is_upgrade_selected
+                                                        if should_select_all:
+                                                            if existing_entry:
+                                                                existing_entry.item_types.clear()
+                                                                existing_entry.item_types.extend(item_types)
+                                                                selected_item_types = set(item_types)
+                                                            else:
+                                                                existing_entry = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=list(item_types))
+                                                                condition.upgrade_ranges.append(existing_entry)
+                                                                upgrade_ranges_by_type[type(upgrade_range.upgrade)] = existing_entry
+                                                                selected_item_types = set(item_types)
+                                                    else:
+                                                        if existing_entry and item_type in existing_entry.item_types:
+                                                            existing_entry.item_types.remove(item_type)
+                                                            selected_item_types.discard(item_type)
+                                                        elif existing_entry:
+                                                            existing_entry.item_types.append(item_type)
+                                                            selected_item_types.add(item_type)
                                                         else:
-                                                            existing_entry = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=list(item_types))
+                                                            existing_entry = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=[item_type])
                                                             condition.upgrade_ranges.append(existing_entry)
                                                             upgrade_ranges_by_type[type(upgrade_range.upgrade)] = existing_entry
-                                                            selected_item_types = set(item_types)
-                                                else:
-                                                    if existing_entry and item_type in existing_entry.item_types:
-                                                        existing_entry.item_types.remove(item_type)
-                                                        selected_item_types.discard(item_type)
-                                                    elif existing_entry:
-                                                        existing_entry.item_types.append(item_type)
-                                                        selected_item_types.add(item_type)
-                                                    else:
-                                                        existing_entry = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=upgrade_range.min_value, max_value=upgrade_range.max_value, item_types=[item_type])
-                                                        condition.upgrade_ranges.append(existing_entry)
-                                                        upgrade_ranges_by_type[type(upgrade_range.upgrade)] = existing_entry
-                                                        selected_item_types = {item_type}
-                                                changed = True
-                                            ImGui.show_tooltip(encoded.plain if encoded else ui._item_type_name(item_type))
-                                            PyImGui.same_line(0, 5)
-                                ImGui.end_child()
-                                style.WindowPadding.pop_style_var()
-                                style.ChildBg.pop_color_direct()
-                            PyImGui.table_next_column()
-                            if ImGui.button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 40):
-                                condition.upgrade_ranges.pop(index)
+                                                            selected_item_types = {item_type}
+                                                    changed = True
+                                                ImGui.show_tooltip(encoded.plain if encoded else ui._item_type_name(item_type))
+                                                PyImGui.same_line(0, 5)
+                                    ImGui.end_child()
+                                    style.WindowPadding.pop_style_var()
+                                    style.ChildBg.pop_color_direct()
+                                PyImGui.table_next_column()
+                                if ImGui.button(f"{IconsFontAwesome5.ICON_TRASH}##{unique_id}", 40, 40):
+                                    condition.upgrade_ranges.pop(index)
+                                    changed = True
+                                ImGui.end_table()
+                            style.CellPadding.pop_style_var()
+
+                            ImGui.separator()
+                            value_is_int = isinstance(instruction.min_value, int) and isinstance(instruction.max_value, int)
+                            current_min = int(upgrade_range.min_value) if value_is_int else upgrade_range.min_value
+                            current_max = int(upgrade_range.max_value) if value_is_int else upgrade_range.max_value
+                            width = PyImGui.get_content_region_avail()[0]
+                            PyImGui.push_item_width(width / 2 - 10)
+                            if value_is_int:
+                                new_min = ImGui.slider_int(f"##Minimum##{unique_id}", int(current_min), int(instruction.min_value), int(instruction.max_value))
+                                if PyImGui.is_item_hovered():
+                                    upgrade_range.upgrade.__setattr__(upgrade_range.target, new_min)
+                                    ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
+                                PyImGui.same_line(0, 8)
+                                new_max = ImGui.slider_int(f"###Maximum##{unique_id}", int(current_max), int(instruction.min_value), int(instruction.max_value))
+                                if PyImGui.is_item_hovered():
+                                    upgrade_range.upgrade.__setattr__(upgrade_range.target, new_max)
+                                    ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
+                            else:
+                                new_min = ImGui.slider_float(f"###Minimum##{unique_id}", current_min, float(instruction.min_value), float(instruction.max_value))
+                                PyImGui.same_line(0, 8)
+                                new_max = ImGui.slider_float(f"##Maximum##{unique_id}", current_max, float(instruction.min_value), float(instruction.max_value))
+                            PyImGui.pop_item_width()
+
+                            new_min_value = min(new_min, new_max)
+                            new_max_value = max(new_min, new_max)
+                            if new_min_value != upgrade_range.min_value or new_max_value != upgrade_range.max_value:
+                                condition.upgrade_ranges[index] = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=float(new_min_value), max_value=float(new_max_value), item_types=upgrade_range.item_types)
                                 changed = True
-                            ImGui.end_table()
-                        style.CellPadding.pop_style_var()
-
-                        ImGui.separator()
-                        value_is_int = isinstance(instruction.min_value, int) and isinstance(instruction.max_value, int)
-                        current_min = int(upgrade_range.min_value) if value_is_int else upgrade_range.min_value
-                        current_max = int(upgrade_range.max_value) if value_is_int else upgrade_range.max_value
-                        width = PyImGui.get_content_region_avail()[0]
-                        PyImGui.push_item_width(width / 2 - 10)
-                        if value_is_int:
-                            new_min = ImGui.slider_int(f"##Minimum##{unique_id}", int(current_min), int(instruction.min_value), int(instruction.max_value))
-                            if PyImGui.is_item_hovered():
-                                upgrade_range.upgrade.__setattr__(upgrade_range.target, new_min)
-                                ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
-                            PyImGui.same_line(0, 8)
-                            new_max = ImGui.slider_int(f"###Maximum##{unique_id}", int(current_max), int(instruction.min_value), int(instruction.max_value))
-                            if PyImGui.is_item_hovered():
-                                upgrade_range.upgrade.__setattr__(upgrade_range.target, new_max)
-                                ImGui.show_tooltip(upgrade_range.upgrade.description_plain)
-                        else:
-                            new_min = ImGui.slider_float(f"###Minimum##{unique_id}", current_min, float(instruction.min_value), float(instruction.max_value))
-                            PyImGui.same_line(0, 8)
-                            new_max = ImGui.slider_float(f"##Maximum##{unique_id}", current_max, float(instruction.min_value), float(instruction.max_value))
-                        PyImGui.pop_item_width()
-
-                        new_min_value = min(new_min, new_max)
-                        new_max_value = max(new_min, new_max)
-                        if new_min_value != upgrade_range.min_value or new_max_value != upgrade_range.max_value:
-                            condition.upgrade_ranges[index] = RangedUpgrade(upgrade=upgrade_range.upgrade, target=upgrade_range.target, min_value=float(new_min_value), max_value=float(new_max_value), item_types=upgrade_range.item_types)
-                            changed = True
-                    ImGui.end_child()
+                        ImGui.end_child()
+                ImGui.end_child()
                 style.ToggleButtonDisabled.pop_color()
                 style.ToggleButtonEnabled.pop_color()
                 

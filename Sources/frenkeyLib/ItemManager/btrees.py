@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Callable, Optional, cast
 
 from Py4GWCoreLib.Merchant import Trading
-from Py4GWCoreLib.UIManager import MerchantWindow
+from Py4GWCoreLib.UIManager import TraderWindow
 from Py4GWCoreLib.enums_src.GameData_enums import Profession
 from Py4GWCoreLib.enums_src.Item_enums import ItemType
 from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree
@@ -119,7 +119,7 @@ class BTrees:
             def _check_prices(node: BehaviorTree.Node):
                 now = time.monotonic()
 
-                if not MerchantWindow.IsOpen():
+                if not TraderWindow.IsOpen():
                     return BehaviorTree.NodeState.FAILURE
 
                 state = cast(_TraderPriceCheckState | None, node.blackboard.get(blackboard_key))
@@ -352,7 +352,7 @@ class TraderPriceCheckManager:
 
     @classmethod
     def get_kind(cls) -> Optional[str]:
-        return cls._kind
+        return cls._kind if cls._kind is not None else cls._detect_kind()
 
     @classmethod
     def get_generation(cls) -> int:
@@ -400,7 +400,7 @@ class TraderPriceCheckManager:
 
     @classmethod
     def tick(cls) -> BehaviorTree.NodeState | None:
-        if not MerchantWindow.IsOpen():
+        if not TraderWindow.IsOpen():
             if cls._tree is not None or cls._kind is not None:
                 cls.reset()
             return None
