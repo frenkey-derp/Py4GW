@@ -9,10 +9,12 @@ from Py4GWCoreLib.enums_src.GameData_enums import Range
 from Py4GWCoreLib.enums_src.Item_enums import ItemAction
 from Py4GWCoreLib.item_data.item_snapshot import ItemSnapshot
 from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
+from Py4GWCoreLib.global_configs.SortingConfig import SlotMatcherConfig
 
 class LootConfig(RuleConfig):
     _initialized: bool = False
     _instances: ClassVar[dict[type[Self], Self]] = {}
+    disallowed_rule_types: ClassVar[tuple[type, ...]] = (SlotMatcherConfig,)
 
     def __new__(cls: type[Self]) -> Self:
         instance = cast(Self | None, cls._instances.get(cls))

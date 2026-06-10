@@ -704,6 +704,9 @@ class UI:
         self.global_config_new_profile_name: str = ""
         self._save_as_profile_popup_id: str = '##save_as_profile_popup'
         self._save_as_profile_popup_requested: bool = False
+        self._empty_profile_popup_id: str = '##empty_profile_popup'
+        self._empty_profile_popup_requested: bool = False
+        self._empty_profile_name: str = ''
         self._manage_profile_selected_name: str = GlobalConfigProfileManager.SHARED_PROFILE_NAME
         self._profile_action_popup_id: str = '##profile_action_popup'
         self._profile_action_popup_requested: bool = False
@@ -2134,6 +2137,31 @@ class UI:
         self.global_config_new_profile_name = ''
         self._switch_global_config_profile(created_profile_name, target_config)
 
+    def _create_empty_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        normalized_profile_name = GlobalConfigProfileManager.sanitize_profile_name(profile_name)
+        if normalized_profile_name == '' or normalized_profile_name == GlobalConfigProfileManager.SHARED_PROFILE_NAME:
+            return
+
+        self.profile_manager.refresh(force=True)
+        if self.profile_manager.profile_exists(target_config.config_type, normalized_profile_name):
+            return
+
+        created_profile_name = self.profile_manager.create_profile(
+            target_config.config_type,
+            normalized_profile_name,
+            source_profile_name=None,
+            overwrite_existing=False,
+        )
+        if created_profile_name is None:
+            return
+
+        self._empty_profile_name = ''
+        self._switch_global_config_profile(created_profile_name, target_config)
+
     def _delete_global_config_profile(self, profile_name: str, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_active_config_info(config_info)
         if target_config is None:
@@ -2189,6 +2217,15 @@ class UI:
         self.global_config_new_profile_name = '' if active_profile_name == GlobalConfigProfileManager.SHARED_PROFILE_NAME else active_profile_name
         self._save_as_profile_popup_requested = True
 
+    def _open_empty_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        self.profile_manager.refresh(force=True)
+        self._empty_profile_name = ''
+        self._empty_profile_popup_requested = True
+
     def _draw_save_as_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
         target_config = self._get_active_config_info(config_info)
         if target_config is None:
@@ -2234,6 +2271,59 @@ class UI:
             PyImGui.close_current_popup()
 
         ImGui.show_tooltip('Creates a profile for this config type and assigns it to the current character. If the name already exists, it overwrites that profile.')
+        PyImGui.end_popup_modal()
+
+    def _draw_empty_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
+        target_config = self._get_active_config_info(config_info)
+        if target_config is None:
+            return
+
+        popup_title = f"Create Empty {self._humanize_name(target_config.config_type)} Profile##{self._empty_profile_popup_id}"
+        if self._empty_profile_popup_requested:
+            PyImGui.open_popup(popup_title)
+            self._empty_profile_popup_requested = False
+
+        PyImGui.set_next_window_size((360, 0), PyImGui.ImGuiCond.Always)
+        if not PyImGui.begin_popup_modal(popup_title, True, PyImGui.WindowFlags.AlwaysAutoResize):
+            return
+
+        ImGui.text_wrapped('Enter a name for the new empty profile. It will start without any saved rules or settings and be assigned to the current character.')
+
+        PyImGui.set_next_item_width(-1)
+        self._empty_profile_name = ImGui.input_text('Profile Name', self._empty_profile_name)
+
+        normalized_profile_name = GlobalConfigProfileManager.sanitize_profile_name(self._empty_profile_name)
+        is_shared_name = normalized_profile_name == GlobalConfigProfileManager.SHARED_PROFILE_NAME
+        profile_exists = normalized_profile_name != '' and self.profile_manager.profile_exists(target_config.config_type, normalized_profile_name)
+
+        if is_shared_name:
+            ImGui.text_colored(
+                'SHARED is reserved and cannot be created as a custom profile.',
+                color=UI.RED_COLOR.color_tuple,
+                font_size=12,
+            )
+        elif profile_exists:
+            ImGui.text_colored(
+                'A profile with this name already exists for this config type.',
+                color=UI.RED_COLOR.color_tuple,
+                font_size=12,
+            )
+
+        btn_width = (PyImGui.get_window_content_region_max()[0] - 8) / 2
+        create_disabled = normalized_profile_name == '' or is_shared_name or profile_exists
+        confirm_with_enter = not create_disabled and self._is_confirm_key_pressed()
+        PyImGui.begin_disabled(create_disabled)
+        if ImGui.button('Create Empty', btn_width) or confirm_with_enter:
+            self._create_empty_global_config_profile(self._empty_profile_name, target_config)
+            PyImGui.close_current_popup()
+        PyImGui.end_disabled()
+
+        PyImGui.same_line(0, 8)
+        if ImGui.button('Cancel', btn_width) or self._is_cancel_key_pressed():
+            self._empty_profile_name = ''
+            PyImGui.close_current_popup()
+
+        ImGui.show_tooltip('Creates a fresh empty profile for this config type and switches the current character to it.')
         PyImGui.end_popup_modal()
 
     def _open_manage_profile_popup(self, config_info: ConfigInfo | None = None) -> None:
@@ -2825,7 +2915,7 @@ class UI:
                             profile_names = self.profile_manager.list_profiles(active_config_type)
                             active_profile_name = self.profile_manager.get_active_profile_name(active_config_type)
                             current_profile_index = profile_names.index(active_profile_name) if active_profile_name in profile_names else 0
-                            PyImGui.set_next_item_width(-32)
+                            PyImGui.set_next_item_width(-64)
                             selected_profile_index = ImGui.combo('##global_config_profile', current_profile_index, profile_names)
                             if selected_profile_index != current_profile_index:
                                 self._switch_global_config_profile(profile_names[selected_profile_index], active_config)
@@ -2834,6 +2924,11 @@ class UI:
                             if ImGui.button('...##manage_profiles', 26):
                                 self._open_manage_profile_popup(active_config)
                             ImGui.show_tooltip('Manage profiles for this config type.')
+                            
+                            PyImGui.same_line(0, 6)
+                            if ImGui.button('+##manage_profiles', 26):
+                                self._open_empty_profile_popup(active_config)
+                            ImGui.show_tooltip('Add an empty profile for this config type.')
                             
                         PyImGui.table_next_column()
                         if ImGui.button("Save As##export_config", -1):
@@ -2849,6 +2944,7 @@ class UI:
                     style.CellPadding.pop_style_var_direct()
 
                     self._draw_save_as_profile_popup(active_config)
+                    self._draw_empty_profile_popup(active_config)
                     self.draw_config(active_config or self.config)
 
             ImGui.end_child()
@@ -4679,9 +4775,8 @@ class UI:
 
             PyImGui.set_next_item_width(-1)
             if ImGui.begin_combo("##add_rule", "Add Rule", PyImGui.ImGuiComboFlags.NoFlag):
-                allowed_rule_types = config_info.config.GetAllowedRuleTypes()
                 for rule_type in self._get_rule_types():
-                    if allowed_rule_types is not None and not issubclass(rule_type, allowed_rule_types):
+                    if not config_info.config.IsAllowedRuleType(rule_type):
                         continue
                     if ImGui.selectable(UI._humanize_name(rule_type.__name__), False):
                         new_rule = rule_type()

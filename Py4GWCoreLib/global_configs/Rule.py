@@ -831,22 +831,3 @@ class UpgradeRangeRule(ExtractUpgradeRule):
     @upgrade_ranges.setter
     def upgrade_ranges(self, value: list[RangedUpgrade]) -> None:
         self.condition.upgrade_ranges = value
-
-class UpgradesRule(ExtractUpgradeRule):
-    """Matches selected upgrades without requiring them to be maxed or ranged."""
-    ui_selectable: ClassVar[bool] = True
-
-    def __init__(self, upgrades: Optional[list[tuple[Upgrade, list[ItemType]] | Upgrade]] = None):
-        super().__init__([UpgradesCondition(upgrades)])
-
-    @property
-    def condition(self) -> UpgradesCondition:
-        return cast(UpgradesCondition, self.conditions[0])
-
-    @property
-    def upgrades(self) -> list[tuple[Upgrade, list[ItemType]]]:
-        return self.condition.upgrades
-
-    @upgrades.setter
-    def upgrades(self, value: list[tuple[Upgrade, list[ItemType]] | Upgrade]) -> None:
-        self.condition.upgrades = UpgradesCondition(value).upgrades

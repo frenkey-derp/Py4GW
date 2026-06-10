@@ -1,10 +1,12 @@
 from typing import ClassVar, Self, cast
 
 from Py4GWCoreLib.global_configs.RuleConfig import RuleConfig
+from Py4GWCoreLib.global_configs.SortingConfig import SlotMatcherConfig
 
 class InventoryConfig(RuleConfig):    
     _initialized: bool = False    
     _instances: ClassVar[dict[type[Self], Self]] = {}
+    disallowed_rule_types: ClassVar[tuple[type, ...]] = (SlotMatcherConfig,)
 
     def __new__(cls: type[Self]) -> Self:
         instance = cast(Self | None, cls._instances.get(cls))

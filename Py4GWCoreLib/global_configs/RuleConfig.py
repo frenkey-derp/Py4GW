@@ -13,6 +13,7 @@ from Py4GWCoreLib.global_configs import Rule
 
 class RuleConfig(list[Rule.BaseRule]):
     allowed_rule_types: ClassVar[tuple[type[Rule.BaseRule], ...] | None] = None
+    disallowed_rule_types: ClassVar[tuple[type[Rule.BaseRule], ...]] = ()
     
     def __init__(self):        
         self.blacklisted_items : list[int] = []
@@ -57,9 +58,25 @@ class RuleConfig(list[Rule.BaseRule]):
         return cls.allowed_rule_types
 
     @classmethod
-    def _is_allowed_rule_type(cls, rule: Rule.BaseRule) -> bool:
+    def GetDisallowedRuleTypes(cls) -> tuple[type[Rule.BaseRule], ...]:
+        return cls.disallowed_rule_types
+
+    @classmethod
+    def IsAllowedRuleType(cls, rule: Rule.BaseRule | type[Rule.BaseRule]) -> bool:
+        rule_type = rule if isinstance(rule, type) else type(rule)
         allowed_rule_types = cls.GetAllowedRuleTypes()
-        return allowed_rule_types is None or isinstance(rule, allowed_rule_types)
+        if allowed_rule_types is not None and not issubclass(rule_type, allowed_rule_types):
+            return False
+
+        disallowed_rule_types = cls.GetDisallowedRuleTypes()
+        if disallowed_rule_types and issubclass(rule_type, disallowed_rule_types):
+            return False
+
+        return True
+
+    @classmethod
+    def _is_allowed_rule_type(cls, rule: Rule.BaseRule) -> bool:
+        return cls.IsAllowedRuleType(rule)
 
     @classmethod
     def _cast_rule(cls, rule: Rule.BaseRule) -> Rule.BaseRule:
