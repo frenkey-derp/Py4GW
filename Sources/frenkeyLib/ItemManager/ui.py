@@ -286,6 +286,7 @@ class UpgradeTexture(NamedTuple):
     inherent: int = 0
     
 class UI:
+    PROJECT_PATH = Py4GW.Console.get_projects_path()
     CREME_COLOR : Color = ColorPalette.GetColor("creme")
     GREEN_COLOR : Color = ColorPalette.GetColor("gw_green")
     RANDOM_COLORS : list[Color] = [
@@ -1063,13 +1064,36 @@ class UI:
         doc = doc.replace("**", "")
         doc = doc.replace("\n", "\n\n").strip()
         # inversion_note = "Enable Inverted on a rule to apply it to items that do not match the configured criteria."
-        drag_note = "Drag and drop rules to reorder them, the higher in the list a rule is, the higher its priority."
+        drag_note = "Drag and drop rules to reorder them.\nThe higher in the list a rule is, the higher its priority."
         
         PyImGui.begin_tooltip()
         PyImGui.push_text_wrap_pos(PyImGui.get_cursor_pos_x() + wrap_width)
         ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
         if doc:
             PyImGui.text_wrapped(doc)    
+        PyImGui.pop_text_wrap_pos()
+        
+        ImGui.text_colored(drag_note, color=UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
+        
+        PyImGui.end_tooltip()
+        
+    @staticmethod
+    def show_custom_rule_tooltip(rule: CustomRule, wrap_width: float = 420.0):
+        if not PyImGui.is_item_hovered():
+            return
+        
+        title = UI._humanize_name(rule.__class__.__name__)
+        drag_note = "Drag and drop rules to reorder them.\nThe higher in the list a rule is, the higher its priority."
+        
+        PyImGui.begin_tooltip()
+        PyImGui.push_text_wrap_pos(PyImGui.get_cursor_pos_x() + wrap_width)
+        ImGui.text_colored(title, color=UI.CREME_COLOR.color_tuple, font_size=16)
+        ImGui.text("Conditions")
+        ImGui.separator()
+        for c in rule.conditions:
+            condition_type = type(c)
+            condition_title = UI._humanize_name(condition_type.__name__).replace("Condition", "")
+            ImGui.text(f"- {condition_title}", font_size=14)
         PyImGui.pop_text_wrap_pos()
         
         ImGui.text_colored(drag_note, color=UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=12)
@@ -1230,6 +1254,16 @@ class UI:
 
         return candidate_item if candidate_model_id < existing_model_id else existing_item
 
+    @staticmethod
+    def _draw_item_action_texture(item_action : ItemAction, size: tuple[float, float] = (32, 32)) -> None:
+        path = os.path.join(UI.PROJECT_PATH, "Sources", "frenkeyLib", "Core", "textures", f"item_actions.png")         
+        step = 1.0 / 14
+        uv = ((item_action.value - 1) * step, 0.0, item_action.value * step, 1)
+        if uv:
+            UI._draw_texture_or_dummy(path, size, uv0=uv[:2], uv1=uv[2:])
+        else:
+            UI._draw_texture_or_dummy(None, size)
+            
     @staticmethod
     def _draw_item_texture(item: Optional[ItemData], size: tuple[float, float] = (32, 32)) -> None:
         UI._draw_texture_from_model_file_id(getattr(item, "model_file_id", -1), size)
@@ -1778,9 +1812,13 @@ class UI:
         UI._draw_texture_or_dummy(model_file_texture, size)
 
     @staticmethod
-    def _draw_texture_or_dummy(texture: Optional[str], size: tuple[float, float]) -> None:
+    def _draw_texture_or_dummy(texture: Optional[str], size: tuple[float, float], 
+                            uv0: tuple[float, float] = (0.0, 0.0),
+                            uv1: tuple[float, float] = (1.0, 1.0),
+                            tint: tuple[int, int, int, int] = (255, 255, 255, 255),
+                            border_color: tuple[int, int, int, int] = (0, 0, 0, 0)) -> None:
         if texture is not None and texture != "":
-            ImGui.image(texture, size)
+            ImGui.image(texture, size, uv0, uv1, tint, border_color)
         else:
             ImGui.dummy(*size)
 
@@ -4907,7 +4945,10 @@ class UI:
                                 self._drag_rule_target_index = i
                                 self._drag_rule_target_after = io.mouse_pos_y >= ((item_min[1] + item_max[1]) / 2.0)
                         else:
-                            self.show_rule_type_tooltip(rule.__class__)
+                            if not isinstance(rule, CustomRule):
+                                self.show_rule_type_tooltip(rule.__class__)
+                            else:
+                                self.show_custom_rule_tooltip(rule)
                     
                     else:
                         PyImGui.dummy(0, item_height)
@@ -5017,6 +5058,11 @@ class UI:
 
     def draw_rule_card(self, item_height, selected_rule, i, rule):
         if ImGui.begin_selectable(f"##rule_{i}", selected=selected_rule is rule, size=(0, item_height), child_flags=PyImGui.WindowFlags.NoInputs|PyImGui.WindowFlags.NoBringToFrontOnFocus|PyImGui.WindowFlags.NoScrollWithMouse|PyImGui.WindowFlags.NoScrollbar, selected_color=UI.SELECTABLE_SELECTED_COLOR.rgb_tuple, hover_color=UI.SELECTABLE_HOVERED_COLOR.rgb_tuple):
+            
+            self._draw_item_action_texture(rule.action, (item_height - 4, item_height - 4))
+            PyImGui.same_line(0, 5)
+            
+            PyImGui.begin_group()
             PyImGui.begin_disabled(not rule.enabled)
             ImGui.text(rule.name or f"{rule.__class__.__name__} #{i}")
             PyImGui.set_cursor_pos_y(PyImGui.get_cursor_pos_y() - 5)
@@ -5030,6 +5076,7 @@ class UI:
             # ImGui.text_colored(f"{rule.__class__.__name__}", UI.SUBTLE_TEXT_COLOR.color_tuple, font_size=11)
 
             PyImGui.end_disabled()
+            PyImGui.end_group()
                             
         if ImGui.end_selectable():
             self._set_active_rule(rule)
