@@ -2,11 +2,14 @@
 import math
 import os
 import sys
+import time
 import traceback
 import Py4GW
 import PyImGui
 
 from Py4GWCoreLib.Builds.Any.HeroAI import HeroAI_Build
+from Py4GWCoreLib.py4gwcorelib_src.BehaviorTree import BehaviorTree as InventoryBehaviorTree
+from Py4GWCoreLib.global_configs.LootConfig import LootConfig
 
 MODULE_NAME = "HeroAI"
 MODULE_ICON = "Textures/Module_Icons/HeroAI.png"
@@ -29,8 +32,10 @@ from HeroAI.windows import (HeroAI_FloatingWindows ,HeroAI_Windows,)
 from HeroAI.ui_base import HeroAI_BaseUI
 from HeroAI.ui import (draw_configure_window, draw_skip_cutscene_overlay)
 from HeroAI import team_viewer_broadcast
-from Py4GWCoreLib import (GLOBAL_CACHE, Agent, LootConfig,
+from Py4GWCoreLib import (GLOBAL_CACHE, Agent,
                           Range, Routines, ThrottledTimer, SharedCommandType)
+from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
+from Sources.frenkeyLib.ItemHandling.InventoryBT import InventoryBT
 
 #region GLOBALS
 LOOT_THROTTLE_CHECK = ThrottledTimer(250)
@@ -39,39 +44,101 @@ cached_data = CacheData()
 heroai_build = HeroAI_Build(cached_data)
 map_quads : list[Map.Pathing.Quad] = []
 build_contract_map_signature: tuple[int, int, int, int] | None = None
+inventory_config = InventoryConfig()
+loot_config = LootConfig()
+inventory_bt = InventoryBT(inventory_config)
+inventory_service_throttle = ThrottledTimer(125)
+
+
+def _inventory_state_is_active(state: InventoryBehaviorTree.NodeState) -> bool:
+    return state in (InventoryBehaviorTree.NodeState.SUCCESS, InventoryBehaviorTree.NodeState.RUNNING)
+
+
+def TickInventoryProcessing(cached_data: CacheData) -> bool:
+    options = cached_data.account_options 
+    
+    # if not options or not options.Avoidance:
+    #     return False
+    
+    if cached_data.data.in_aggro:
+        Py4GW.Console.Log(MODULE_NAME, "Skipping inventory processing due to aggro", Py4GW.Console.MessageType.Debug)
+        return False
+
+    player_agent_id = Player.GetAgentID()
+    if cached_data.combat_handler.InCastingRoutine() or Agent.IsCasting(player_agent_id):
+        Py4GW.Console.Log(MODULE_NAME, "Skipping inventory processing due to casting", Py4GW.Console.MessageType.Debug)
+        return False
+
+    active_node = inventory_bt.tree.blackboard.get(InventoryBT._ACTIVE_NODE_KEY)
+    active_node_name = "None"
+    if active_node is not None:
+        resolved_active_node = getattr(active_node, "root", active_node)
+        active_node_name = getattr(resolved_active_node, "name", type(resolved_active_node).__name__)
+
+    Py4GW.Console.Log(MODULE_NAME, f"Inventory BT active node: {active_node_name}", Py4GW.Console.MessageType.Debug)
+    has_pending_work = active_node is not None or InventoryBT.HasExecuteableInventoryActions(inventory_config)
+    if not has_pending_work:
+        return False
+
+    if active_node is None and not inventory_service_throttle.IsExpired():
+        return False
+
+    inventory_service_throttle.Reset()
+
+    state = inventory_bt.tick()
+    return state != InventoryBehaviorTree.NodeState.FAILURE
+
+
+def _has_active_pick_up_loot_message() -> bool:
+    account_email = Player.GetAccountEmail()
+    index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
+    return bool(index != -1 and message and message.Command == SharedCommandType.PickUpLoot)
+
+
 #region Looting
 def LootingNode(cached_data: CacheData)-> BehaviorTree.NodeState:
     options = cached_data.account_options
     if not options or not options.Looting:
-        return BehaviorTree.NodeState.FAILURE
-
-    if is_follow_recovery_active(cached_data, follow_execution_state):
+        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
     
     if cached_data.data.in_aggro:
+        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
     
-    
-    account_email = Player.GetAccountEmail()
-    index, message = GLOBAL_CACHE.ShMem.PreviewNextMessage(account_email)
-
-    if index != -1 and message and message.Command == SharedCommandType.PickUpLoot:
+    if _has_active_pick_up_loot_message():
+        cached_data.in_looting_routine = True
+        if not Routines.Checks.Map.MapValid() or not Map.IsExplorable():
+            cached_data.in_looting_routine = False
+            return BehaviorTree.NodeState.FAILURE
+        if GLOBAL_CACHE.Inventory.GetFreeSlotCount() <= 1:
+            cached_data.in_looting_routine = False
+            return BehaviorTree.NodeState.FAILURE
         if LOOT_THROTTLE_CHECK.IsExpired():
+            cached_data.in_looting_routine = False
             return BehaviorTree.NodeState.FAILURE
         return BehaviorTree.NodeState.RUNNING
-    
-    if GLOBAL_CACHE.Inventory.GetFreeSlotCount() <= 1:
+
+    if not Routines.Checks.Map.MapValid() or not Map.IsExplorable():
+        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
     
-    loot_array = LootConfig().GetfilteredLootArray(
+    if GLOBAL_CACHE.Inventory.GetFreeSlotCount() <= 1:
+        cached_data.in_looting_routine = False
+        return BehaviorTree.NodeState.FAILURE
+
+    now = time.monotonic()
+    loot_array = loot_config.GetfilteredLootArray(
         Range.Earshot.value,
         multibox_loot=True,
         allow_unasigned_loot=False,
     )
 
     if len(loot_array) == 0:
+        cached_data.in_looting_routine = False
         return BehaviorTree.NodeState.FAILURE
 
+    account_email = Player.GetAccountEmail()
     self_account = GLOBAL_CACHE.ShMem.GetAccountDataFromEmail(account_email)
     if self_account:
         GLOBAL_CACHE.ShMem.SendMessage(
@@ -81,9 +148,10 @@ def LootingNode(cached_data: CacheData)-> BehaviorTree.NodeState:
             (0, 0, 0, 0),
         )
         LOOT_THROTTLE_CHECK.Reset()
-        # Return RUNNING so the tree knows the task started
+        cached_data.in_looting_routine = True
         return BehaviorTree.NodeState.RUNNING
 
+    cached_data.in_looting_routine = False
     return BehaviorTree.NodeState.FAILURE
 
 
@@ -190,14 +258,17 @@ def initialize(cached_data: CacheData) -> bool:
     if not Routines.Checks.Map.MapValid():
         heroai_build.ClearBuildContract()
         build_contract_map_signature = None
+        inventory_bt.reset()
         return False
     
     if not GLOBAL_CACHE.Party.IsPartyLoaded():
+        inventory_bt.reset()
         return False
         
     if not Map.IsExplorable():  # halt operation if not in explorable area
         heroai_build.ClearBuildContract()
         build_contract_map_signature = None
+        inventory_bt.reset()
         return False
 
     if Map.IsInCinematic():  # halt operation during cinematic
@@ -215,6 +286,7 @@ def initialize(cached_data: CacheData) -> bool:
     if build_contract_map_signature != map_signature:
         heroai_build.EnsureBuildContract(cached_data)
         build_contract_map_signature = map_signature
+        inventory_bt.reset()
     cached_data.UpdateCombat()
     return True
 
@@ -343,9 +415,19 @@ HeroAI_BT = BehaviorTree.SequenceNode(name="HeroAI_Main_BT",
         GlobalGuardNode,
         CastingBlockNode,
 
-        # ---------- PRIORITY SELECTOR ----------
+        # # ---------- PRIORITY SELECTOR ----------
         BehaviorTree.SelectorNode(name="UpdateStatusSelector",
             children=[
+                # Inventory processing (allowed while moving, out of combat)
+                BehaviorTree.ActionNode(
+                    name="TickInventoryProcessing",
+                    action_fn=lambda: (
+                        BehaviorTree.NodeState.SUCCESS
+                        if TickInventoryProcessing(cached_data)
+                        else BehaviorTree.NodeState.FAILURE
+                    ),
+                ),
+                
                 # Looting routine already active (allowed anytime)
                 BehaviorTree.ActionNode(name="LootingRoutine",
                     action_fn=lambda: LootingNode(cached_data),

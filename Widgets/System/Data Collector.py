@@ -92,7 +92,7 @@ def main():
         return
     
     # Disabled until we have fixed some remaining issues
-    # DATA_COLLECTOR.run()
+    DATA_COLLECTOR.run()
 
 __all__ = ['main']
 

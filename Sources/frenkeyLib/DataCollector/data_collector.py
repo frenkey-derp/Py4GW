@@ -37,17 +37,17 @@ class DataCollectorRuntime:
         self.config = DataCollectorConfig()
         self.run_throttle = ThrottledTimer(250)
         self.collectors : dict[str, BaseCollector] = {
-            'Allies': ALLIES,
-            'Armorers': ARMORERS,
-            'Artisans': ARTISANS,
-            'Collectors': COLLECTORS,
-            'Consumable Crafters': CONSUMABLE_CRAFTERS,
-            'Foes': FOES,
-            'Merchants': MERCHANTS,
-            'Traders': TRADERS,
-            'Weaponsmiths': WEAPONSMITHS,
+            # 'Allies': ALLIES,
+            # 'Armorers': ARMORERS,
+            # 'Artisans': ARTISANS,
+            # 'Collectors': COLLECTORS,
+            # 'Consumable Crafters': CONSUMABLE_CRAFTERS,
+            # 'Foes': FOES,
+            # 'Merchants': MERCHANTS,
+            # 'Traders': TRADERS,
+            # 'Weaponsmiths': WEAPONSMITHS,
             'Items': ITEMS,
-            'Chests': CHESTS,
+            # 'Chests': CHESTS,
         }
         
         self.collector_enabled = True

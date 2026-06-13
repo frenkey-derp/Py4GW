@@ -154,6 +154,7 @@ class CacheData:
             self.party : PartyCache = PartyCache()
             self.account_data : AccountStruct = AccountStruct()
             self.account_options : HeroAIOptionStruct = HeroAIOptionStruct()
+            self.account_options.reset()
             
             self.combat_handler = CombatClass()
             # self.HeroAI_vars: HeroAI_varsClass = HeroAI_varsClass()
