@@ -74,7 +74,7 @@ from Py4GWCoreLib.global_configs.BuyConfig import BuyConfig, BuyConfigEntry
 from Py4GWCoreLib.global_configs.CraftingConfig import CraftingConfig
 from Py4GWCoreLib.global_configs.InventoryConfig import InventoryConfig
 from Py4GWCoreLib.global_configs.LootConfig import LootConfig
-from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+from Py4GWCoreLib.global_configs.GlobalConfigProfileManager import GlobalConfigProfileManager
 from Py4GWCoreLib.global_configs.SortingConfig import BagSortPlan, BagSortPreviewEntry, SortArgument, SortDirection, SortField, SlotGroupConfig, SlotMatcherConfig, SlotReference, Sorter, SortingConfig
 from Sources.frenkeyLib.ItemHandling.Recipe import CraftingRecipe, Recipe
 from Py4GWCoreLib.global_configs.Rule import (

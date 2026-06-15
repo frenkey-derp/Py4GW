@@ -1,7 +1,7 @@
 import PyImGui
 from Py4GWCoreLib import *
 from Py4GWCoreLib.HotkeyManager import HOTKEY_MANAGER
-from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+from Py4GWCoreLib.global_configs.GlobalConfigProfileManager import GlobalConfigProfileManager
 
 #do not ever disable this module, it is the main module for everything
 MODULE_NAME = "Environment Upkeeper"

@@ -28,7 +28,7 @@ from Py4GWCoreLib.enums_src.Hero_enums import HeroType
 from Py4GWCoreLib.enums_src.Model_enums import ModelID
 from Py4GWCoreLib.enums_src.Multiboxing_enums import ReloadType
 from Py4GWCoreLib.global_configs.LootConfig import LootConfig as FrenkeyLootConfig
-from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+from Py4GWCoreLib.global_configs.GlobalConfigProfileManager import GlobalConfigProfileManager
 from Widgets.Automation.Helpers import Pycons as PyconsHelper
 from Widgets.Automation.Helpers.Pycons import resolve_pycons_account_ini_path
 from Py4GWCoreLib.py4gwcorelib_src.WidgetManager import get_widget_handler

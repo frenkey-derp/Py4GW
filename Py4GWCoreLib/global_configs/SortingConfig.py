@@ -509,9 +509,9 @@ class SortingConfig:
 
     def _ensure_profile_sync(self) -> None:
         try:
-            from Py4GWCoreLib.global_configs.ProfileManager import GlobalConfigProfileManager
+            from Py4GWCoreLib.global_configs.GlobalConfigProfileManager import GLOBAL_CONFIG_PROFILE_MANAGER
 
-            GlobalConfigProfileManager().refresh_and_sync()
+            GLOBAL_CONFIG_PROFILE_MANAGER.refresh_and_sync()
         except Exception:
             pass
 

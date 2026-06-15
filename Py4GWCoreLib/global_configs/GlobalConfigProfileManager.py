@@ -474,3 +474,5 @@ class GlobalConfigProfileManager:
                     SharedCommandType.Reload,
                     (reload_type,),
                 )
+
+GLOBAL_CONFIG_PROFILE_MANAGER = GlobalConfigProfileManager()
