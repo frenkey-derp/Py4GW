@@ -56,6 +56,7 @@ def _inventory_state_is_active(state: InventoryBehaviorTree.NodeState) -> bool:
 
 def TickInventoryProcessing(cached_data: CacheData) -> bool:
     options = cached_data.account_options 
+    return False
     
     # if not options or not options.Avoidance:
     #     return False
